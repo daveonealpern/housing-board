@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sheet 1.07 | Housing Signal Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0F2033;
+    --panel: #16293D;
+    --panel-hover: #1C3349;
+    --line: #33495D;
+    --line-bright: #6E93AC;
+    --grid-line: rgba(110, 147, 172, 0.06);
+    --paper: #E9EFF3;
+    --paper-dim: #93AAC0;
+    --brass: #C7A15C;
+    --up: #63B08F;
+    --down: #CF6E76;
+    --flat: #93AAC0;
+    --radius: 2px;
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background-color: var(--ink);
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 48px 48px;
+    color: var(--paper);
+    font-family: var(--font-body);
+    min-height: 100vh;
+  }
+  .page { max-width: 1180px; margin: 0 auto; padding: 40px 32px 80px; }
+
+  .back {
+    font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--paper-dim); text-decoration: none;
+    display: inline-block; margin-bottom: 22px;
+  }
+  .back:hover { color: var(--brass); }
+
+  .title-block {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    gap: 24px; flex-wrap: wrap;
+    border-bottom: 2px solid var(--line-bright); padding-bottom: 28px;
+  }
+  .title-block .eyebrow {
+    font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--brass); margin: 0 0 10px;
+  }
+  .title-block h1 {
+    font-family: var(--font-display); font-weight: 700;
+    font-size: clamp(28px, 4vw, 42px); margin: 0; line-height: 1.1;
+  }
+  .mark { flex-shrink: 0; }
+  .meta {
+    font-family: var(--font-mono); font-size: 12px; color: var(--paper-dim);
+    text-align: right; line-height: 1.8;
+  }
+  .meta strong { color: var(--brass); font-weight: 500; }
+
+  .summary-line {
+    font-family: var(--font-mono); font-size: 13px; color: var(--paper-dim);
+    margin: 18px 0 34px;
+  }
+  .summary-line strong { color: var(--brass); font-weight: 500; }
+
+  .notice {
+    border: 1px solid var(--brass); border-left-width: 3px;
+    background: rgba(199, 161, 92, 0.07);
+    padding: 14px 18px; margin-bottom: 30px; font-size: 13.5px; line-height: 1.6;
+  }
+  .notice strong { color: var(--brass); }
+
+  /* ---------- lead-time spine ---------- */
+  .spine-block {
+    border: 1px solid var(--line); background: var(--panel);
+    padding: 26px 26px 20px; margin-bottom: 44px;
+  }
+  .spine-block h2 {
+    font-family: var(--font-display); font-weight: 600; font-size: 21px; margin: 0 0 8px;
+  }
+  .spine-block p {
+    font-size: 14px; color: var(--paper-dim); max-width: 70ch; margin: 0 0 20px; line-height: 1.65;
+  }
+  #spine { width: 100%; height: auto; display: block; overflow: visible; }
+  .legend {
+    display: flex; gap: 22px; flex-wrap: wrap; margin-top: 16px;
+    font-family: var(--font-mono); font-size: 11.5px; color: var(--paper-dim);
+  }
+  .legend span { display: flex; align-items: center; gap: 7px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  #tip {
+    position: fixed; pointer-events: none; z-index: 60;
+    background: #0A1826; color: var(--paper); border: 1px solid var(--line-bright);
+    padding: 9px 12px; font-size: 12.5px; max-width: 290px; line-height: 1.45;
+    opacity: 0; transition: opacity 120ms ease; border-radius: var(--radius);
+  }
+
+  /* ---------- sections ---------- */
+  .book-section { margin-bottom: 46px; }
+  .book-heading {
+    display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap;
+    border-bottom: 1px solid var(--line); padding-bottom: 12px; margin-bottom: 20px;
+  }
+  .book-num {
+    font-family: var(--font-mono); font-size: 11.5px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--brass);
+  }
+  .book-heading h2 {
+    font-family: var(--font-display); font-weight: 600; font-size: 23px; margin: 0;
+  }
+  .book-note { font-size: 13px; color: var(--paper-dim); }
+  .sec-note {
+    font-size: 14px; color: var(--paper-dim); max-width: 74ch;
+    margin: -8px 0 20px; line-height: 1.65;
+  }
+
+  /* ---------- cards ---------- */
+  .parcel-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); }
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 16px 17px 13px; display: flex; flex-direction: column; gap: 10px;
+    transition: border-color 150ms ease;
+  }
+  .card:hover { border-color: var(--line-bright); }
+  .card.dim { opacity: 0.55; border-style: dashed; }
+  .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .card-name { font-weight: 600; font-size: 14.5px; line-height: 1.3; }
+  .card-src {
+    font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--paper-dim); margin-top: 5px;
+  }
+  .card-val { text-align: right; white-space: nowrap; }
+  .card-val .v {
+    font-family: var(--font-mono); font-size: 21px; font-weight: 500;
+    line-height: 1; color: var(--paper);
+  }
+  .card-val .d { font-family: var(--font-mono); font-size: 11.5px; margin-top: 5px; }
+  .up { color: var(--up); } .down { color: var(--down); } .flat { color: var(--flat); }
+  .chart { width: 100%; height: 54px; display: block; }
+  .card-read { font-size: 13px; color: var(--paper-dim); line-height: 1.55; }
+  .card-foot {
+    display: flex; justify-content: space-between; gap: 10px;
+    font-family: var(--font-mono); font-size: 10.5px; color: var(--paper-dim);
+    border-top: 1px solid var(--line); padding-top: 9px; margin-top: auto;
+  }
+  .card-foot a { color: var(--brass); text-decoration: none; }
+  .card-foot a:hover { text-decoration: underline; }
+  .empty {
+    display: flex; align-items: center; justify-content: center; height: 54px;
+    font-family: var(--font-mono); font-size: 11px; color: var(--paper-dim);
+    border: 1px dashed var(--line);
+  }
+
+  /* ---------- calendar ---------- */
+  .cal { border: 1px solid var(--line); background: var(--panel); }
+  .cal-row {
+    display: grid; grid-template-columns: 1fr auto; gap: 14px; align-items: center;
+    padding: 10px 16px; border-bottom: 1px solid var(--line); font-size: 13.5px;
+  }
+  .cal-row:last-child { border-bottom: none; }
+  .cal-when { font-family: var(--font-mono); font-size: 12.5px; color: var(--paper-dim); }
+  .pill-day {
+    display: inline-block; padding: 2px 9px; margin-left: 10px; border-radius: 10px;
+    font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.05em;
+  }
+  .pill-day.now  { background: rgba(99, 176, 143, 0.16); color: var(--up); }
+  .pill-day.soon { background: rgba(199, 161, 92, 0.16); color: var(--brass); }
+  .pill-day.far  { background: rgba(147, 170, 192, 0.12); color: var(--paper-dim); }
+
+  /* ---------- table ---------- */
+  .tbl-scroll { overflow-x: auto; border: 1px solid var(--line); background: var(--panel); }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; min-width: 760px; }
+  th, td { padding: 9px 13px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th {
+    font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--paper-dim); font-weight: 500;
+    background: rgba(110, 147, 172, 0.05);
+  }
+  th:first-child, td:first-child { text-align: left; }
+  td.num { font-family: var(--font-mono); }
+  tbody tr:hover { background: var(--panel-hover); }
+  td a { color: var(--brass); text-decoration: none; }
+  td a:hover { text-decoration: underline; }
+  .tk { font-family: var(--font-mono); font-size: 11px; color: var(--paper-dim); }
+
+  .hub-footer {
+    border-top: 1px solid var(--line); padding-top: 22px; margin-top: 20px;
+    font-size: 12.5px; color: var(--paper-dim); line-height: 1.7; max-width: 78ch;
+  }
+  @media (max-width: 640px) {
+    .page { padding: 28px 18px 60px; }
+    .title-block { flex-direction: column; align-items: flex-start; }
+    .meta { text-align: left; }
+    .spine-block { padding: 20px 16px 16px; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <a class="back" href="../command-index/">&larr; Sheet Index</a>
+
+  <header class="title-block">
+    <div>
+      <p class="eyebrow">Sheet 1.07 &middot; Book I</p>
+      <h1>Housing Signal Board</h1>
+    </div>
+    <svg class="mark" width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle cx="30" cy="32" r="15" stroke="#6E93AC" stroke-width="1"/>
+      <circle cx="30" cy="32" r="2.5" fill="#C7A15C"/>
+      <line x1="30" y1="10" x2="30" y2="17" stroke="#6E93AC" stroke-width="1"/>
+      <line x1="30" y1="47" x2="30" y2="54" stroke="#6E93AC" stroke-width="1"/>
+      <line x1="8" y1="32" x2="15" y2="32" stroke="#6E93AC" stroke-width="1"/>
+      <line x1="45" y1="32" x2="52" y2="32" stroke="#6E93AC" stroke-width="1"/>
+    </svg>
+    <div class="meta" id="meta">LOADING</div>
+  </header>
+
+  <p class="summary-line" id="summary">Reading data file&hellip;</p>
+
+  <div id="notice"></div>
+
+  <div class="spine-block">
+    <h2>Lead-time spine</h2>
+    <p>Every series on this sheet sits somewhere on a timeline. Permit backlog and builder land decisions see furthest ahead; delinquency and completions only confirm what already happened. Position on this axis is the reason to watch a series, not its headline number.</p>
+    <svg id="spine" viewBox="0 0 1120 216" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Indicators plotted by forecasting lead time"></svg>
+    <div class="legend">
+      <span><i class="dot" style="background:#63B08F"></i> Expanding</span>
+      <span><i class="dot" style="background:#CF6E76"></i> Contracting</span>
+      <span><i class="dot" style="background:#93AAC0"></i> Flat</span>
+      <span>Hover for detail, click to jump</span>
+    </div>
+  </div>
+
+  <section class="book-section">
+    <div class="book-heading">
+      <span class="book-num">Release Schedule</span>
+      <h2>What publishes next</h2>
+      <span class="book-note">from FRED's own calendar</span>
+    </div>
+    <p class="sec-note">These are the agencies' filed release dates, not estimates. The sheet reads them each morning, so a shifted or cancelled release shows up here without anyone adjusting anything.</p>
+    <div class="cal" id="cal"></div>
+  </section>
+
+  <section class="book-section">
+    <div class="book-heading">
+      <span class="book-num">+6 to +18 mo</span>
+      <h2>Land and permit pipeline</h2>
+    </div>
+    <p class="sec-note">The layer closest to your own work. Authorized-but-not-started backlog is the sharpest series here: when builders hold paper and decline to break ground, starts fall about two quarters later.</p>
+    <div class="parcel-grid" id="g-structural"></div>
+  </section>
+
+  <section class="book-section">
+    <div class="book-heading">
+      <span class="book-num">+1 to +3 mo</span>
+      <h2>Demand and credit</h2>
+    </div>
+    <p class="sec-note">Watch the gap between the 30-year mortgage rate and the 10-year Treasury separately from the rate itself. That spread has run historically wide since 2022, and compression alone would improve affordability with no Fed move at all.</p>
+    <div class="parcel-grid" id="g-demand"></div>
+  </section>
+
+  <section class="book-section">
+    <div class="book-heading">
+      <span class="book-num">Coincident</span>
+      <h2>Activity now</h2>
+    </div>
+    <p class="sec-note">These confirm rather than predict. Their value is calibration: if the leading layer turned three months ago and this layer has not followed, either the signal was noise or the lag is running long.</p>
+    <div class="parcel-grid" id="g-coincident"></div>
+  </section>
+
+  <section class="book-section">
+    <div class="book-heading">
+      <span class="book-num">Inputs</span>
+      <h2>Cost and labor</h2>
+    </div>
+    <p class="sec-note">Materials cost reaches pro formas before it reaches completed cost. Construction job openings are the better labor read than headline employment, because hiring intent turns before payrolls do.</p>
+    <div class="parcel-grid" id="g-cost"></div>
+  </section>
+
+  <section class="book-section">
+    <div class="book-heading">
+      <span class="book-num">&minus;6 to &minus;12 mo</span>
+      <h2>Distress</h2>
+    </div>
+    <p class="sec-note">Lagging by construction, but useful for confirming that a turn was real rather than a two-month wobble.</p>
+    <div class="parcel-grid" id="g-distress"></div>
+  </section>
+
+  <section class="book-section">
+    <div class="book-heading">
+      <span class="book-num">State</span>
+      <h2>California</h2>
+      <span class="book-note">LA and Ventura context</span>
+    </div>
+    <p class="sec-note">State-level series that move entitlement throughput before they move price, and that most people watching national housing data never look at.</p>
+    <div class="parcel-grid" id="g-ca"></div>
+  </section>
+
+  <section class="book-section">
+    <div class="book-heading">
+      <span class="book-num">SEC EDGAR</span>
+      <h2>Public homebuilders</h2>
+    </div>
+    <p class="sec-note">Latest filing and real estate inventory carried on the balance sheet, pulled from each company's XBRL data the day it files. Lot counts owned versus optioned are disclosed in prose rather than tagged data, so those are not here. Ask for them when a quarter lands and they get read by hand.</p>
+    <div class="tbl-scroll"><table><thead><tr>
+      <th>Builder</th><th>Form</th><th>Period</th><th>Filed</th>
+      <th>Real estate inventory</th><th>Change</th><th>Filing</th>
+    </tr></thead><tbody id="bBody"></tbody></table></div>
+    <div class="parcel-grid" id="g-builders" style="margin-top:16px"></div>
+  </section>
+
+  <section class="book-section">
+    <div class="book-heading">
+      <span class="book-num">Sentiment</span>
+      <h2>Prediction markets</h2>
+      <span class="book-note">thin liquidity, read with caution</span>
+    </div>
+    <p class="sec-note">Kept small on purpose. Total housing volume across these venues runs under a million dollars, so a few traders can move an implied probability several points. A crowd mood ring, not a forecast.</p>
+    <div class="parcel-grid" id="g-markets"></div>
+  </section>
+
+  <footer class="hub-footer">
+    Rebuilt automatically each morning from FRED, SEC EDGAR and Polymarket by a scheduled job in the <span class="tk">housing-board</span> repository. Nothing on this sheet is entered by hand.<br>
+    Lead-time estimates are historical averages across several cycles and will not hold in every one. Verify anything before it reaches an investment committee memo.
+  </footer>
+
+</div>
+
+<script>
+"use strict";
+let D = null;
+
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+const fmt = v => v == null ? '—'
+  : Math.abs(v) >= 1e9   ? '$' + (v/1e9).toFixed(1) + 'B'
+  : Math.abs(v) >= 1e6   ? (v/1e6).toFixed(2) + 'M'
+  : Math.abs(v) >= 10000 ? (v/1000).toFixed(1) + 'k'
+  : Math.abs(v) >= 100   ? v.toFixed(0)
+  : Math.abs(v) >= 10    ? v.toFixed(1) : v.toFixed(2);
+
+function trend(obs){
+  if(!obs || obs.length < 2) return {dir:'flat', pct:null, last:null, date:null};
+  const last = obs[obs.length-1], back = obs[Math.max(0, obs.length - 13)];
+  const pct = back.v ? ((last.v - back.v)/Math.abs(back.v))*100 : null;
+  const dir = pct == null ? 'flat' : pct > 0.6 ? 'up' : pct < -0.6 ? 'down' : 'flat';
+  return {dir, pct, last:last.v, date:last.d};
+}
+const health = s => { const t = trend(s.obs); return t.dir === 'flat' ? 'flat' : (t.dir === s.good ? 'up' : 'down'); };
+
+function chart(obs, tone, w, h){
+  if(!obs || obs.length < 2) return '<div class="empty">NO DATA</div>';
+  const pts = obs.slice(-96), vals = pts.map(p => p.v);
+  const mn = Math.min(...vals), mx = Math.max(...vals), sp = (mx - mn) || 1, pad = 3;
+  const X = i => (i/(pts.length-1))*w;
+  const Y = v => h - pad - ((v - mn)/sp)*(h - pad*2);
+  const line = pts.map((p,i) => (i?'L':'M') + X(i).toFixed(1) + ' ' + Y(p.v).toFixed(1)).join(' ');
+  const col = tone === 'up' ? '#63B08F' : tone === 'down' ? '#CF6E76' : '#93AAC0';
+  const uid = 'g' + Math.random().toString(36).slice(2,8);
+  return '<svg class="chart" viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none" aria-hidden="true">'
+    + '<defs><linearGradient id="'+uid+'" x1="0" y1="0" x2="0" y2="1">'
+    + '<stop offset="0%" stop-color="'+col+'" stop-opacity=".22"/>'
+    + '<stop offset="100%" stop-color="'+col+'" stop-opacity="0"/></linearGradient></defs>'
+    + '<path d="'+line+' L'+w+' '+h+' L0 '+h+' Z" fill="url(#'+uid+')"/>'
+    + '<path d="'+line+'" fill="none" stroke="'+col+'" stroke-width="1.5" stroke-linejoin="round"/>'
+    + '<circle cx="'+X(pts.length-1).toFixed(1)+'" cy="'+Y(vals[vals.length-1]).toFixed(1)+'" r="2.6" fill="'+col+'"/>'
+    + '</svg>';
+}
+
+function card(id, s){
+  const t = trend(s.obs), tone = health(s);
+  const lead = s.lead > 0 ? 'leads ~'+s.lead+'mo' : s.lead < 0 ? 'lags ~'+Math.abs(s.lead)+'mo' : 'coincident';
+  const chg = t.pct == null ? '' :
+    '<div class="d '+tone+'">'+(t.pct>=0?'+':'')+t.pct.toFixed(1)+'% YoY</div>';
+  return '<article class="card'+(s.obs.length?'':' dim')+'" id="c-'+id+'">'
+    + '<div class="card-top"><div><div class="card-name">'+esc(s.name)+'</div>'
+    + '<div class="card-src">'+esc(s.release_name || 'FRED')+' &middot; '+lead+'</div></div>'
+    + '<div class="card-val"><div class="v">'+fmt(t.last)+'</div>'+chg+'</div></div>'
+    + chart(s.obs, tone, 300, 54)
+    + '<div class="card-read">'+esc(s.read)+'</div>'
+    + '<div class="card-foot"><span>'+esc(t.date || s.units)+'</span>'
+    + '<a href="https://fred.stlouisfed.org/series/'+esc(s.sid)+'" target="_blank" rel="noopener">'+esc(s.sid)+'</a>'
+    + '</div></article>';
+}
+
+function spine(){
+  const ids = Object.keys(D.series);
+  const leads = ids.map(i => D.series[i].lead);
+  const W=1120, H=216, L=60, R=40, T=44, B=44;
+  const mx = Math.max(...leads, 12), mn = Math.min(...leads, -9);
+  const X = m => L + ((mx - m)/(mx - mn))*(W - L - R);
+  let s = '<line x1="'+L+'" y1="'+(H-B)+'" x2="'+(W-R)+'" y2="'+(H-B)+'" stroke="#33495D"/>';
+  for(let m = mx; m >= mn; m -= 3){
+    const x = X(m), lbl = m === 0 ? 'TODAY' : (m > 0 ? '+'+m+'MO' : m+'MO');
+    s += '<line x1="'+x+'" y1="'+(H-B)+'" x2="'+x+'" y2="'+(H-B+6)+'" stroke="#33495D"/>'
+      +  '<text x="'+x+'" y="'+(H-B+22)+'" fill="'+(m===0?'#C7A15C':'#6E93AC')+'" font-size="10.5" letter-spacing="0.08em" text-anchor="middle" font-family="IBM Plex Mono, monospace">'+lbl+'</text>';
+  }
+  const x0 = X(0);
+  s += '<line x1="'+x0+'" y1="'+(T-18)+'" x2="'+x0+'" y2="'+(H-B)+'" stroke="#C7A15C" stroke-dasharray="3 4"/>'
+    +  '<text x="'+(x0-9)+'" y="'+(T-24)+'" fill="#C7A15C" font-size="10.5" letter-spacing="0.1em" text-anchor="end" font-family="IBM Plex Mono, monospace">FORECAST</text>'
+    +  '<text x="'+(x0+9)+'" y="'+(T-24)+'" fill="#6E93AC" font-size="10.5" letter-spacing="0.1em" font-family="IBM Plex Mono, monospace">CONFIRMATION</text>';
+  const rows = 4, rh = (H - T - B - 12)/rows, used = {};
+  ids.forEach(id => {
+    const sr = D.series[id], x = X(sr.lead), k = Math.round(x/26);
+    used[k] = used[k] || 0;
+    const y = T + (used[k] % rows)*rh + rh/2; used[k]++;
+    const st = health(sr);
+    const col = st === 'up' ? '#63B08F' : st === 'down' ? '#CF6E76' : '#93AAC0';
+    const has = sr.obs.length > 0;
+    s += '<g class="mk" style="cursor:pointer" data-id="'+id+'" data-name="'+esc(sr.name)+'" data-read="'+esc(sr.read)+'">'
+      +  '<line x1="'+x+'" y1="'+y+'" x2="'+x+'" y2="'+(H-B)+'" stroke="#243B50"/>'
+      +  '<circle cx="'+x+'" cy="'+y+'" r="'+(has?6:4.5)+'" fill="'+(has?col:'none')+'" stroke="'+col+'" stroke-width="1.7"/>'
+      +  '<circle cx="'+x+'" cy="'+y+'" r="13" fill="transparent"/></g>';
+  });
+  const el = document.getElementById('spine'); el.innerHTML = s;
+  const tip = document.getElementById('tip') || (() => {
+    const t = document.createElement('div'); t.id = 'tip'; document.body.appendChild(t); return t;
+  })();
+  el.querySelectorAll('.mk').forEach(g => {
+    g.addEventListener('mouseenter', () => {
+      tip.innerHTML = '<strong>'+g.dataset.name+'</strong><br>'+g.dataset.read;
+      tip.style.opacity = '1';
+    });
+    g.addEventListener('mousemove', e => {
+      tip.style.left = Math.min(e.clientX + 14, innerWidth - 305) + 'px';
+      tip.style.top  = (e.clientY + 16) + 'px';
+    });
+    g.addEventListener('mouseleave', () => { tip.style.opacity = '0'; });
+    g.addEventListener('click', () => {
+      const c = document.getElementById('c-' + g.dataset.id);
+      if(c) c.scrollIntoView({behavior:'smooth', block:'center'});
+    });
+  });
+}
+
+function render(){
+  const buckets = {structural:'g-structural', demand:'g-demand', coincident:'g-coincident',
+                   cost:'g-cost', distress:'g-distress', ca:'g-ca'};
+  Object.keys(buckets).forEach(b => {
+    document.getElementById(buckets[b]).innerHTML =
+      Object.keys(D.series).filter(id => D.series[id].bucket === b)
+            .map(id => card(id, D.series[id])).join('');
+  });
+  spine();
+
+  document.getElementById('cal').innerHTML = (D.calendar || []).slice(0, 14).map(r => {
+    const p = r.days <= 7 ? 'now' : r.days <= 30 ? 'soon' : 'far';
+    const d = new Date(r.date + 'T12:00:00');
+    return '<div class="cal-row"><div>'+esc(r.name)+'</div><div class="cal-when">'
+      + d.toLocaleDateString(undefined,{month:'short', day:'numeric'}).toUpperCase()
+      + '<span class="pill-day '+p+'">'+(r.days === 0 ? 'TODAY' : r.days+'D')+'</span></div></div>';
+  }).join('') || '<div class="cal-row"><div>No upcoming dates returned.</div><div></div></div>';
+
+  document.getElementById('bBody').innerHTML = (D.builders || []).map(b => {
+    const inv = b.inventory || [];
+    const last = inv[inv.length-1], prev = inv[inv.length-2];
+    const ch = (last && prev && prev.v) ? ((last.v - prev.v)/Math.abs(prev.v)*100) : null;
+    return '<tr><td>'+esc(b.name)+' <span class="tk">'+esc(b.ticker)+'</span></td>'
+      + '<td class="num">'+esc(b.form || '—')+'</td><td class="num">'+esc(b.period || '—')+'</td>'
+      + '<td class="num">'+esc(b.filed || '—')+'</td>'
+      + '<td class="num">'+(last ? fmt(last.v) : '—')+'</td>'
+      + '<td class="num '+(ch==null?'':ch>=0?'up':'down')+'">'+(ch==null?'—':(ch>=0?'+':'')+ch.toFixed(1)+'%')+'</td>'
+      + '<td>'+(b.url ? '<a href="'+esc(b.url)+'" target="_blank" rel="noopener">open</a>' : '—')+'</td></tr>';
+  }).join('') || '<tr><td colspan="7" style="text-align:center;color:#93AAC0;padding:26px">No filings returned.</td></tr>';
+
+  document.getElementById('g-builders').innerHTML = (D.builders || [])
+    .filter(b => (b.inventory || []).length > 2).slice(0, 6).map(b => {
+      const t = trend(b.inventory), tone = (t.pct == null) ? 'flat' : (t.pct >= 0 ? 'up' : 'down');
+      return '<article class="card"><div class="card-top"><div><div class="card-name">'+esc(b.ticker)+' inventory</div>'
+        + '<div class="card-src">'+esc(b.inventory_tag || 'XBRL')+'</div></div>'
+        + '<div class="card-val"><div class="v">'+fmt(t.last)+'</div>'
+        + (t.pct == null ? '' : '<div class="d '+tone+'">'+(t.pct>=0?'+':'')+t.pct.toFixed(1)+'%</div>')+'</div></div>'
+        + chart(b.inventory, tone, 300, 54)
+        + '<div class="card-read">Real estate carried on the balance sheet. A build in dollars while community count stays flat means unsold inventory accumulating.</div>'
+        + '<div class="card-foot"><span>'+esc(t.date || '')+'</span><span>'+b.inventory.length+' QTRS</span></div></article>';
+    }).join('');
+
+  document.getElementById('g-markets').innerHTML = (D.markets || []).slice(0, 6).map(m =>
+    '<article class="card"><div class="card-top"><div><div class="card-name">'+esc(m.title)+'</div>'
+    + '<div class="card-src">Polymarket &middot; $'+Math.round(m.vol).toLocaleString()+' vol</div></div>'
+    + '<div class="card-val"><div class="v">'+(m.top ? Math.round(m.top.p*100)+'%' : '—')+'</div></div></div>'
+    + '<div class="card-read">'+(m.top ? 'Leading outcome: '+esc(m.top.q) : 'No priced outcome returned.')+'</div>'
+    + '<div class="card-foot"><span>LIVE</span><span>THIN</span></div></article>'
+  ).join('') || '<article class="card dim"><div class="card-name">No open housing markets</div>'
+    + '<div class="empty">NOTHING LISTED</div>'
+    + '<div class="card-read">Polymarket relists metro home value markets monthly, so this fills back in after each cycle.</div></article>';
+
+  if((D.errors || []).length){
+    document.getElementById('notice').innerHTML =
+      '<div class="notice"><strong>'+D.errors.length+' issue'+(D.errors.length>1?'s':'')+' on the last run.</strong><br>'
+      + D.errors.slice(0, 8).map(esc).join('<br>') + '</div>';
+  }
+
+  const ok = Object.values(D.series).filter(s => s.obs.length).length;
+  const g = new Date(D.generated);
+  const next = (D.calendar || [])[0];
+  document.getElementById('meta').innerHTML =
+    'UPDATED ' + g.toLocaleDateString(undefined,{year:'numeric',month:'2-digit',day:'2-digit'}).replace(/\//g,'.')
+    + '<br>PREPARED FOR D. ALPERN'
+    + '<br>' + (next ? 'NEXT RELEASE <strong>' + next.days + 'D</strong>' : 'NO SCHEDULED RELEASE');
+  document.getElementById('summary').innerHTML =
+    '<strong>' + ok + '</strong> of ' + Object.keys(D.series).length + ' series carrying data, '
+    + '<strong>' + (D.builders || []).length + '</strong> builders tracked, '
+    + '<strong>' + (D.markets || []).length + '</strong> live markets.';
+}
+
+fetch('data.json?t=' + Date.now())
+  .then(r => { if(!r.ok) throw new Error('data.json not found'); return r.json(); })
+  .then(j => { D = j; render(); })
+  .catch(() => {
+    document.getElementById('meta').textContent = 'NO DATA YET';
+    document.getElementById('summary').textContent = '';
+    document.getElementById('notice').innerHTML =
+      '<div class="notice"><strong>No data file yet.</strong> The collector has not completed a run. '
+      + 'Open the Actions tab in this repository, choose Update housing data, press Run workflow, '
+      + 'then reload this sheet in about a minute.</div>';
+  });
+</script>
+</body>
+</html>
