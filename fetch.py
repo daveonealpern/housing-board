@@ -357,12 +357,17 @@ def pull_builders():
         elif tk in CIK_FALLBACK:
             cik, expect = CIK_FALLBACK[tk]
             title = expect
+        elif tk in DELISTED:
+            continue   # gone from the active ticker file for good; nothing to report
         else:
             note("No SEC record for ticker %s" % tk); continue
         rec = {"ticker": tk, "name": title, "cik": cik}
         try:
             sub = get_json("https://data.sec.gov/submissions/CIK%s.json" % cik, headers=SEC_HEADERS)
-            ent = sub.get("entityName", "")
+            # The Submissions API's field is "name". "entityName" belongs to a
+            # different SEC endpoint (CompanyFacts) and never appears here, so
+            # using it made this check silently fail on every run.
+            ent = sub.get("name", "")
             if expect and expect.lower() not in ent.lower():
                 note("CIK %s is %s, not %s - skipped" % (cik, ent, tk)); continue
             if ent:
