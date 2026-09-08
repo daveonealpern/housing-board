@@ -33,6 +33,20 @@ REFS = {
 # Shown in the rates band at the top of the sheet, in this order.
 RATES = ["MORTGAGE30US", "SPREAD", "DGS10", "T10Y2Y", "SOFR", "DPRIME", "FEDFUNDS"]
 
+# sid -> multiplier to convert FRED's native value into a true, real-world
+# number. Verified against each series' own FRED units field:
+#   - permits/starts/sales/completions/employment are reported in thousands
+#   - construction spend is reported in millions of dollars
+#   - BAML spread series are reported in PERCENT, not basis points, despite
+#     the market convention of quoting credit spreads in bp
+SCALE = {
+    "AUTHNOTT": 1000, "PERMIT": 1000, "PERMIT1": 1000, "HOUST1F": 1000, "HOUST": 1000,
+    "HSN1F": 1000, "EXHOSLUSM495S": 1000, "COMPUTSA": 1000,
+    "JTS2300JOL": 1000, "USCONS": 1000,
+    "PRRESCONS": 1_000_000,
+    "BAMLC0A4CBBB": 100, "BAMLH0A0HYM2": 100,
+}
+
 ERRORS = []
 def note(msg):
     ERRORS.append(msg)
@@ -81,19 +95,19 @@ def fred(path, **params):
 # ---------------------------------------------------------------------------
 SERIES = [
     # --- land and permit pipeline ---
-    ("AUTHNOTT",   "Permits authorized, not started", "structural",  9, "K units",      "down",
+    ("AUTHNOTT",   "Permits authorized, not started", "structural",  9, "units",      "down",
      "A swelling backlog means builders hold entitlements and are choosing not to break ground.",
      "housing units authorized not started"),
-    ("PERMIT",     "Building permits, total",         "structural",  7, "K units SAAR", "up",
+    ("PERMIT",     "Building permits, total",         "structural",  7, "units SAAR", "up",
      "The front of the construction pipeline. Turns before starts by one to two quarters.",
      "new private housing units authorized by building permits"),
-    ("PERMIT1",    "Single-family permits",           "structural",  7, "K units SAAR", "up",
+    ("PERMIT1",    "Single-family permits",           "structural",  7, "units SAAR", "up",
      "Cleaner than the total, which multifamily swings distort.",
      "new private housing units authorized single family"),
-    ("HOUST1F",    "Single-family housing starts",    "structural",  4, "K units SAAR", "up",
+    ("HOUST1F",    "Single-family housing starts",    "structural",  4, "units SAAR", "up",
      "Where permits become dirt. Compare against permits to see the conversion rate.",
      "privately owned housing starts single family"),
-    ("HOUST",      "Housing starts, total",           "structural",  4, "K units SAAR", "up",
+    ("HOUST",      "Housing starts, total",           "structural",  4, "units SAAR", "up",
      "Total starts including multifamily, which swings hard on a few large projects.",
      "housing starts total new privately owned"),
 
@@ -152,16 +166,16 @@ SERIES = [
      "ice bofa us high yield index option-adjusted spread"),
 
     # --- activity now ---
-    ("HSN1F",         "New home sales",               "coincident",  0, "K SAAR",       "up",
+    ("HSN1F",         "New home sales",               "coincident",  0, "units SAAR",       "up",
      "Recorded at contract signing, so slightly ahead of existing sales.",
      "new one family houses sold united states"),
     ("MSACSR",        "Months supply, new homes",     "coincident",  1, "months",       "down",
      "Above roughly six months has historically preceded builder discounting.",
      "monthly supply of new houses"),
-    ("EXHOSLUSM495S", "Existing home sales",          "coincident", -1, "K SAAR",       "up",
+    ("EXHOSLUSM495S", "Existing home sales",          "coincident", -1, "units SAAR",       "up",
      "Records at closing, so it reflects decisions made a month or two earlier.",
      "existing home sales"),
-    ("COMPUTSA",      "Housing completions",          "coincident", -2, "K SAAR",       "up",
+    ("COMPUTSA",      "Housing completions",          "coincident", -2, "units SAAR",       "up",
      "Supply arriving now from starts twelve to eighteen months ago.",
      "new privately owned housing units completed"),
     ("MSPUS",         "Median sales price, US homes", "coincident", -2, "$",            "up",
@@ -175,13 +189,13 @@ SERIES = [
     ("WPUSI012011", "Construction materials PPI",     "cost",        1, "index",        "down",
      "Reaches pro formas before it reaches completed cost.",
      "producer price index construction materials"),
-    ("JTS2300JOL",  "Construction job openings",      "cost",        2, "K",            "up",
+    ("JTS2300JOL",  "Construction job openings",      "cost",        2, "jobs",            "up",
      "Hiring intent turns before payrolls. Better labor read than employment level.",
      "job openings construction"),
-    ("USCONS",      "Construction employment",        "cost",        0, "K",            "up",
+    ("USCONS",      "Construction employment",        "cost",        0, "jobs",            "up",
      "Coincident. Useful mainly as a check on the openings series.",
      "all employees construction"),
-    ("PRRESCONS",   "Residential construction spend", "cost",       -1, "$M SAAR",      "up",
+    ("PRRESCONS",   "Residential construction spend", "cost",       -1, "$ SAAR",      "up",
      "Put-in-place dollars, so it reflects work already underway.",
      "total private construction spending residential"),
 
@@ -233,7 +247,8 @@ def pull_fred():
             try:
                 r = fred("/series/observations", series_id=active,
                          observation_start=START, sort_order="asc")
-                obs = [{"d": o["date"], "v": float(o["value"])}
+                mult = SCALE.get(sid, 1)
+                obs = [{"d": o["date"], "v": float(o["value"]) * mult}
                        for o in r.get("observations", []) if o["value"] not in (".", "")]
                 obs = to_monthly(obs)
                 break
@@ -327,17 +342,23 @@ def pull_release_calendar(release_ids):
 # SEC EDGAR - public homebuilders
 # ---------------------------------------------------------------------------
 BUILDERS = ["DHI", "LEN", "PHM", "NVR", "TOL", "KBH", "MTH", "TMHC", "TPH", "CCS", "LGIH", "MHO"]
-# Acquired by Sumitomo Forestry on 2026-05-14 and delisted. Historical filings
-# stay useful; it will simply never report a newer period, so it never goes stale.
-DELISTED = {"TPH"}
 INVENTORY_TAGS = ["InventoryRealEstate", "InventoryOperativeBuilders",
                   "RealEstateInventoryConstructionInProcess", "InventoryNet"]
 SEC_HEADERS = {"User-Agent": SEC_UA, "Accept": "application/json"}
 
-# Used only when the ticker index does not carry a filer. The entity name is
-# verified against the fragment before any data is accepted, so a wrong CIK
-# fails safely instead of importing another company's numbers.
-CIK_FALLBACK = {"TMHC": ("0001562476", "Taylor Morrison")}
+# Builders whose SEC reporting has ended for good, taken private by
+# acquisition. Their CIK stays valid forever, since the SEC's historical
+# record does not disappear when a ticker delists, so their final filing and
+# full inventory history keep showing here; only the "expect a newer filing"
+# assumption is switched off for them (see refresh_brief). Both drop out of
+# SEC's live company_tickers.json once delisted, so their CIK is hardcoded
+# and verified against the returned entity name rather than looked up.
+DELISTED = {
+    "TPH":  {"cik": "0001561680", "name": "Tri Pointe Homes",
+             "note": "Acquired by Sumitomo Forestry, closed 2026-05-14"},
+    "TMHC": {"cik": "0001562476", "name": "Taylor Morrison Home Corp",
+             "note": "Acquired by Berkshire Hathaway, closed 2026-07-24"},
+}
 
 def pull_builders():
     rows = []
@@ -351,17 +372,16 @@ def pull_builders():
         return rows
 
     for tk in BUILDERS:
+        delisted = tk in DELISTED
         expect = None
         if tk in lookup:
             cik, title = lookup[tk]
-        elif tk in CIK_FALLBACK:
-            cik, expect = CIK_FALLBACK[tk]
-            title = expect
-        elif tk in DELISTED:
-            continue   # gone from the active ticker file for good; nothing to report
+        elif delisted:
+            cik, title = DELISTED[tk]["cik"], DELISTED[tk]["name"]
+            expect = DELISTED[tk]["name"]
         else:
             note("No SEC record for ticker %s" % tk); continue
-        rec = {"ticker": tk, "name": title, "cik": cik}
+        rec = {"ticker": tk, "name": title, "cik": cik, "delisted": delisted}
         try:
             sub = get_json("https://data.sec.gov/submissions/CIK%s.json" % cik, headers=SEC_HEADERS)
             # The Submissions API's field is "name". "entityName" belongs to a
@@ -398,7 +418,6 @@ def pull_builders():
                     break
             except Exception:
                 continue
-        rec["delisted"] = tk in DELISTED
         rows.append(rec)
         print("  %-6s %s %s" % (tk, rec.get("form", "-"), rec.get("filed", "")))
         time.sleep(0.25)
@@ -482,18 +501,31 @@ def parse_json_reply(txt):
     return json.loads(t[a:b+1]) if a >= 0 and b > a else None
 
 
+NUMFIELDS = ["deliveries_units", "deliveries_yoy_pct", "orders_units", "orders_yoy_pct",
+             "margin_pct", "cancel_rate_pct"]
+
 EXTRACT_PROMPT = """You are reading one homebuilder's quarterly SEC filing. Extract only what the
 filing itself states. Any figure not present in this text must be null. Never estimate,
 never carry a number over from another company, never infer from general knowledge.
 
 Company: {name} ({ticker})   Period ending: {period}
 
-Return ONLY a JSON object, no prose and no code fence:
+Return ONLY a JSON object, no prose and no code fence. Every "_pct" or "_units"
+field must be a bare number (e.g. 20.7, not "20.7%" and not "20.7% adj") taken
+directly from the filing, or null if the filing does not state it. Never
+estimate or back a number out from a percentage; if only the percentage is
+given, leave the unit field null.
 {{
   "deliveries": "e.g. '2,662 (-10% YoY)' or null",
+  "deliveries_units": "home closings this quarter as a bare integer, or null",
+  "deliveries_yoy_pct": "YoY change in deliveries as a signed number, or null",
   "orders": "net new orders with YoY change, or null",
+  "orders_units": "net new orders this quarter as a bare integer, or null",
+  "orders_yoy_pct": "YoY change in net orders as a signed number, or null",
   "margin": "homebuilding gross margin percent, note if adjusted, or null",
+  "margin_pct": "homebuilding gross margin as a bare number, or null",
   "cancels": "cancellation rate and its basis, or null",
+  "cancel_rate_pct": "cancellation rate as a bare number, or null",
   "lots_owned": "number of lots owned, or null",
   "lots_optioned": "number of lots optioned or controlled, or null",
   "communities": "active selling community count or growth guidance, or null",
@@ -613,7 +645,20 @@ def refresh_brief(builders):
                      "lots_owned", "lots_optioned", "communities", "incentives")}
                    for e in extracts]
 
+    # Append this quarter to each builder's numeric history rather than
+    # overwrite it, so charts can plot a trend once more than one quarter
+    # has been read. Keyed by quarter so a re-read of the same filing never
+    # double-counts. Capped at eight quarters, about two years, per builder.
+    history = brief.get("metric_history", {}) or {}
+    for e in extracts:
+        h = history.setdefault(e["ticker"], [])
+        if not any(x.get("quarter") == e["quarter"] for x in h):
+            h.append({"quarter": e["quarter"], **{k: e.get(k) for k in NUMFIELDS}})
+            h.sort(key=lambda x: x["quarter"])
+            history[e["ticker"]] = h[-8:]
+
     brief.update({
+        "metric_history": history,
         "as_of": TODAY.isoformat(),
         "source": "auto",
         "headline": new.get("headline", brief.get("headline", "")),
