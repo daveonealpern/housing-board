@@ -73,6 +73,25 @@
   }
   .summary-line strong { color: var(--brass); font-weight: 500; }
 
+  .rates {
+    display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(168px, 1fr));
+    margin-bottom: 34px;
+  }
+  .rate {
+    background: var(--panel); border: 1px solid var(--line); border-top: 2px solid var(--brass);
+    padding: 13px 14px 10px; border-radius: var(--radius);
+  }
+  .rate-lbl {
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--paper-dim);
+  }
+  .rate-v {
+    font-family: var(--font-mono); font-size: 26px; font-weight: 500;
+    line-height: 1.15; margin-top: 6px;
+  }
+  .rate-sub { font-family: var(--font-mono); font-size: 11px; margin-top: 2px; }
+  .rate-spark { width: 100%; height: 22px; display: block; margin-top: 8px; }
+
   .notice {
     border: 1px solid var(--brass); border-left-width: 3px;
     background: rgba(199, 161, 92, 0.07);
@@ -146,8 +165,22 @@
   }
   .card-val .d { font-family: var(--font-mono); font-size: 11.5px; margin-top: 5px; }
   .up { color: var(--up); } .down { color: var(--down); } .flat { color: var(--flat); }
-  .chart { width: 100%; height: 54px; display: block; }
-  .card-read { font-size: 13px; color: var(--paper-dim); line-height: 1.55; }
+  .chart { width: 100%; height: 78px; display: block; }
+  .scale-note {
+    display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap;
+    font-family: var(--font-mono); font-size: 10px; color: var(--paper-dim);
+    margin-top: -2px;
+  }
+  .scale-note b { color: var(--paper); font-weight: 500; }
+  .scale-note .ref-key { color: var(--brass); }
+  .reading {
+    font-size: 13px; color: var(--paper); line-height: 1.6;
+    border-left: 2px solid var(--brass); padding-left: 11px;
+  }
+  .card-read {
+    font-size: 12.5px; color: var(--paper-dim); line-height: 1.5;
+    padding-left: 13px; margin-top: -3px;
+  }
   .card-foot {
     display: flex; justify-content: space-between; gap: 10px;
     font-family: var(--font-mono); font-size: 10.5px; color: var(--paper-dim);
@@ -178,6 +211,28 @@
   .pill-day.far  { background: rgba(147, 170, 192, 0.12); color: var(--paper-dim); }
 
   /* ---------- table ---------- */
+  .brief { background: var(--panel); border: 1px solid var(--line); padding: 26px 28px 22px; }
+  .brief-lede {
+    font-family: var(--font-display); font-size: 20px; line-height: 1.4;
+    color: var(--paper); margin: 0 0 20px; padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .brief h3 {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--brass); font-weight: 500;
+    margin: 26px 0 10px;
+  }
+  .brief h3:first-of-type { margin-top: 0; }
+  .brief p { font-size: 14.5px; line-height: 1.68; color: var(--paper-dim); margin: 0 0 13px; max-width: 76ch; }
+  .brief p:last-child { margin-bottom: 0; }
+  .brief-meta {
+    font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--paper-dim);
+    border-top: 1px solid var(--line); margin-top: 24px; padding-top: 12px;
+    display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  }
+  .brief .tbl-scroll { margin: 4px 0 6px; }
+
   .tbl-scroll { overflow-x: auto; border: 1px solid var(--line); background: var(--panel); }
   table { border-collapse: collapse; width: 100%; font-size: 13px; min-width: 760px; }
   th, td { padding: 9px 13px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
@@ -229,12 +284,14 @@
 
   <p class="summary-line" id="summary">Reading data file&hellip;</p>
 
+  <div class="rates" id="rates"></div>
+
   <div id="notice"></div>
 
   <div class="spine-block">
     <h2>Lead-time spine</h2>
     <p>Every series on this sheet sits somewhere on a timeline. Permit backlog and builder land decisions see furthest ahead; delinquency and completions only confirm what already happened. Position on this axis is the reason to watch a series, not its headline number.</p>
-    <svg id="spine" viewBox="0 0 1120 216" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Indicators plotted by forecasting lead time"></svg>
+    <svg id="spine" viewBox="0 0 1120 288" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Indicators plotted by forecasting lead time"></svg>
     <div class="legend">
       <span><i class="dot" style="background:#63B08F"></i> Expanding</span>
       <span><i class="dot" style="background:#CF6E76"></i> Contracting</span>
@@ -253,6 +310,16 @@
     <div class="cal" id="cal"></div>
   </section>
 
+  <section class="book-section" id="brief-section">
+    <div class="book-heading">
+      <span class="book-num">Builder brief</span>
+      <h2>What the public builders are saying</h2>
+      <span class="book-note" id="brief-asof"></span>
+    </div>
+    <p class="sec-note">Rewritten whenever a builder files a new 10-Q. Lot counts, incentive load and regional commentary sit in MD&amp;A prose rather than tagged data, so this section is read out of the filings themselves rather than scraped.</p>
+    <div id="brief"></div>
+  </section>
+
   <section class="book-section">
     <div class="book-heading">
       <span class="book-num">+6 to +18 mo</span>
@@ -269,6 +336,16 @@
     </div>
     <p class="sec-note">Watch the gap between the 30-year mortgage rate and the 10-year Treasury separately from the rate itself. That spread has run historically wide since 2022, and compression alone would improve affordability with no Fed move at all.</p>
     <div class="parcel-grid" id="g-demand"></div>
+  </section>
+
+  <section class="book-section">
+    <div class="book-heading">
+      <span class="book-num">+3 to +12 mo</span>
+      <h2>Capital markets</h2>
+      <span class="book-note">the rate complex and credit spreads</span>
+    </div>
+    <p class="sec-note">USD LIBOR stopped publishing in June 2023, so it is deliberately absent. SOFR replaced it, and the 30-day and 90-day averages here are the free public stand-ins for 1-month and 3-month Term SOFR, which CME licenses and FRED cannot carry. Prime is what smaller land and construction facilities actually price off. The 2s10s curve carries the longest lead of anything on this sheet.</p>
+    <div class="parcel-grid" id="g-capital"></div>
   </section>
 
   <section class="book-section">
@@ -351,44 +428,172 @@ const fmt = v => v == null ? '—'
   : Math.abs(v) >= 100   ? v.toFixed(0)
   : Math.abs(v) >= 10    ? v.toFixed(1) : v.toFixed(2);
 
+function obsBefore(obs, iso){
+  let best = null;
+  for(const o of obs){ if(o.d <= iso) best = o; else break; }
+  return best;
+}
+function shiftYears(iso, n){
+  const d = new Date(iso + 'T12:00:00'); d.setFullYear(d.getFullYear() + n);
+  return d.toISOString().slice(0,10);
+}
+// Year-on-year measured by DATE, not by row count. Daily, weekly, monthly and
+// quarterly series all sit in the same payload, so counting rows back would
+// mean thirteen days for SOFR and thirteen months for permits.
 function trend(obs){
-  if(!obs || obs.length < 2) return {dir:'flat', pct:null, last:null, date:null};
-  const last = obs[obs.length-1], back = obs[Math.max(0, obs.length - 13)];
-  const pct = back.v ? ((last.v - back.v)/Math.abs(back.v))*100 : null;
-  const dir = pct == null ? 'flat' : pct > 0.6 ? 'up' : pct < -0.6 ? 'down' : 'flat';
-  return {dir, pct, last:last.v, date:last.d};
+  const none = {dir:'flat', pct:null, abs:null, usePct:false, last:null, date:null, since:null};
+  if(!obs || obs.length < 2) return none;
+  const last = obs[obs.length-1];
+  const ya = obsBefore(obs, shiftYears(last.d, -1));
+  if(!ya || ya.d === last.d) return {...none, last:last.v, date:last.d};
+  const abs = last.v - ya.v;
+  // Percentage change is meaningless for anything that crosses zero, and nobody
+  // quotes a yield curve that way regardless of where it currently sits. If the
+  // series has been on both sides of zero, report the move in points instead.
+  const w = obs.slice(-96).map(o => o.v);
+  const crossesZero = Math.min(...w) < 0 && Math.max(...w) > 0;
+  const usePct = !crossesZero && Math.abs(ya.v) > 0.5 && Math.abs(last.v) > 0.5
+                 && (ya.v > 0) === (last.v > 0);
+  const pct = usePct ? (abs/Math.abs(ya.v))*100 : null;
+  const move = usePct ? pct : abs;
+  const gate = usePct ? 0.6 : 0.05;
+  const dir = move > gate ? 'up' : move < -gate ? 'down' : 'flat';
+  return {dir, pct, abs, usePct, last:last.v, date:last.d, since:ya.d};
+}
+// Mean of the last three months against the three before it.
+function momentum(obs){
+  if(!obs || obs.length < 4) return null;
+  const last = obs[obs.length-1].d;
+  const c1 = shiftYears(last, 0), m1 = new Date(c1 + 'T12:00:00');
+  m1.setMonth(m1.getMonth() - 3);
+  const m2 = new Date(c1 + 'T12:00:00'); m2.setMonth(m2.getMonth() - 6);
+  const a = m1.toISOString().slice(0,10), b = m2.toISOString().slice(0,10);
+  const recent = obs.filter(o => o.d > a).map(o => o.v);
+  const prior  = obs.filter(o => o.d > b && o.d <= a).map(o => o.v);
+  if(!recent.length || !prior.length) return null;
+  const mean = z => z.reduce((x,y)=>x+y,0)/z.length;
+  return mean(recent) - mean(prior);
 }
 const health = s => { const t = trend(s.obs); return t.dir === 'flat' ? 'flat' : (t.dir === s.good ? 'up' : 'down'); };
 
-function chart(obs, tone, w, h){
+function chart(obs, tone, ref, w, h){
   if(!obs || obs.length < 2) return '<div class="empty">NO DATA</div>';
   const pts = obs.slice(-96), vals = pts.map(p => p.v);
-  const mn = Math.min(...vals), mx = Math.max(...vals), sp = (mx - mn) || 1, pad = 3;
-  const X = i => (i/(pts.length-1))*w;
+  let mn = Math.min(...vals), mx = Math.max(...vals);
+  const med = [...vals].sort((a,b)=>a-b)[Math.floor(vals.length/2)];
+  const refV = (ref && ref.v != null) ? ref.v : med;
+  const refL = (ref && ref.label) ? ref.label : 'median';
+  mn = Math.min(mn, refV); mx = Math.max(mx, refV);
+  const sp = (mx - mn) || 1;
+  const GUT = 46, PW = w - GUT, pad = 8;
+  const X = i => (i/(pts.length-1))*PW;
   const Y = v => h - pad - ((v - mn)/sp)*(h - pad*2);
   const line = pts.map((p,i) => (i?'L':'M') + X(i).toFixed(1) + ' ' + Y(p.v).toFixed(1)).join(' ');
   const col = tone === 'up' ? '#63B08F' : tone === 'down' ? '#CF6E76' : '#93AAC0';
   const uid = 'g' + Math.random().toString(36).slice(2,8);
+  const yR = Y(refV), yT = Y(mx), yB = Y(mn);
+  const T = (x,y,t,c,anch) => '<text x="'+x+'" y="'+y+'" fill="'+c+'" font-size="9" '
+    + 'letter-spacing="0.04em" text-anchor="'+(anch||'start')+'" font-family="IBM Plex Mono, monospace">'+t+'</text>';
   return '<svg class="chart" viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none" aria-hidden="true">'
     + '<defs><linearGradient id="'+uid+'" x1="0" y1="0" x2="0" y2="1">'
     + '<stop offset="0%" stop-color="'+col+'" stop-opacity=".22"/>'
     + '<stop offset="100%" stop-color="'+col+'" stop-opacity="0"/></linearGradient></defs>'
-    + '<path d="'+line+' L'+w+' '+h+' L0 '+h+' Z" fill="url(#'+uid+')"/>'
+    + '<line x1="0" y1="'+yT.toFixed(1)+'" x2="'+PW+'" y2="'+yT.toFixed(1)+'" stroke="#243B50" stroke-width="1"/>'
+    + '<line x1="0" y1="'+yB.toFixed(1)+'" x2="'+PW+'" y2="'+yB.toFixed(1)+'" stroke="#243B50" stroke-width="1"/>'
+    + '<line x1="0" y1="'+yR.toFixed(1)+'" x2="'+PW+'" y2="'+yR.toFixed(1)+'" stroke="#C7A15C" stroke-width="1" stroke-dasharray="3 3" opacity=".75"/>'
+    + '<path d="'+line+' L'+PW+' '+h+' L0 '+h+' Z" fill="url(#'+uid+')"/>'
     + '<path d="'+line+'" fill="none" stroke="'+col+'" stroke-width="1.5" stroke-linejoin="round"/>'
-    + '<circle cx="'+X(pts.length-1).toFixed(1)+'" cy="'+Y(vals[vals.length-1]).toFixed(1)+'" r="2.6" fill="'+col+'"/>'
+    + '<circle cx="'+X(pts.length-1).toFixed(1)+'" cy="'+Y(vals[vals.length-1]).toFixed(1)+'" r="2.8" fill="'+col+'"/>'
+    + T(PW+5, yT+3.5, fmt(mx), '#6E93AC')
+    + T(PW+5, yB+3.5, fmt(mn), '#6E93AC')
+    + T(PW+5, yR+3.5, fmt(refV), '#C7A15C')
+    + T(0, h-1, pts[0].d.slice(0,7), '#4E6A82')
     + '</svg>';
+}
+
+function scaleNote(obs, ref){
+  if(!obs || obs.length < 2) return '';
+  const pts = obs.slice(-96), vals = pts.map(p => p.v);
+  const span = (new Date(pts[pts.length-1].d) - new Date(pts[0].d)) / 31557600000;
+  const refL = (ref && ref.label) ? ref.label : 'median';
+  return '<div class="scale-note">'
+    + '<span>' + fmt(Math.min(...vals)) + ' – ' + fmt(Math.max(...vals))
+    + ' over ' + Math.max(1, Math.round(span)) + 'y</span>'
+    + '<span class="ref-key">dashed: ' + esc(refL) + '</span></div>';
+}
+
+// Two or three plain sentences describing what this chart currently says.
+function reading(s){
+  const obs = s.obs;
+  if(!obs || obs.length < 3) return '';
+  const t = trend(obs);
+  const pts = obs.slice(-96), vals = pts.map(p => p.v);
+  const mn = Math.min(...vals), mx = Math.max(...vals), cur = vals[vals.length-1];
+  const pos = (mx - mn) ? Math.round(((cur - mn)/(mx - mn))*100) : 50;
+  const sorted = [...vals].sort((a,b) => a-b);
+  const med = sorted[Math.floor(sorted.length/2)];
+  const refV = (s.ref && s.ref.v != null) ? s.ref.v : med;
+  const refL = (s.ref && s.ref.label) ? s.ref.label : 'its median';
+  const u  = s.units === '%' ? '%' : s.units === 'bp' ? 'bp' : '';
+  const au = s.units === '%' ? ' pts' : s.units === 'bp' ? 'bp' : '';
+  const span = (new Date(pts[pts.length-1].d) - new Date(pts[0].d)) / 31557600000;
+  const yrs = Math.max(1, Math.round(span));
+
+  let out = 'Now ' + fmt(cur) + u;
+  if(t.usePct && t.pct != null)
+    out += Math.abs(t.pct) < 0.05 ? ', unchanged over the year'
+         : ', ' + (t.pct >= 0 ? 'up ' : 'down ') + Math.abs(t.pct).toFixed(1) + '% over the year';
+  else if(t.abs != null)
+    out += Math.abs(t.abs) < 0.005 ? ', unchanged over the year'
+         : ', ' + (t.abs >= 0 ? 'up ' : 'down ') + fmt(Math.abs(t.abs)) + au + ' over the year';
+  out += '. ';
+
+  const range = mx - mn;
+  if(range === 0){
+    out += 'It has not moved across the ' + yrs + '-year window shown. ';
+  } else {
+    const side = Math.abs(cur - refV) < range*0.02 ? 'sitting right on ' + refL
+               : (cur > refV ? 'above ' : 'below ') + refL;
+    out += 'That is ' + pos + '% of the way up its ' + yrs + '-year range and ' + side + '. ';
+  }
+
+  const m = momentum(obs);
+  if(m != null){
+    const moving = Math.abs(m) > (mx - mn)*0.03;
+    const rising = m > 0;
+    const word = !moving ? 'been flat' : (rising ? 'been rising' : 'been falling');
+    let verdict = 'neither expansionary nor contractionary on its own';
+    if(moving && s.good !== 'flat')
+      verdict = ((rising && s.good === 'up') || (!rising && s.good === 'down'))
+        ? 'the expansionary direction for this series'
+        : 'the contractionary direction for this series';
+    out += 'The last three months have ' + word + ', ' + verdict + '.';
+  }
+
+  if(s.lead > 0 && obs.length){
+    const d = new Date(obs[obs.length-1].d + 'T12:00:00');
+    d.setMonth(d.getMonth() + s.lead);
+    out += ' On a ~' + s.lead + " month lead, today's reading maps to roughly "
+        + d.toLocaleDateString(undefined,{month:'long', year:'numeric'}) + '.';
+  }
+  return '<div class="reading">' + esc(out) + '</div>';
 }
 
 function card(id, s){
   const t = trend(s.obs), tone = health(s);
   const lead = s.lead > 0 ? 'leads ~'+s.lead+'mo' : s.lead < 0 ? 'lags ~'+Math.abs(s.lead)+'mo' : 'coincident';
-  const chg = t.pct == null ? '' :
-    '<div class="d '+tone+'">'+(t.pct>=0?'+':'')+t.pct.toFixed(1)+'% YoY</div>';
+  const chg = (t.usePct && t.pct != null)
+      ? '<div class="d '+tone+'">'+(t.pct>=0?'+':'')+t.pct.toFixed(1)+'% YoY</div>'
+      : (t.abs != null
+          ? '<div class="d '+tone+'">'+(t.abs>=0?'+':'')+fmt(t.abs)
+            +(s.units==='%'?' pts':s.units==='bp'?'bp':'')+' YoY</div>' : '');
   return '<article class="card'+(s.obs.length?'':' dim')+'" id="c-'+id+'">'
     + '<div class="card-top"><div><div class="card-name">'+esc(s.name)+'</div>'
     + '<div class="card-src">'+esc(s.release_name || 'FRED')+' &middot; '+lead+'</div></div>'
     + '<div class="card-val"><div class="v">'+fmt(t.last)+'</div>'+chg+'</div></div>'
-    + chart(s.obs, tone, 300, 54)
+    + chart(s.obs, tone, s.ref, 300, 78)
+    + scaleNote(s.obs, s.ref)
+    + reading(s)
     + '<div class="card-read">'+esc(s.read)+'</div>'
     + '<div class="card-foot"><span>'+esc(t.date || s.units)+'</span>'
     + '<a href="https://fred.stlouisfed.org/series/'+esc(s.sid)+'" target="_blank" rel="noopener">'+esc(s.sid)+'</a>'
@@ -398,7 +603,7 @@ function card(id, s){
 function spine(){
   const ids = Object.keys(D.series);
   const leads = ids.map(i => D.series[i].lead);
-  const W=1120, H=216, L=60, R=40, T=44, B=44;
+  const W=1120, H=288, L=60, R=40, T=46, B=44;
   const mx = Math.max(...leads, 12), mn = Math.min(...leads, -9);
   const X = m => L + ((mx - m)/(mx - mn))*(W - L - R);
   let s = '<line x1="'+L+'" y1="'+(H-B)+'" x2="'+(W-R)+'" y2="'+(H-B)+'" stroke="#33495D"/>';
@@ -411,11 +616,13 @@ function spine(){
   s += '<line x1="'+x0+'" y1="'+(T-18)+'" x2="'+x0+'" y2="'+(H-B)+'" stroke="#C7A15C" stroke-dasharray="3 4"/>'
     +  '<text x="'+(x0-9)+'" y="'+(T-24)+'" fill="#C7A15C" font-size="10.5" letter-spacing="0.1em" text-anchor="end" font-family="IBM Plex Mono, monospace">FORECAST</text>'
     +  '<text x="'+(x0+9)+'" y="'+(T-24)+'" fill="#6E93AC" font-size="10.5" letter-spacing="0.1em" font-family="IBM Plex Mono, monospace">CONFIRMATION</text>';
-  const rows = 4, rh = (H - T - B - 12)/rows, used = {};
+  const rows = 6, rh = (H - T - B - 12)/rows, used = {};
   ids.forEach(id => {
-    const sr = D.series[id], x = X(sr.lead), k = Math.round(x/26);
+    const sr = D.series[id], bx = X(sr.lead), k = Math.round(bx/18);
     used[k] = used[k] || 0;
-    const y = T + (used[k] % rows)*rh + rh/2; used[k]++;
+    const n = used[k]++;
+    const y = T + (n % rows)*rh + rh/2;
+    const x = bx + Math.floor(n / rows) * 14;  // fan right once a column fills
     const st = health(sr);
     const col = st === 'up' ? '#63B08F' : st === 'down' ? '#CF6E76' : '#93AAC0';
     const has = sr.obs.length > 0;
@@ -445,15 +652,89 @@ function spine(){
   });
 }
 
+function paras(a){
+  return (a || []).map(p => '<p>' + esc(p) + '</p>').join('');
+}
+function renderBrief(){
+  const b = D.brief;
+  const host = document.getElementById('brief');
+  if(!b || !(b.national || []).length){
+    host.innerHTML = '<div class="brief"><p>No brief on file yet. It is written the first time '
+      + 'the collector reads a new filing.</p></div>';
+    return;
+  }
+  const cols = [['deliveries','Deliveries'],['orders','Net orders'],['margin','Gross margin'],
+                ['cancels','Cancels'],['lots_owned','Lots owned'],['lots_optioned','Lots optioned'],
+                ['communities','Communities'],['incentives','Incentives']];
+  const rows = b.metrics || [];
+  const live = cols.filter(([k]) => rows.some(r => r[k] != null && r[k] !== ''));
+  let table = '';
+  if(rows.length && live.length){
+    table = '<div class="tbl-scroll"><table><thead><tr><th>Builder</th><th>Quarter</th>'
+      + live.map(([,l]) => '<th>' + l + '</th>').join('') + '</tr></thead><tbody>'
+      + rows.map(r => '<tr><td>' + esc(r.name || r.ticker) + ' <span class="tk">' + esc(r.ticker) + '</span></td>'
+          + '<td class="num">' + esc(r.quarter || '—') + '</td>'
+          + live.map(([k]) => '<td class="num">' + esc(r[k] == null || r[k] === '' ? '—' : r[k]) + '</td>').join('')
+          + '</tr>').join('')
+      + '</tbody></table></div>';
+  }
+  const sec = (label, key) => (b[key] || []).length
+    ? '<h3>' + label + '</h3>' + paras(b[key]) : '';
+
+  let stale = '';
+  if((b.stale || []).length){
+    stale = '<div class="notice"><strong>' + b.stale.length + ' builder'
+      + (b.stale.length > 1 ? 's have' : ' has') + ' filed since this brief was written: '
+      + b.stale.map(s => esc(s.ticker) + ' (' + esc(s.period) + ')').join(', ')
+      + '.</strong> The figures below predate those filings.</div>';
+  }
+
+  host.innerHTML = stale
+    + '<div class="brief">'
+    + (b.headline ? '<p class="brief-lede">' + esc(b.headline) + '</p>' : '')
+    + sec('National picture', 'national')
+    + (table ? '<h3>By builder</h3>' + table : '')
+    + sec('Land positions', 'land')
+    + sec('Southern California', 'socal')
+    + sec('Ventura County', 'ventura')
+    + sec('What it implies', 'takeaway')
+    + '<div class="brief-meta"><span>' + (b.source === 'auto' ? 'Read from filings automatically' : 'Read from filings by hand')
+    + '</span><span>' + Object.keys(b.covered || {}).length + ' builders covered</span></div></div>';
+
+  document.getElementById('brief-asof').textContent = b.as_of ? 'as of ' + b.as_of : '';
+}
+
 function render(){
-  const buckets = {structural:'g-structural', demand:'g-demand', coincident:'g-coincident',
-                   cost:'g-cost', distress:'g-distress', ca:'g-ca'};
+  const buckets = {structural:'g-structural', demand:'g-demand', capital:'g-capital',
+                   coincident:'g-coincident', cost:'g-cost', distress:'g-distress', ca:'g-ca'};
   Object.keys(buckets).forEach(b => {
     document.getElementById(buckets[b]).innerHTML =
       Object.keys(D.series).filter(id => D.series[id].bucket === b)
             .map(id => card(id, D.series[id])).join('');
   });
   spine();
+
+  document.getElementById('rates').innerHTML = (D.rates || []).map(id => {
+    const s = D.series[id]; if(!s) return '';
+    const t = trend(s.obs), tone = health(s);
+    const pts = (s.obs || []).slice(-96), vals = pts.map(p => p.v);
+    let spark = '';
+    if(vals.length > 1){
+      const mn = Math.min(...vals), mx = Math.max(...vals), sp = (mx - mn) || 1;
+      const col = tone === 'up' ? '#63B08F' : tone === 'down' ? '#CF6E76' : '#93AAC0';
+      const d = pts.map((p,i) => (i?'L':'M') + ((i/(pts.length-1))*100).toFixed(1)
+                + ' ' + (20 - ((p.v - mn)/sp)*18).toFixed(1)).join(' ');
+      spark = '<svg class="rate-spark" viewBox="0 0 100 22" preserveAspectRatio="none" aria-hidden="true">'
+            + '<path d="'+d+'" fill="none" stroke="'+col+'" stroke-width="1.2"/></svg>';
+    }
+    const unit = s.units === '%' ? '%' : s.units === 'bp' ? 'bp' : '';
+    const showUnit = (t.last == null) ? '' : unit;
+    return '<div class="rate"><div class="rate-lbl">'+esc(s.name)+'</div>'
+      + '<div class="rate-v">'+fmt(t.last)+showUnit+'</div>'
+      + '<div class="rate-sub '+tone+'">'+((t.usePct && t.pct!=null) ? (t.pct>=0?'+':'')+t.pct.toFixed(1)+'% YoY'
+          : (t.abs!=null ? (t.abs>=0?'+':'')+fmt(t.abs)+unit+' YoY' : '&nbsp;'))+'</div>'
+      + spark + '</div>';
+  }).join('');
 
   document.getElementById('cal').innerHTML = (D.calendar || []).slice(0, 14).map(r => {
     const p = r.days <= 7 ? 'now' : r.days <= 30 ? 'soon' : 'far';
@@ -462,6 +743,8 @@ function render(){
       + d.toLocaleDateString(undefined,{month:'short', day:'numeric'}).toUpperCase()
       + '<span class="pill-day '+p+'">'+(r.days === 0 ? 'TODAY' : r.days+'D')+'</span></div></div>';
   }).join('') || '<div class="cal-row"><div>No upcoming dates returned.</div><div></div></div>';
+
+  renderBrief();
 
   document.getElementById('bBody').innerHTML = (D.builders || []).map(b => {
     const inv = b.inventory || [];
@@ -482,7 +765,9 @@ function render(){
         + '<div class="card-src">'+esc(b.inventory_tag || 'XBRL')+'</div></div>'
         + '<div class="card-val"><div class="v">'+fmt(t.last)+'</div>'
         + (t.pct == null ? '' : '<div class="d '+tone+'">'+(t.pct>=0?'+':'')+t.pct.toFixed(1)+'%</div>')+'</div></div>'
-        + chart(b.inventory, tone, 300, 54)
+        + chart(b.inventory, tone, null, 300, 78)
+        + scaleNote(b.inventory, null)
+        + reading({obs:b.inventory, units:'$', good:'up', lead:0})
         + '<div class="card-read">Real estate carried on the balance sheet. A build in dollars while community count stays flat means unsold inventory accumulating.</div>'
         + '<div class="card-foot"><span>'+esc(t.date || '')+'</span><span>'+b.inventory.length+' QTRS</span></div></article>';
     }).join('');

@@ -1,0 +1,56 @@
+{
+  "as_of": "2026-09-07",
+  "source": "manual",
+  "covered": {
+    "DHI": "2026-06-30",
+    "LEN": "2026-05-31",
+    "PHM": "2026-06-30",
+    "KBH": "2026-05-31",
+    "TOL": "2026-07-31",
+    "TPH": "2026-06-30",
+    "NVR": "2026-06-30",
+    "MTH": "2026-06-30",
+    "CCS": "2026-06-30",
+    "LGIH": "2026-06-30",
+    "MHO": "2026-06-30"
+  },
+  "headline": "Flat volume, compressed margins, and a cancellation gradient that sorts cleanly by buyer segment.",
+  "national": [
+    "Every builder in the group is selling roughly the same number of homes as last year and making meaningfully less money doing it. Volume is flat to down, margins are compressed, and the entire group is deliberately starting fewer homes than it sells.",
+    "The cancellation gradient is the most useful single read. Horton at 20%, KB at 12%, Tri Pointe at 11%, Toll at 2.6%. That is a clean sort by buyer segment, and it says the stress is concentrated at the entry level. Horton's rate rose from 17% a year earlier and 16% sequentially, while Toll's improved from 3.2%. Active adult is the other resilient pocket: Pulte's active adult orders rose 12% against 5% for first-time buyers.",
+    "Incentives may have peaked, which is the swing factor for 2027. Lennar's incentive rate on deliveries fell to 12.9% from 14.1% in Q1 and 14.5% in Q4 2025, described on the call as the first meaningful reduction and possibly the start of a sustainable trend. Pulte's incentives dropped 50 basis points sequentially. Against that, 37% of builders were still cutting prices in July at an average 6%, with 63% using some incentive. Call it a plateau rather than a turn.",
+    "Nobody is building into the softness. Pulte took 15,570 orders in the first half and intentionally started only 14,378 homes. Horton is carrying 38,000 homes in inventory, 23,300 unsold and 7,600 of those completed. Horton trimmed full-year guidance after demand softened late in the quarter, and Toll said July pace ran below expectations into Q4."
+  ],
+  "metrics": [
+    {"ticker": "DHI",  "name": "D.R. Horton", "quarter": "Jun 2026", "deliveries": "23,983 (+4%)", "orders": "23,084 (flat)", "margin": "20.7%",     "cancels": "20%"},
+    {"ticker": "LEN",  "name": "Lennar",      "quarter": "May 2026", "deliveries": "20,519",      "orders": "21,749",       "margin": "15.6%",     "cancels": "n/d"},
+    {"ticker": "PHM",  "name": "PulteGroup",  "quarter": "Jun 2026", "deliveries": "-8% YoY",     "orders": "+6% YoY",      "margin": "25.0%",     "cancels": "n/d"},
+    {"ticker": "KBH",  "name": "KB Home",     "quarter": "May 2026", "deliveries": "2,395 (-23%)","orders": "3,317 (-4%)",  "margin": "15.2%",     "cancels": "12%"},
+    {"ticker": "TOL",  "name": "Toll Brothers","quarter": "Jul 2026","deliveries": "2,662 (-10%)","orders": "2,508 (+5%)",  "margin": "25.6% adj", "cancels": "2.6%"},
+    {"ticker": "TPH",  "name": "Tri Pointe",  "quarter": "Jun 2026", "deliveries": "1,013 (-24%)","orders": "1,147 (+1%)",  "margin": "18.0%",     "cancels": "11%"}
+  ],
+  "land": [
+    "This is where the group's behavior has actually changed, and it cuts both ways for a land seller.",
+    "They are pushing land risk off balance sheet as hard as they can. Lennar now owns 2% of its homesites and controls 98% through third parties: 11,000 owned against 484,000 controlled. Toll holds 75,500 lots with 58% under option. Horton closed 67% of its homes on lots developed by Forestar or third parties, up from 65%. The industry framing has shifted from land light to land right, meaning controlling the right locations and delivery schedules rather than simply minimizing ownership.",
+    "But they are still buying, and they need lots delivered in 2027 and 2028. Pulte is projecting $5.4 billion of land investment in 2026 and guiding community count growth of 3% to 5%. Toll is guiding 8% to 10% community growth into fiscal 2027. KB's community count is already up 9%.",
+    "The pricing note that matters most for underwriting: Pulte reported land inflation has eased, with prices stabilizing nationally, lower prices negotiated in select markets, and those land cost benefits flowing through financials in 18 to 24 months. Builders are repricing land now for margin recovery they expect in 2028."
+  ],
+  "socal": [
+    "The Southern California story is sharper than the national one, and it is not in the builder filings. It is in the regional data.",
+    "Zonda's latest shows the lowest level of new housing starts in the Southland since 2012, with closings exceeding starts across many California markets in Q1. Critically, that pullback has not produced an inventory overhang, because builders closed through without accumulating standing homes, so months of supply stayed under control.",
+    "The product response is directly relevant to ministerial subdivision work. Builders across Southern California are moving toward smaller, more attainable homes at higher density, with narrower lot configurations and more attached product, driven by both land economics and buyer preference.",
+    "The constraint underneath: lot supply remains structurally undersupplied despite modest improvement in finished lots, with the tightest availability concentrated in the attainable price ranges where demand is strongest.",
+    "Two negative signals worth weighing. KB Home, at 36% California revenue, attributes its margin tailwind specifically to Northern California, which Evercore called a lasting support beyond 2026. Southern California is conspicuously not the driver. And Toll named Atlanta, Seattle, Portland, San Francisco and Texas as its more challenging markets, notably leaving Southern California off that list.",
+    "One structural change: Sumitomo Forestry completed its acquisition of Tri Pointe on May 14, 2026 at $47 per share, delisting the company and making the group roughly the fifth largest U.S. builder at about 15,000 units annually. Tri Pointe reports Homebuilding Southern California as a named segment, so one of the most active regional counterparties is now a private subsidiary of a Japanese parent. Expect a different capital posture and no more quarterly segment disclosure."
+  ],
+  "ventura": [
+    "No public builder discloses at county level. Ventura appears in none of these filings or calls. Anything county-specific attributed to a builder filing is extrapolation.",
+    "What is verifiable: KB Home is actively selling at Beltramo Ranch in the county, and there are currently 137 new homes for sale countywide at a $915K median list. That is a thin new-home pipeline for a county of that size, consistent with the Southland starts figure.",
+    "The two items that belong on the radar are regulatory, not corporate. The 2025 California Building Standards Code and local County amendments took effect for all applications submitted on or after January 1, 2026, and AB 1308 now requires the County to inspect completed residential work of one to ten units within ten business days, with a miss treated as a Housing Accountability Act violation. That second one is real leverage on close-out timing."
+  ],
+  "takeaway": [
+    "The demand picture argues against entitling for entry-level detached product right now. The lot supply picture argues strongly for finished lots in attainable ranges, which is exactly the gap.",
+    "The optioned-lot share across the group says structure takedowns and options rather than fee sales, because that is the only shape of deal they currently want.",
+    "Horton's cancellation rate moving to 20% and its guidance trim are the weakest signals in the group, which matters for anyone holding a PSA with them."
+  ]
+}

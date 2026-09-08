@@ -7,26 +7,61 @@ Nothing here needs a human. If a source fails it is recorded in data.json
 under "errors" and shows on the page, rather than disappearing quietly.
 """
 
-import os, sys, json, time, datetime, urllib.request, urllib.parse, urllib.error
+import os, sys, json, time, gzip, datetime, urllib.request, urllib.parse, urllib.error
 
 FRED_KEY = os.environ.get("FRED_API_KEY", "").strip()
 SEC_UA   = os.environ.get("SEC_USER_AGENT", "").strip() or "Housing Signal Board research contact@example.com"
+ANTHROPIC_KEY   = os.environ.get("ANTHROPIC_API_KEY", "").strip()
+ANTHROPIC_MODEL = os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-5").strip()
+BRIEF_PATH      = os.environ.get("BRIEF_PATH", "brief.json")
 FRED_BASE = "https://api.stlouisfed.org/fred"
 OUT_PATH  = os.environ.get("OUT_PATH", "data.json")
 TODAY = datetime.date.today()
-START = (TODAY - datetime.timedelta(days=365 * 8)).isoformat()
+START = (TODAY - datetime.timedelta(days=365 * 10)).isoformat()
+
+# A horizontal marker drawn on a chart where an absolute level carries meaning.
+# Series not listed here get a dashed line at their own median instead.
+REFS = {
+    "MSACSR":       {"v": 6.0,  "label": "balanced market"},
+    "MORTGAGE30US": {"v": 6.0,  "label": "6% threshold"},
+    "DRSFRMACBS":   {"v": 2.0,  "label": "pre-2020 norm"},
+    "T10Y2Y":       {"v": 0.0,  "label": "inversion line"},
+    "BAMLH0A0HYM2": {"v": 4.0,  "label": "calm-market norm"},
+    "BAMLC0A4CBBB": {"v": 1.5,  "label": "calm-market norm"},
+}
+
+# Shown in the rates band at the top of the sheet, in this order.
+RATES = ["MORTGAGE30US", "SPREAD", "DGS10", "T10Y2Y", "SOFR", "DPRIME", "FEDFUNDS"]
 
 ERRORS = []
 def note(msg):
     ERRORS.append(msg)
     print("  ! " + msg, file=sys.stderr)
 
+def to_monthly(obs):
+    """Collapse to one point per month, keeping the last reading in each.
+
+    Daily, weekly, monthly and quarterly series share one payload. Without this
+    a 96-point chart is eight years of permits but three months of SOFR, and
+    every range comparison is measured against a different window.
+    """
+    if not obs:
+        return obs
+    by_month = {}
+    for o in obs:                       # observations arrive sorted ascending
+        by_month[o["d"][:7]] = o        # last of the month wins
+    return [by_month[k] for k in sorted(by_month)][-120:]
+
+
 def get_json(url, headers=None, tries=3):
     for attempt in range(tries):
         try:
             req = urllib.request.Request(url, headers=headers or {"User-Agent": SEC_UA})
             with urllib.request.urlopen(req, timeout=45) as r:
-                return json.loads(r.read().decode("utf-8"))
+                raw = r.read()
+            if raw[:2] == b"\x1f\x8b":          # gzip magic number
+                raw = gzip.decompress(raw)
+            return json.loads(raw.decode("utf-8"))
         except urllib.error.HTTPError as e:
             if e.code in (429, 502, 503) and attempt < tries - 1:
                 time.sleep(4 * (attempt + 1)); continue
@@ -66,15 +101,55 @@ SERIES = [
     ("MORTGAGE30US", "30-year fixed mortgage rate",   "demand",      3, "%",            "down",
      "The affordability lever. Direction and speed matter more than the level.",
      "30-year fixed rate mortgage average"),
-    ("DGS10",        "10-year Treasury",              "demand",      3, "%",            "down",
-     "The base the mortgage rate prices off. Watch the gap between the two.",
-     "10-year treasury constant maturity rate"),
     ("UMCSENT",      "Consumer sentiment",            "demand",      3, "index",        "up",
      "Headline sentiment is a weak housing signal on its own, but it turns early.",
      "university of michigan consumer sentiment"),
     ("TDSP",         "Household debt service ratio",  "demand",      4, "%",            "down",
      "How stretched household budgets already are before a payment shock.",
      "household debt service payments percent disposable income"),
+
+    # --- capital markets: the rate complex and credit spreads ---
+    ("T10Y2Y",       "2s10s curve",                   "capital",    12, "%",            "up",
+     "10-year minus 2-year. Below zero is an inversion, which has led recessions "
+     "by roughly a year. Steepening back above zero is the signal, not the inversion itself.",
+     "10-year treasury minus 2-year treasury constant maturity"),
+    ("DGS2",         "2-year Treasury",               "capital",     3, "%",            "down",
+     "Tracks where the market thinks policy is going over the next two years.",
+     "2-year treasury constant maturity rate"),
+    ("DGS10",        "10-year Treasury",              "capital",     3, "%",            "down",
+     "The base the 30-year mortgage prices off. Watch the gap between the two.",
+     "10-year treasury constant maturity rate"),
+    ("DGS30",        "30-year Treasury",              "capital",     3, "%",            "down",
+     "The long end. Matters for permanent takeout financing more than for construction.",
+     "30-year treasury constant maturity rate"),
+    ("SOFR",         "SOFR, overnight",               "capital",     3, "%",            "down",
+     "The overnight secured rate that replaced LIBOR in 2023. The floor under "
+     "floating construction debt.",
+     "secured overnight financing rate"),
+    ("SOFR30DAYAVG", "SOFR 30-day average",           "capital",     3, "%",            "down",
+     "Backward-looking compounded average from the New York Fed. The closest free "
+     "public stand-in for 1-month Term SOFR, which is licensed and not on FRED.",
+     "30-day average sofr"),
+    ("SOFR90DAYAVG", "SOFR 90-day average",           "capital",     3, "%",            "down",
+     "The quarterly-reset equivalent. Use this one if your facility resets quarterly.",
+     "90-day average sofr"),
+    ("DPRIME",       "Bank prime loan rate",          "capital",     3, "%",            "down",
+     "What smaller land and construction facilities actually price off. Moves in "
+     "lockstep with fed funds, historically about 300bp above it.",
+     "bank prime loan rate"),
+    ("FEDFUNDS",     "Federal funds rate",            "capital",     4, "%",            "down",
+     "The policy rate. Housing responds to the long end, but this sets the tone.",
+     "federal funds effective rate"),
+    ("MORTGAGE15US", "15-year fixed mortgage",        "capital",     3, "%",            "down",
+     "The gap to the 30-year shows how much of the curve borrowers are paying for.",
+     "15-year fixed rate mortgage average"),
+    ("BAMLC0A4CBBB", "BBB corporate spread",          "capital",     6, "bp",           "down",
+     "Investment-grade credit stress. Widening here tightens builder revolvers "
+     "before it shows up in any housing number.",
+     "ice bofa bbb us corporate index option-adjusted spread"),
+    ("BAMLH0A0HYM2", "High yield spread",             "capital",     6, "bp",           "down",
+     "The risk appetite gauge. Blows out first when credit turns.",
+     "ice bofa us high yield index option-adjusted spread"),
 
     # --- activity now ---
     ("HSN1F",         "New home sales",               "coincident",  0, "K SAAR",       "up",
@@ -160,6 +235,7 @@ def pull_fred():
                          observation_start=START, sort_order="asc")
                 obs = [{"d": o["date"], "v": float(o["value"])}
                        for o in r.get("observations", []) if o["value"] not in (".", "")]
+                obs = to_monthly(obs)
                 break
             except urllib.error.HTTPError as e:
                 if e.code == 400:
@@ -172,6 +248,8 @@ def pull_fred():
 
         rec = {"name": name, "bucket": bucket, "lead": lead, "units": units,
                "good": good, "read": read, "sid": active, "obs": obs or []}
+        if sid in REFS:
+            rec["ref"] = REFS[sid]
 
         # metadata: units, frequency, last update stamp
         try:
@@ -195,6 +273,33 @@ def pull_fred():
         print("  %-16s %5d obs" % (active, len(rec["obs"])))
         time.sleep(0.35)
     return out, release_of
+
+def add_spread(series):
+    """30-year mortgage rate minus the 10-year Treasury, in basis points."""
+    m, t = series.get("MORTGAGE30US"), series.get("DGS10")
+    if not m or not t or not m["obs"] or not t["obs"]:
+        note("Spread skipped: a leg is missing"); return
+    tre, out, last = {o["d"]: o["v"] for o in t["obs"]}, [], None
+    for o in m["obs"]:
+        if o["d"] in tre:
+            last = tre[o["d"]]
+        else:
+            for p in reversed(t["obs"]):
+                if p["d"] <= o["d"]:
+                    last = p["v"]; break
+        if last is not None:
+            out.append({"d": o["d"], "v": round((o["v"] - last) * 100)})
+    out = to_monthly(out)
+    if out:
+        series["SPREAD"] = {
+            "name": "Mortgage spread over 10Y", "bucket": "demand", "lead": 3,
+            "units": "bp", "good": "down", "sid": "SPREAD",
+            "release_name": "Computed", "obs": out,
+            "ref": {"v": 170, "label": "historical norm"},
+            "read": "Historically near 170bp and far wider since 2022. Compression "
+                    "improves affordability with no Fed move at all.",
+        }
+
 
 def pull_release_calendar(release_ids):
     """Authoritative future publication dates, straight from FRED's own calendar."""
@@ -222,9 +327,17 @@ def pull_release_calendar(release_ids):
 # SEC EDGAR - public homebuilders
 # ---------------------------------------------------------------------------
 BUILDERS = ["DHI", "LEN", "PHM", "NVR", "TOL", "KBH", "MTH", "TMHC", "TPH", "CCS", "LGIH", "MHO"]
+# Acquired by Sumitomo Forestry on 2026-05-14 and delisted. Historical filings
+# stay useful; it will simply never report a newer period, so it never goes stale.
+DELISTED = {"TPH"}
 INVENTORY_TAGS = ["InventoryRealEstate", "InventoryOperativeBuilders",
                   "RealEstateInventoryConstructionInProcess", "InventoryNet"]
-SEC_HEADERS = {"User-Agent": SEC_UA, "Accept-Encoding": "gzip, deflate", "Host": "data.sec.gov"}
+SEC_HEADERS = {"User-Agent": SEC_UA, "Accept": "application/json"}
+
+# Used only when the ticker index does not carry a filer. The entity name is
+# verified against the fragment before any data is accepted, so a wrong CIK
+# fails safely instead of importing another company's numbers.
+CIK_FALLBACK = {"TMHC": ("0001562476", "Taylor Morrison")}
 
 def pull_builders():
     rows = []
@@ -238,12 +351,22 @@ def pull_builders():
         return rows
 
     for tk in BUILDERS:
-        if tk not in lookup:
+        expect = None
+        if tk in lookup:
+            cik, title = lookup[tk]
+        elif tk in CIK_FALLBACK:
+            cik, expect = CIK_FALLBACK[tk]
+            title = expect
+        else:
             note("No SEC record for ticker %s" % tk); continue
-        cik, title = lookup[tk]
         rec = {"ticker": tk, "name": title, "cik": cik}
         try:
             sub = get_json("https://data.sec.gov/submissions/CIK%s.json" % cik, headers=SEC_HEADERS)
+            ent = sub.get("entityName", "")
+            if expect and expect.lower() not in ent.lower():
+                note("CIK %s is %s, not %s - skipped" % (cik, ent, tk)); continue
+            if ent:
+                rec["name"] = ent
             f = sub.get("filings", {}).get("recent", {})
             for i, form in enumerate(f.get("form", [])):
                 if form in ("10-Q", "10-K"):
@@ -270,6 +393,7 @@ def pull_builders():
                     break
             except Exception:
                 continue
+        rec["delisted"] = tk in DELISTED
         rows.append(rec)
         print("  %-6s %s %s" % (tk, rec.get("form", "-"), rec.get("filed", "")))
         time.sleep(0.25)
@@ -303,6 +427,210 @@ def pull_markets():
     return out
 
 # ---------------------------------------------------------------------------
+# Builder brief
+#
+# Lot counts owned versus optioned, incentive load and regional commentary live
+# in MD&A prose, not tagged XBRL, so they cannot be scraped. When an Anthropic
+# key is present the collector reads each newly filed 10-Q and rewrites the
+# brief. Without one it leaves the stored brief alone and flags on the sheet
+# which builders have filed since it was written.
+# ---------------------------------------------------------------------------
+TAG_RE = None
+
+def strip_html(raw):
+    import re, html as htmlmod
+    global TAG_RE
+    if TAG_RE is None:
+        TAG_RE = (re.compile(r"(?is)<(script|style|ix:header)[^>]*>.*?</\1>"),
+                  re.compile(r"(?s)<[^>]+>"), re.compile(r"[ \t\r\f\v]+"),
+                  re.compile(r"\n{3,}"))
+    drop, tags, spaces, blanks = TAG_RE
+    t = drop.sub(" ", raw)
+    t = tags.sub(" ", t)
+    t = htmlmod.unescape(t)
+    t = spaces.sub(" ", t)
+    return blanks.sub("\n\n", t).strip()
+
+
+def anthropic(prompt, max_tokens=4000):
+    body = json.dumps({
+        "model": ANTHROPIC_MODEL,
+        "max_tokens": max_tokens,
+        "messages": [{"role": "user", "content": prompt}],
+    }).encode()
+    req = urllib.request.Request(
+        "https://api.anthropic.com/v1/messages", data=body, method="POST",
+        headers={"x-api-key": ANTHROPIC_KEY, "anthropic-version": "2023-06-01",
+                 "content-type": "application/json"})
+    with urllib.request.urlopen(req, timeout=180) as r:
+        out = json.loads(r.read().decode("utf-8"))
+    return "".join(b.get("text", "") for b in out.get("content", []) if b.get("type") == "text")
+
+
+def parse_json_reply(txt):
+    t = txt.strip()
+    if t.startswith("```"):
+        t = t.split("```")[1]
+        if t.lstrip().lower().startswith("json"):
+            t = t.lstrip()[4:]
+    a, b = t.find("{"), t.rfind("}")
+    return json.loads(t[a:b+1]) if a >= 0 and b > a else None
+
+
+EXTRACT_PROMPT = """You are reading one homebuilder's quarterly SEC filing. Extract only what the
+filing itself states. Any figure not present in this text must be null. Never estimate,
+never carry a number over from another company, never infer from general knowledge.
+
+Company: {name} ({ticker})   Period ending: {period}
+
+Return ONLY a JSON object, no prose and no code fence:
+{{
+  "deliveries": "e.g. '2,662 (-10% YoY)' or null",
+  "orders": "net new orders with YoY change, or null",
+  "margin": "homebuilding gross margin percent, note if adjusted, or null",
+  "cancels": "cancellation rate and its basis, or null",
+  "lots_owned": "number of lots owned, or null",
+  "lots_optioned": "number of lots optioned or controlled, or null",
+  "communities": "active selling community count or growth guidance, or null",
+  "incentives": "incentive load as stated, or null",
+  "backlog": "backlog units and value, or null",
+  "california": "any statement specific to California or a California region. null if none.",
+  "notes": "at most two sentences on land strategy or outlook, in the filing's own terms"
+}}
+
+FILING TEXT:
+{text}
+"""
+
+SYNTH_PROMPT = """You are writing a quarterly homebuilder brief for a California land entitlement
+consultant who works in Los Angeles and Ventura Counties. Below is structured data extracted
+from each builder's latest filing, plus the previous edition of the brief for continuity.
+
+Rules:
+- Use only the extracted data. Do not introduce figures that are not in it.
+- If nothing in the data speaks to Southern California, say so plainly rather than inventing it.
+- No public builder discloses at county level, so never attribute a Ventura County claim to a
+  filing. Carry forward the prior ventura section unless the new data genuinely changes it.
+- Write plainly. No em dashes. Short direct sentences.
+
+Return ONLY a JSON object, no prose and no code fence:
+{{
+  "headline": "one sentence, under 20 words",
+  "national": ["3 to 4 paragraphs"],
+  "land": ["2 to 4 paragraphs on lot positions and land strategy"],
+  "socal": ["2 to 4 paragraphs, or one paragraph saying the filings are silent on it"],
+  "ventura": ["carry forward or refine the prior section"],
+  "takeaway": ["2 to 3 short paragraphs of implications for a land seller"]
+}}
+
+EXTRACTED DATA:
+{data}
+
+PREVIOUS BRIEF:
+{prior}
+"""
+
+
+def load_brief():
+    try:
+        with open(BRIEF_PATH) as f:
+            return json.load(f)
+    except Exception:
+        return {"as_of": None, "covered": {}, "national": [], "metrics": [],
+                "land": [], "socal": [], "ventura": [], "takeaway": []}
+
+
+def refresh_brief(builders):
+    brief = load_brief()
+    covered = brief.get("covered", {}) or {}
+
+    fresh = [b for b in builders
+             if b.get("period") and not b.get("delisted")
+             and b["period"] > covered.get(b["ticker"], "")]
+
+    if not fresh:
+        brief["stale"] = []
+        return brief
+
+    names = ", ".join("%s (%s)" % (b["ticker"], b["period"]) for b in fresh)
+    print("  new filings since last brief: %s" % names)
+
+    if not ANTHROPIC_KEY:
+        brief["stale"] = [{"ticker": b["ticker"], "period": b["period"], "url": b.get("url")}
+                          for b in fresh]
+        note("Brief is behind by %d filing(s): %s. Add ANTHROPIC_API_KEY to refresh "
+             "it automatically, or ask for a manual read." % (len(fresh), names))
+        return brief
+
+    extracts = []
+    for b in fresh:
+        if not b.get("url"):
+            continue
+        try:
+            req = urllib.request.Request(b["url"], headers={"User-Agent": SEC_UA})
+            with urllib.request.urlopen(req, timeout=90) as r:
+                raw = r.read()
+            if raw[:2] == b"\x1f\x8b":
+                raw = gzip.decompress(raw)
+            text = strip_html(raw.decode("utf-8", "ignore"))[:180000]
+            got = parse_json_reply(anthropic(EXTRACT_PROMPT.format(
+                name=b["name"], ticker=b["ticker"], period=b["period"], text=text), 2000))
+            if got:
+                got.update({"ticker": b["ticker"], "name": b["name"], "quarter": b["period"]})
+                extracts.append(got)
+                print("    read %s" % b["ticker"])
+        except Exception as e:
+            note("Could not read %s filing: %s" % (b["ticker"], e))
+        time.sleep(1)
+
+    if not extracts:
+        note("No filings could be read; brief left unchanged.")
+        brief["stale"] = [{"ticker": b["ticker"], "period": b["period"]} for b in fresh]
+        return brief
+
+    prior = {k: brief.get(k, []) for k in ("national", "land", "socal", "ventura", "takeaway")}
+    try:
+        new = parse_json_reply(anthropic(SYNTH_PROMPT.format(
+            data=json.dumps(extracts, indent=1)[:120000],
+            prior=json.dumps(prior)[:40000]), 6000))
+    except Exception as e:
+        note("Brief synthesis failed: %s" % e)
+        return brief
+    if not new:
+        note("Brief synthesis returned nothing usable; keeping previous edition.")
+        return brief
+
+    # keep any builder row we did not refresh this run
+    kept = [m for m in brief.get("metrics", [])
+            if m.get("ticker") not in {e["ticker"] for e in extracts}]
+    rows = kept + [{k: e.get(k) for k in
+                    ("ticker", "name", "quarter", "deliveries", "orders", "margin", "cancels",
+                     "lots_owned", "lots_optioned", "communities", "incentives")}
+                   for e in extracts]
+
+    brief.update({
+        "as_of": TODAY.isoformat(),
+        "source": "auto",
+        "headline": new.get("headline", brief.get("headline", "")),
+        "national": new.get("national", brief.get("national", [])),
+        "land": new.get("land", brief.get("land", [])),
+        "socal": new.get("socal", brief.get("socal", [])),
+        "ventura": new.get("ventura", brief.get("ventura", [])),
+        "takeaway": new.get("takeaway", brief.get("takeaway", [])),
+        "metrics": rows,
+        "stale": [],
+    })
+    for e in extracts:
+        covered[e["ticker"]] = e["quarter"]
+    brief["covered"] = covered
+
+    with open(BRIEF_PATH, "w") as f:
+        json.dump(brief, f, indent=2)
+    print("  brief rewritten from %d filing(s)" % len(extracts))
+    return brief
+
+
+# ---------------------------------------------------------------------------
 def main():
     if not FRED_KEY:
         print("FRED_API_KEY is not set. Add it under Settings > Secrets and variables > Actions.",
@@ -310,15 +638,19 @@ def main():
         sys.exit(1)
 
     print("FRED series...");     series, releases = pull_fred()
+    add_spread(series)
     print("Release calendar..."); calendar = pull_release_calendar(releases)
     print("SEC EDGAR...");        builders = pull_builders()
     print("Polymarket...");       markets  = pull_markets()
+    print("Builder brief...");   brief    = refresh_brief(builders)
 
     payload = {
         "generated": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
         "series": series,
+        "rates": [r for r in RATES if r in series],
         "calendar": calendar,
         "builders": builders,
+        "brief": brief,
         "markets": markets,
         "errors": ERRORS,
     }
