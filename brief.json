@@ -22,12 +22,60 @@
     "Nobody is building into the softness. Pulte took 15,570 orders in the first half and intentionally started only 14,378 homes. Horton is carrying 38,000 homes in inventory, 23,300 unsold and 7,600 of those completed. Horton trimmed full-year guidance after demand softened late in the quarter, and Toll said July pace ran below expectations into Q4."
   ],
   "metrics": [
-    {"ticker": "DHI",  "name": "D.R. Horton", "quarter": "Jun 2026", "deliveries": "23,983 (+4%)", "orders": "23,084 (flat)", "margin": "20.7%",     "cancels": "20%"},
-    {"ticker": "LEN",  "name": "Lennar",      "quarter": "May 2026", "deliveries": "20,519",      "orders": "21,749",       "margin": "15.6%",     "cancels": "n/d"},
-    {"ticker": "PHM",  "name": "PulteGroup",  "quarter": "Jun 2026", "deliveries": "-8% YoY",     "orders": "+6% YoY",      "margin": "25.0%",     "cancels": "n/d"},
-    {"ticker": "KBH",  "name": "KB Home",     "quarter": "May 2026", "deliveries": "2,395 (-23%)","orders": "3,317 (-4%)",  "margin": "15.2%",     "cancels": "12%"},
-    {"ticker": "TOL",  "name": "Toll Brothers","quarter": "Jul 2026","deliveries": "2,662 (-10%)","orders": "2,508 (+5%)",  "margin": "25.6% adj", "cancels": "2.6%"},
-    {"ticker": "TPH",  "name": "Tri Pointe",  "quarter": "Jun 2026", "deliveries": "1,013 (-24%)","orders": "1,147 (+1%)",  "margin": "18.0%",     "cancels": "11%"}
+    {
+      "ticker": "DHI",
+      "name": "D.R. Horton",
+      "quarter": "Jun 2026",
+      "deliveries": "23,983 (+4%)",
+      "orders": "23,084 (flat)",
+      "margin": "20.7%",
+      "cancels": "20%"
+    },
+    {
+      "ticker": "LEN",
+      "name": "Lennar",
+      "quarter": "May 2026",
+      "deliveries": "20,519",
+      "orders": "21,749",
+      "margin": "15.6%",
+      "cancels": "n/d"
+    },
+    {
+      "ticker": "PHM",
+      "name": "PulteGroup",
+      "quarter": "Jun 2026",
+      "deliveries": "-8% YoY",
+      "orders": "+6% YoY",
+      "margin": "25.0%",
+      "cancels": "n/d"
+    },
+    {
+      "ticker": "KBH",
+      "name": "KB Home",
+      "quarter": "May 2026",
+      "deliveries": "2,395 (-23%)",
+      "orders": "3,317 (-4%)",
+      "margin": "15.2%",
+      "cancels": "12%"
+    },
+    {
+      "ticker": "TOL",
+      "name": "Toll Brothers",
+      "quarter": "Jul 2026",
+      "deliveries": "2,662 (-10%)",
+      "orders": "2,508 (+5%)",
+      "margin": "25.6% adj",
+      "cancels": "2.6%"
+    },
+    {
+      "ticker": "TPH",
+      "name": "Tri Pointe",
+      "quarter": "Jun 2026",
+      "deliveries": "1,013 (-24%)",
+      "orders": "1,147 (+1%)",
+      "margin": "18.0%",
+      "cancels": "11%"
+    }
   ],
   "land": [
     "This is where the group's behavior has actually changed, and it cuts both ways for a land seller.",
@@ -52,5 +100,73 @@
     "The demand picture argues against entitling for entry-level detached product right now. The lot supply picture argues strongly for finished lots in attainable ranges, which is exactly the gap.",
     "The optioned-lot share across the group says structure takedowns and options rather than fee sales, because that is the only shape of deal they currently want.",
     "Horton's cancellation rate moving to 20% and its guidance trim are the weakest signals in the group, which matters for anyone holding a PSA with them."
-  ]
+  ],
+  "metric_history": {
+    "DHI": [
+      {
+        "quarter": "2026-06-30",
+        "deliveries_units": 23983,
+        "deliveries_yoy_pct": 4.0,
+        "orders_units": 23084,
+        "orders_yoy_pct": 0.0,
+        "margin_pct": 20.7,
+        "cancel_rate_pct": 20.0
+      }
+    ],
+    "LEN": [
+      {
+        "quarter": "2026-05-31",
+        "deliveries_units": 20519,
+        "deliveries_yoy_pct": null,
+        "orders_units": 21749,
+        "orders_yoy_pct": null,
+        "margin_pct": 15.6,
+        "cancel_rate_pct": null
+      }
+    ],
+    "PHM": [
+      {
+        "quarter": "2026-06-30",
+        "deliveries_units": null,
+        "deliveries_yoy_pct": -8.0,
+        "orders_units": null,
+        "orders_yoy_pct": 6.0,
+        "margin_pct": 25.0,
+        "cancel_rate_pct": null
+      }
+    ],
+    "KBH": [
+      {
+        "quarter": "2026-05-31",
+        "deliveries_units": 2395,
+        "deliveries_yoy_pct": -23.0,
+        "orders_units": 3317,
+        "orders_yoy_pct": -4.0,
+        "margin_pct": 15.2,
+        "cancel_rate_pct": 12.0
+      }
+    ],
+    "TOL": [
+      {
+        "quarter": "2026-07-31",
+        "deliveries_units": 2662,
+        "deliveries_yoy_pct": -10.0,
+        "orders_units": 2508,
+        "orders_yoy_pct": 5.0,
+        "margin_pct": 25.6,
+        "cancel_rate_pct": 2.6
+      }
+    ],
+    "TPH": [
+      {
+        "quarter": "2026-06-30",
+        "deliveries_units": 1013,
+        "deliveries_yoy_pct": -24.0,
+        "orders_units": 1147,
+        "orders_yoy_pct": 1.0,
+        "margin_pct": 18.0,
+        "cancel_rate_pct": 11.0
+      }
+    ]
+  }
 }
