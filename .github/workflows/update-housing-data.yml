@@ -2,8 +2,11 @@ name: Update housing data
 
 on:
   schedule:
-    # 13:00 UTC daily = 6am Pacific in summer, 5am in winter
-    - cron: "0 13 * * *"
+    # 13:07 UTC daily = ~6am Pacific in summer, ~5am in winter.
+    # Offset seven minutes past the hour on purpose: GitHub's own docs warn that
+    # jobs scheduled for exactly :00 compete with everyone else's on-the-hour
+    # jobs and can run late.
+    - cron: "7 13 * * *"
   workflow_dispatch:        # adds a "Run workflow" button you can press any time
 
 permissions:
