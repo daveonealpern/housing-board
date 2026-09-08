@@ -246,12 +246,34 @@
   .map-wrap { background: var(--panel); border: 1px solid var(--line); padding: 20px 20px 16px; }
   .map-svg-box { width: 100%; max-width: 780px; margin: 0 auto; }
   .map-svg-box svg { width: 100%; height: auto; display: block; }
-  .map-state { stroke: #0A1826; stroke-width: 0.8; transition: fill 150ms ease, opacity 150ms ease; cursor: default; }
+  .map-state { stroke: #0A1826; stroke-width: 0.8; transition: fill 150ms ease, opacity 150ms ease; cursor: pointer; }
+  .map-state:hover { stroke: #6E93AC; stroke-width: 1.3; }
+  .map-state-selected { stroke: #C7A15C !important; stroke-width: 2 !important; }
   .map-legend { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 14px; font-family: var(--font-mono); font-size: 11px; color: var(--paper-dim); }
   .map-scale { display: flex; align-items: center; gap: 3px; }
   .map-scale i { width: 15px; height: 11px; display: inline-block; border-radius: 1px; }
   .map-caption { font-size: 13.5px; color: var(--paper-dim); line-height: 1.6; margin-top: 14px; max-width: 74ch; }
   .map-caption b { color: var(--paper); font-weight: 600; }
+
+  .state-detail { background: var(--panel); border: 1px solid var(--line); border-top: 2px solid var(--brass); padding: 18px 20px 15px; margin-top: 16px; }
+  .state-detail-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 4px; }
+  .state-detail-head h4 { font-family: var(--font-display); font-size: 18px; font-weight: 600; margin: 0; }
+  .state-detail-count { font-family: var(--font-mono); font-size: 11.5px; color: var(--paper-dim); }
+  .state-detail-note { font-size: 13px; color: var(--paper-dim); margin: 4px 0 14px; }
+  .sd-row { display: grid; grid-template-columns: 1.4fr 1fr 2fr auto; gap: 12px; align-items: center; padding: 9px 0; border-top: 1px solid var(--line); font-size: 13px; }
+  .sd-row:first-of-type { border-top: none; }
+  .sd-row.sd-historical { opacity: 0.6; }
+  .sd-name { font-weight: 600; }
+  .sd-name .tk { font-weight: 400; color: var(--paper-dim); }
+  .sd-seg { font-family: var(--font-mono); font-size: 11px; color: var(--paper-dim); }
+  .sd-stats { display: flex; gap: 12px; flex-wrap: wrap; font-family: var(--font-mono); font-size: 11.5px; }
+  .sd-stats span b { color: var(--paper); font-weight: 500; }
+  .sd-none { font-family: var(--font-mono); font-size: 11px; color: var(--paper-dim); }
+  .sd-link { font-family: var(--font-mono); font-size: 11px; color: var(--brass); text-decoration: none; white-space: nowrap; }
+  .sd-link:hover { text-decoration: underline; }
+  @media (max-width: 700px) {
+    .sd-row { grid-template-columns: 1fr; gap: 4px; }
+  }
   .filing-list { display: flex; flex-direction: column; gap: 1px; background: var(--line); border: 1px solid var(--line); }
   .filing-row {
     display: grid; grid-template-columns: 1fr auto auto; gap: 14px; align-items: center;
@@ -397,6 +419,7 @@
       <div class="map-legend" id="map-legend"></div>
     </div>
     <p class="map-caption" id="map-caption"></p>
+    <div id="state-detail"></div>
   </section>
 
   <section class="book-section">
@@ -861,6 +884,7 @@ const MAP_VIEWBOX = "192 9 1028 746";
 const REGIONS = {DHI:{name:"D.R. Horton",delisted:false,segments:{"Northwest":["CO","OR","UT","WA"],"Southwest":["AZ","CA","HI","NV","NM"],"South Central":["AR","OK","TX"],"Southeast":["AL","FL","LA","MS"],"East":["GA","NC","SC","TN"],"North":["DE","IL","IN","IA","KS","KY","MD","MN","MO","NE","NJ","OH","PA","VA","WV","WI"]}},LEN:{name:"Lennar",delisted:false,segments:{"East":["FL","NJ","PA"],"Central":["AL","GA","IL","IN","MD","MN","NC","SC","TN","VA"],"South Central":["AR","KS","MO","OK","TX"],"West":["AZ","CA","CO","ID","NV","OR","UT","WA"]}},PHM:{name:"PulteGroup",delisted:false,segments:{"Northeast":["MD","MA","NJ","PA","RI","VA"],"Southeast":["GA","NC","SC","TN"],"Florida":["FL"],"Midwest":["IL","IN","KY","MI","MN","OH"],"Texas":["TX"],"West":["AZ","CA","CO","NV","NM","OR","UT","WA"]}},KBH:{name:"KB Home",delisted:false,segments:{"West Coast":["CA","ID","WA"],"Southwest":["AZ","NV"],"Central":["CO","TX"],"Southeast":["FL","NC"]}},TOL:{name:"Toll Brothers",delisted:false,segments:{"North":["CT","DE","MA","MI","NJ","NY","PA"],"Mid-Atlantic":["GA","MD","NC","TN","VA"],"South":["FL","SC","TX"],"Mountain":["AZ","CO","ID","NV","UT"],"Pacific":["CA","OR","WA"]}},NVR:{name:"NVR",delisted:false,segments:{"Mid Atlantic":["MD","VA","WV","DE","DC"],"North East":["NJ","PA"],"Mid East":["NY","OH","PA","IN","IL"],"South East":["NC","SC","FL","TN"]}},MTH:{name:"Meritage Homes",delisted:false,segments:{"West":["AZ","CA","CO","UT"],"Central":["TX","TN"],"East":["AL","FL","GA","MS","NC","SC"]}},CCS:{name:"Century Communities",delisted:false,segments:{"West":["CA","WA"],"Mountain":["AZ","CO","NV","UT"],"Texas":["TX"],"Southeast":["FL","GA","NC","SC","TN"],"Century Complete":["AL","IN","KY","MI"]}},LGIH:{name:"LGI Homes",delisted:false,segments:{"Central":["TX","OK","MN"],"Southeast":["GA","AL","TN","NC","SC","WV","MD","PA","VA"],"Northwest":["CO","WA","OR"],"West":["AZ","NM","NV","CA","UT"],"Florida":["FL"]}},MHO:{name:"M/I Homes",delisted:false,segments:{"Northern":["OH","IN","IL","MN","MI"],"Southern":["FL","TX","NC","TN"]}},TPH:{name:"Tri Pointe Homes",delisted:true,segments:{"West":["AZ","CA","NV","WA"],"Central":["CO","TX","UT"],"East":["DC","FL","MD","NC","SC","VA"]}},TMHC:{name:"Taylor Morrison",delisted:true,segments:{"East":["FL","GA","NC","SC"],"Central":["TX","CO","IN"],"West":["AZ","CA","NV","OR","WA"]}},};
 
 let mapMode = 'ALL';
+let selectedState = 'CA';
 
 function statesForBuilder(tk){
   const seen = new Set();
@@ -933,7 +957,8 @@ function renderMap(){
   let svg = '<svg viewBox="' + MAP_VIEWBOX + '" xmlns="http://www.w3.org/2000/svg">';
   Object.keys(STATE_PATHS).forEach(code => {
     const st = STATE_PATHS[code];
-    svg += '<path class="map-state" data-code="' + code + '" d="' + st.d + '" fill="' + fills[code] + '"'
+    const sel = code === selectedState;
+    svg += '<path class="map-state' + (sel ? ' map-state-selected' : '') + '" data-code="' + code + '" d="' + st.d + '" fill="' + fills[code] + '"'
       + (fills[code] === '#1C3349' ? ' opacity="0.55"' : '') + '/>';
   });
   svg += '</svg>';
@@ -942,7 +967,7 @@ function renderMap(){
   box.querySelectorAll('.map-state').forEach(p => {
     const code = p.dataset.code, name = STATE_PATHS[code].n;
     p.addEventListener('mouseenter', () => {
-      tip.innerHTML = '<strong>' + name + '</strong><br>' + esc(labelOf[code]);
+      tip.innerHTML = '<strong>' + name + '</strong><br>' + esc(labelOf[code]) + '<br><span style="color:#8FA6BC">Click for more detail</span>';
       tip.style.opacity = '1';
     });
     p.addEventListener('mousemove', e => {
@@ -950,10 +975,12 @@ function renderMap(){
       tip.style.top  = (e.clientY + 16) + 'px';
     });
     p.addEventListener('mouseleave', () => { tip.style.opacity = '0'; });
+    p.addEventListener('click', () => { selectedState = code; renderMap(); });
   });
 
   renderMapLegend();
   renderMapCaption();
+  renderStateDetail();
 }
 
 function renderMapLegend(){
@@ -1022,6 +1049,70 @@ function renderSourceFilings(){
       + ' <span class="tk">' + esc(b.ticker) + '</span>' + tag + '</div>'
       + '<div class="filing-meta">' + esc(meta || '\u2014') + '</div>' + link + '</div>';
   }).join('') + '</div>';
+}
+
+
+function fmtQ(iso){
+  if(!iso) return '';
+  const [y,m] = iso.split('-');
+  const q = Math.ceil(Number(m)/3);
+  return y + ' Q' + q;
+}
+
+// Everything currently known about one state: which active builders report
+// a presence, their own segment name for it, their latest company-wide
+// numbers where a filing has been read, and a link to that filing. Delisted
+// builders that used to operate here show separately, dimmed, as history
+// rather than mixed in with builders still actually building today.
+function renderStateDetail(){
+  const host = document.getElementById('state-detail');
+  const code = selectedState;
+  const st = STATE_PATHS[code];
+  if(!host || !st) return;
+
+  const builderByTk = {};
+  (D.builders || []).forEach(b => { builderByTk[b.ticker] = b; });
+  const history = (D.brief && D.brief.metric_history) || {};
+
+  const active = [], historical = [];
+  Object.keys(REGIONS).forEach(tk => {
+    const info = REGIONS[tk];
+    if(!statesForBuilder(tk).has(code)) return;
+    (info.delisted ? historical : active).push(tk);
+  });
+
+  const statRow = tk => {
+    const h = history[tk];
+    if(!h || !h.length) return '<span class="sd-none">No quarterly detail read yet</span>';
+    const last = h[h.length - 1];
+    const parts = [];
+    if(last.margin_pct != null) parts.push('<span>Margin <b>' + fmt(last.margin_pct) + '%</b></span>');
+    if(last.cancel_rate_pct != null) parts.push('<span>Cancels <b>' + fmt(last.cancel_rate_pct) + '%</b></span>');
+    if(last.orders_yoy_pct != null) parts.push('<span>Orders <b>' + (last.orders_yoy_pct>=0?'+':'') + fmt(last.orders_yoy_pct) + '%</b> YoY</span>');
+    if(last.deliveries_yoy_pct != null) parts.push('<span>Deliveries <b>' + (last.deliveries_yoy_pct>=0?'+':'') + fmt(last.deliveries_yoy_pct) + '%</b> YoY</span>');
+    return '<div class="sd-stats">' + (parts.join('') || '<span class="sd-none">Nothing numeric on file for this quarter</span>')
+      + '<span style="color:var(--paper-dim)">(' + esc(fmtQ(last.quarter)) + ')</span></div>';
+  };
+
+  const row = (tk, isHist) => {
+    const info = REGIONS[tk], b = builderByTk[tk];
+    const link = (b && b.url) ? '<a class="sd-link" href="' + esc(b.url) + '" target="_blank" rel="noopener">Filing</a>' : '';
+    return '<div class="sd-row' + (isHist ? ' sd-historical' : '') + '">'
+      + '<div class="sd-name">' + esc(info.name) + ' <span class="tk">' + esc(tk) + '</span>'
+      + (isHist ? '<div class="sd-seg">' + esc(info.note || 'Delisted \u2014 historical footprint') + '</div>' : '') + '</div>'
+      + '<div class="sd-seg">' + esc(segmentsAt(tk, code).join(', ')) + '</div>'
+      + (isHist ? '<span class="sd-none">No longer files with the SEC</span>' : statRow(tk))
+      + '<div>' + link + '</div></div>';
+  };
+
+  const count = active.length;
+  host.innerHTML = '<div class="state-detail">'
+    + '<div class="state-detail-head"><h4>' + esc(st.n) + '</h4>'
+    + '<span class="state-detail-count">' + count + ' of 10 active builders' + (historical.length ? ', ' + historical.length + ' historical' : '') + '</span></div>'
+    + '<p class="state-detail-note">Numbers are each builder\u2019s latest company-wide quarter, not broken out by state or segment. Filings don\u2019t disclose it at that level, so this is the finest grain honestly available.</p>'
+    + (active.length ? active.map(tk => row(tk, false)).join('') : '<div class="sd-row"><span class="sd-none">None of the 10 tracked active builders report a presence here.</span></div>')
+    + (historical.length ? historical.map(tk => row(tk, true)).join('') : '')
+    + '</div>';
 }
 
 function paras(a){
