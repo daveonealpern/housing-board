@@ -13,22 +13,26 @@ jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      # v5 and v6 run on Node 24. The older v4/v5 pair still works but emits a
+      # deprecation warning on every run.
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
-          python-version: "3.11"
+          python-version: "3.12"
 
       - name: Pull all sources
         env:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
           SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+          # Optional. Without it the brief stays put and the sheet flags new filings.
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: python fetch.py
 
       - name: Commit if anything changed
         run: |
           git config user.name  "housing-board-bot"
           git config user.email "actions@github.com"
-          git add data.json
+          git add data.json brief.json
           git diff --staged --quiet || git commit -m "Housing data update $(date -u +'%Y-%m-%d')"
           git push
