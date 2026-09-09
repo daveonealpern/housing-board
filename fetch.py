@@ -134,7 +134,7 @@ SERIES = [
      "The base the 30-year mortgage prices off. Watch the gap between the two.",
      "10-year treasury constant maturity rate"),
     ("DGS30",        "30-year Treasury",              "capital",     3, "%",            "down",
-     "The long end. Matters for permanent takeout financing more than for construction.",
+     "The long end of the curve. Matters more for the long-term mortgage that eventually replaces a construction loan than for the construction loan itself.",
      "30-year treasury constant maturity rate"),
     ("SOFR",         "SOFR, overnight",               "capital",     3, "%",            "down",
      "The overnight secured rate that replaced LIBOR in 2023. The floor under "
@@ -145,11 +145,10 @@ SERIES = [
      "public stand-in for 1-month Term SOFR, which is licensed and not on FRED.",
      "30-day average sofr"),
     ("SOFR90DAYAVG", "SOFR 90-day average",           "capital",     3, "%",            "down",
-     "The quarterly-reset equivalent. Use this one if your facility resets quarterly.",
+     "The quarterly-reset equivalent. Use this one if your loan's rate resets every quarter rather than monthly.",
      "90-day average sofr"),
     ("DPRIME",       "Bank prime loan rate",          "capital",     3, "%",            "down",
-     "What smaller land and construction facilities actually price off. Moves in "
-     "lockstep with fed funds, historically about 300bp above it.",
+     "What smaller land and construction loans actually price off. Moves in lockstep with the fed funds rate, historically about 300bp above it.",
      "bank prime loan rate"),
     ("FEDFUNDS",     "Federal funds rate",            "capital",     4, "%",            "down",
      "The policy rate. Housing responds to the long end, but this sets the tone.",
@@ -158,8 +157,7 @@ SERIES = [
      "The gap to the 30-year shows how much of the curve borrowers are paying for.",
      "15-year fixed rate mortgage average"),
     ("BAMLC0A4CBBB", "BBB corporate spread",          "capital",     6, "bp",           "down",
-     "Investment-grade credit stress. Widening here tightens builder revolvers "
-     "before it shows up in any housing number.",
+     "Investment-grade credit stress. When this widens, it gets more expensive for builders to draw on their revolving credit lines, tightening their cash position before it ever shows up in a housing number.",
      "ice bofa bbb us corporate index option-adjusted spread"),
     ("BAMLH0A0HYM2", "High yield spread",             "capital",     6, "bp",           "down",
      "The risk appetite gauge. Blows out first when credit turns.",
@@ -187,7 +185,7 @@ SERIES = [
 
     # --- cost and labor ---
     ("WPUSI012011", "Construction materials PPI",     "cost",        1, "index",        "down",
-     "Reaches pro formas before it reaches completed cost.",
+     "Reaches a builder's cost projections before it reaches their completed, as-built cost.",
      "producer price index construction materials"),
     ("JTS2300JOL",  "Construction job openings",      "cost",        2, "jobs",            "up",
      "Hiring intent turns before payrolls. Better labor read than employment level.",
@@ -196,7 +194,7 @@ SERIES = [
      "Coincident. Useful mainly as a check on the openings series.",
      "all employees construction"),
     ("PRRESCONS",   "Residential construction spend", "cost",       -1, "$ SAAR",      "up",
-     "Put-in-place dollars, so it reflects work already underway.",
+     "The dollar value of construction work actually completed in the period, not contracts signed or work planned, so it reflects work already underway.",
      "total private construction spending residential"),
 
     # --- distress ---
@@ -204,7 +202,7 @@ SERIES = [
      "Lags badly but confirms turns. Watch the rate of change, not the level.",
      "delinquency rate single-family residential mortgages commercial banks"),
     ("DRCRELEXFACBS",  "CRE loan delinquency",        "distress",   -7, "%",            "down",
-     "Multifamily is the segment to watch given the completion wave working through.",
+     "Multifamily is the segment to watch: a large batch of apartment projects that broke ground during the last construction boom are finishing around the same time, and that surge of new supply pressures rents and loan performance together.",
      "delinquency rate commercial real estate loans banks"),
 
     # --- california ---
@@ -218,9 +216,112 @@ SERIES = [
      "Your metro, same two-month lag as the national index.",
      "s&p case-shiller ca-los angeles home price index"),
     ("CAUR",     "California unemployment",           "ca",         -1, "%",            "down",
-     "Context for absorption. Rising unemployment shrinks the buyer pool before price moves.",
+     "Context for how fast homes actually sell. Rising unemployment shrinks the pool of qualified buyers before prices move.",
      "unemployment rate in california"),
 ]
+
+# A concrete, illustrative scenario per series, shown on hover alongside the
+# standing note above. Written to make the mechanism tangible, not just
+# restate the definition; several exist specifically because the underlying
+# concept (a yield curve inversion, a completion wave, put-in-place spend)
+# does not explain itself from the name alone.
+EXAMPLES = {
+    "AUTHNOTT": "For example: a builder pulls permits for a 200-home phase but only breaks "
+                "ground on 140 this quarter. The other 60 sit in this backlog until they "
+                "either start construction or the permit expires.",
+    "PERMIT": "For example: a jump here in March typically shows up as more dirt turning "
+              "in housing starts by around May or June.",
+    "PERMIT1": "For example: one large apartment complex getting a single permit for 300 "
+               "units can swing the total-permits number sharply in a month; this series "
+               "strips that out.",
+    "HOUST1F": "For example: if permits ran at 100,000 last month but starts only hit "
+               "80,000, roughly 20,000 homes are sitting between paperwork and groundbreaking.",
+    "HOUST": "For example: one large 400-unit apartment tower breaking ground can move this "
+             "number more than a hundred small single-family starts combined.",
+    "MORTGAGE30US": "For example: on a $400,000 loan, moving from 6.5% to 7.0% adds roughly "
+                    "$130 to the monthly payment, enough to price some buyers out entirely.",
+    "UMCSENT": "For example: sentiment can drop sharply after a bad headline even while "
+               "people keep buying homes at the same pace, which is why it counts as a weak "
+               "signal on its own.",
+    "TDSP": "For example: when this ratio is already elevated, a small rise in rates or a "
+            "job loss leaves far less room to absorb before a household falls behind on "
+            "payments.",
+    "T10Y2Y": "For example: in 2022 this curve went negative for the first time in years, "
+              "correctly flagging elevated recession risk roughly a year ahead of when "
+              "growth actually slowed.",
+    "DGS2": "For example: this yield tends to rise when the market expects the Fed to keep "
+            "raising rates, and fall once cuts are expected.",
+    "DGS10": "For example: the 30-year mortgage rate usually runs about 1.5 to 2.5 points "
+             "above this yield; a mortgage rate far outside that range signals something "
+             "else, like spread widening, is going on.",
+    "DGS30": "For example: a builder using construction-to-permanent financing cares more "
+             "about where this yield sits at the time of the permanent take-out loan than "
+             "at groundbreaking.",
+    "SOFR": "For example: a construction loan priced at \"SOFR plus 250bp\" moves "
+            "dollar-for-dollar with this rate every time it resets.",
+    "SOFR30DAYAVG": "For example: a loan that resets monthly and references 1-month Term "
+                    "SOFR will track very close to this series, since it is the closest "
+                    "free public substitute.",
+    "SOFR90DAYAVG": "For example: a facility that resets every quarter will track this "
+                    "series more closely than the overnight or 30-day figures.",
+    "DPRIME": "For example: a small local construction loan quoted at \"prime plus 1%\" "
+              "moves in direct lockstep with this number.",
+    "FEDFUNDS": "For example: a quarter-point Fed cut here does not guarantee the 30-year "
+                "mortgage rate moves at all in the short run, since mortgage pricing follows "
+                "the 10-year Treasury more closely.",
+    "MORTGAGE15US": "For example: a 15-year loan often carries a rate half a point or more "
+                    "below the 30-year on the same day, reflecting the shorter payoff period.",
+    "BAMLC0A4CBBB": "For example: if this widens by 50bp, a builder's next bond issuance or "
+                    "credit facility renewal likely gets priced meaningfully more expensively, "
+                    "even if Treasury yields have not moved at all.",
+    "BAMLH0A0HYM2": "For example: this spread often jumps well before equity markets sell "
+                    "off, since credit investors tend to reprice risk first.",
+    "HSN1F": "For example: a buyer signing a contract on a to-be-built home in March counts "
+             "here immediately, even though the sale will not close for months.",
+    "MSACSR": "For example: at 10,000 homes for sale and 1,500 selling per month, that is "
+              "roughly 6.7 months of supply, a level that has historically preceded builders "
+              "cutting prices.",
+    "EXHOSLUSM495S": "For example: a home that goes under contract in March typically does "
+                     "not count here until the sale closes in April or May.",
+    "COMPUTSA": "For example: a wave of apartment buildings that broke ground in a hot "
+                "construction year will show up as completions here roughly twelve to "
+                "eighteen months later, arriving on the market around the same time.",
+    "MSPUS": "For example: if builders shift toward more starter homes and fewer luxury "
+             "homes, this median can fall even while every single home sells for more than "
+             "it did last year.",
+    "CSUSHPINSA": "For example: because this uses a three-month moving average reported two "
+                  "months late, a price turn that already happened in July might not clearly "
+                  "show up here until October.",
+    "WPUSI012011": "For example: a spike in lumber or steel prices here typically shows up "
+                   "in a builder's cost projections before it ever appears in their actual "
+                   "completed-home costs.",
+    "JTS2300JOL": "For example: a builder posting more openings for framers and electricians "
+                  "this month is signaling planned activity before a single new hire shows "
+                  "up on payroll.",
+    "USCONS": "For example: this confirms whether the hiring intent shown by job openings "
+              "actually turned into people getting hired.",
+    "PRRESCONS": "For example: this counts the dollar value of a foundation actually poured "
+                 "this month, not the total contract value of a home that will take a year "
+                 "to build.",
+    "DRSFRMACBS": "For example: this rate was still near normal levels well after the 2008 "
+                  "housing bust had already begun, since missed payments take months to show "
+                  "up as a formally delinquent loan.",
+    "DRCRELEXFACBS": "For example: an apartment building that leased up slower than expected, "
+                     "in a market with lots of other new buildings competing for the same "
+                     "renters, is exactly the kind of loan that shows up as delinquent here.",
+    "CABPPRIV": "For example: if California's permit count falls while the national number "
+                "holds steady, that is a sign the state's slowdown is more severe, or "
+                "starting earlier, than the rest of the country.",
+    "CASTHPI": "For example: this index is built from repeat sales of the same homes over "
+               "time, so it tracks value changes more cleanly than a raw median price, which "
+               "mixes in whatever happened to sell that quarter.",
+    "LXXRSA": "For example: Los Angeles can diverge from the statewide CASTHPI number if the "
+              "coastal metro is cooling while inland California markets stay hot, or the "
+              "other way around.",
+    "CAUR": "For example: a local employer announcing layoffs shrinks the pool of people who "
+            "can qualify for a mortgage in that area, months before it shows up as softer "
+            "home sales.",
+}
 
 # ---------------------------------------------------------------------------
 # FRED
@@ -263,6 +364,8 @@ def pull_fred():
 
         rec = {"name": name, "bucket": bucket, "lead": lead, "units": units,
                "good": good, "read": read, "sid": active, "obs": obs or []}
+        if sid in EXAMPLES:
+            rec["example"] = EXAMPLES[sid]
         if sid in REFS:
             rec["ref"] = REFS[sid]
 
@@ -341,7 +444,7 @@ def pull_release_calendar(release_ids):
 # ---------------------------------------------------------------------------
 # SEC EDGAR - public homebuilders
 # ---------------------------------------------------------------------------
-BUILDERS = ["DHI", "LEN", "PHM", "NVR", "TOL", "KBH", "MTH", "TMHC", "TPH", "CCS", "LGIH", "MHO"]
+BUILDERS = ["DHI", "LEN", "PHM", "NVR", "TOL", "KBH", "MTH", "CCS", "LGIH", "MHO"]
 INVENTORY_TAGS = ["InventoryRealEstate", "InventoryOperativeBuilders",
                   "RealEstateInventoryConstructionInProcess", "InventoryNet"]
 SEC_HEADERS = {"User-Agent": SEC_UA, "Accept": "application/json"}
@@ -357,19 +460,17 @@ SEC_HEADERS = {"User-Agent": SEC_UA, "Accept": "application/json"}
 YAHOO_HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
                                 "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"}
 
-# Builders whose SEC reporting has ended for good, taken private by
-# acquisition. Their CIK stays valid forever, since the SEC's historical
-# record does not disappear when a ticker delists, so their final filing and
-# full inventory history keep showing here; only the "expect a newer filing"
-# assumption is switched off for them (see refresh_brief). Both drop out of
-# SEC's live company_tickers.json once delisted, so their CIK is hardcoded
-# and verified against the returned entity name rather than looked up.
-DELISTED = {
-    "TPH":  {"cik": "0001561680", "name": "Tri Pointe Homes",
-             "note": "Acquired by Sumitomo Forestry, closed 2026-05-14"},
-    "TMHC": {"cik": "0001562476", "name": "Taylor Morrison Home Corp",
-             "note": "Acquired by Berkshire Hathaway, closed 2026-07-24"},
-}
+# Tri Pointe Homes (acquired by Sumitomo Forestry, closed 2026-05-14) and
+# Taylor Morrison (acquired by Berkshire Hathaway, closed 2026-07-24) are
+# intentionally absent from BUILDERS above. Earlier versions of this board
+# kept them visible with a "delisted" label and their final filing, on the
+# reasoning that historical footprint was useful context. On review that
+# read as showing companies that no longer exist as if they still competed
+# in this market, so they are dropped outright rather than flagged. Their
+# acquirers are not tracked in their place: neither Sumitomo Forestry nor
+# Berkshire Hathaway is a pure-play homebuilder, and folding a conglomerate
+# into a peer group built for comparing builder-to-builder metrics would
+# make every comparison on this board less meaningful, not more complete.
 
 def pull_builders():
     rows = []
@@ -383,24 +484,16 @@ def pull_builders():
         return rows
 
     for tk in BUILDERS:
-        delisted = tk in DELISTED
-        expect = None
-        if tk in lookup:
-            cik, title = lookup[tk]
-        elif delisted:
-            cik, title = DELISTED[tk]["cik"], DELISTED[tk]["name"]
-            expect = DELISTED[tk]["name"]
-        else:
+        if tk not in lookup:
             note("No SEC record for ticker %s" % tk); continue
-        rec = {"ticker": tk, "name": title, "cik": cik, "delisted": delisted}
+        cik, title = lookup[tk]
+        rec = {"ticker": tk, "name": title, "cik": cik}
         try:
             sub = get_json("https://data.sec.gov/submissions/CIK%s.json" % cik, headers=SEC_HEADERS)
             # The Submissions API's field is "name". "entityName" belongs to a
             # different SEC endpoint (CompanyFacts) and never appears here, so
-            # using it made this check silently fail on every run.
+            # using it made an earlier version of this check silently fail.
             ent = sub.get("name", "")
-            if expect and expect.lower() not in ent.lower():
-                note("CIK %s is %s, not %s - skipped" % (cik, ent, tk)); continue
             if ent:
                 rec["name"] = ent
             f = sub.get("filings", {}).get("recent", {})
@@ -593,8 +686,7 @@ def refresh_brief(builders):
     covered = brief.get("covered", {}) or {}
 
     fresh = [b for b in builders
-             if b.get("period") and not b.get("delisted")
-             and b["period"] > covered.get(b["ticker"], "")]
+             if b.get("period") and b["period"] > covered.get(b["ticker"], "")]
 
     if not fresh:
         brief["stale"] = []
@@ -695,15 +787,17 @@ def refresh_brief(builders):
 # Stock prices
 # ---------------------------------------------------------------------------
 def pull_resale_data():
-    """Existing-home resale market: median sale price and homes sold, at
-    national, California, and Ventura County level, from one consistent
-    source so the three levels are actually comparable to each other.
+    """Existing-home resale market: median sale price, homes sold, median
+    days on market, and the sale-to-list price ratio, at national,
+    California, and Ventura County level, from one consistent source so the
+    three levels are actually comparable to each other.
 
     Neither FRED nor SEC EDGAR carry closed-sale data below the national
     level; FRED's Ventura County series (via Realtor.com) is inventory and
-    days-on-market only, not sales volume or price. Redfin's Data Center is
-    the one free, no-key source confirmed to publish the same two metrics
-    at all three levels: https://www.redfin.com/news/data-center/downloads
+    days-on-market only, not sale price, volume, or the list-price ratio.
+    Redfin's Data Center is the one free, no-key source confirmed to
+    publish all four at every level:
+    https://www.redfin.com/news/data-center/downloads
 
     Redfin rebuilt this Data Center in May 2026, unifying their monthly and
     weekly pipelines. Column names changed as part of that rebuild; the
@@ -721,22 +815,25 @@ def pull_resale_data():
     counties rather than a separate pre-built file). Rather than keep
     guessing at a URL with no confirmed replacement, national is instead
     derived from the same state file already being pulled for California:
-    homes sold summed across all states, and price taken as a
-    homes-sold-weighted average of state medians. That weighted average is
-    a real approximation, not Redfin's own precise calculation, and is
-    labeled as such on the resulting level so it never reads as equally
-    authoritative to the two directly-sourced levels.
+    every numeric field is a homes-sold-weighted average across states
+    (a straight sum for homes sold itself). That is a real approximation,
+    not Redfin's own precise calculation, and is labeled as such on the
+    resulting level so it never reads as equally authoritative to the two
+    directly-sourced levels.
     """
     BASE = "https://redfin-public-data.s3.us-west-2.amazonaws.com/redfin_market_tracker/"
     LABELS = {"national": "United States", "ca": "California", "ventura": "Ventura County, CA"}
 
     COLS = {
-        "period_end":  ["PERIOD_END", "period_end"],
-        "region_type": ["REGION_TYPE", "region_type"],
-        "region_name": ["REGION", "REGION_NAME", "region_name"],
-        "price":       ["Median Sale Price NSA ($)", "Median Sale Price ($)", "median_sale_price"],
-        "sold":        ["Homes Sold", "homes_sold"],
+        "period_end":   ["PERIOD_END", "period_end"],
+        "region_type":  ["REGION_TYPE", "region_type"],
+        "region_name":  ["REGION", "REGION_NAME", "region_name"],
+        "price":        ["Median Sale Price NSA ($)", "Median Sale Price ($)", "median_sale_price"],
+        "sold":         ["Homes Sold", "homes_sold"],
+        "dom":          ["Median Days On Market (days)", "median_dom"],
+        "sale_to_list": ["Average Sale To List Ratio (%)", "avg_sale_to_list"],
     }
+    NUMERIC_FIELDS = ["price", "sold", "dom", "sale_to_list"]
 
     def find_col(header, candidates):
         lower = {h.strip().lower(): h for h in header}
@@ -759,46 +856,69 @@ def pull_resale_data():
         return None, last_err
 
     def parse_rows(raw, key):
-        """Yields (period_end, region_type, region_name, price, sold) tuples,
-        or None (with a note already logged) if the header can't be read."""
+        """Returns a list of dicts, one per data row, keyed by the logical
+        field names above (not the raw header text), or None (with a note
+        already logged) if a required column can't be found."""
         text = raw.decode("utf-8", "replace")
         lines_ = text.splitlines()
         reader = csv.DictReader(lines_, delimiter="\t")
         header = reader.fieldnames or []
         resolved = {k: find_col(header, v) for k, v in COLS.items()}
-        missing = [k for k, v in resolved.items() if v is None]
+        # only the identifying columns are truly required; a metric column
+        # going missing (Redfin adding/renaming one field) shouldn't take
+        # down the other three metrics along with it
+        required = ["period_end", "region_type", "region_name"]
+        missing = [k for k in required if resolved[k] is None]
         if missing:
             sample = lines_[1][:300] if len(lines_) > 1 else "(no data rows)"
             note("Resale %s: could not find column(s) %s. Full header: %s | Sample row: %s"
                  % (key, missing, header, sample))
             return None
-        c_end, c_type, c_region, c_price, c_sold = (
-            resolved["period_end"], resolved["region_type"], resolved["region_name"],
-            resolved["price"], resolved["sold"])
+        missing_metrics = [k for k in NUMERIC_FIELDS if resolved[k] is None]
+        if missing_metrics:
+            note("Resale %s: metric column(s) %s not found, continuing without them. Full header: %s"
+                 % (key, missing_metrics, header))
         out = []
         for row in reader:
-            d = (row.get(c_end) or "")[:10]
+            d = (row.get(resolved["period_end"]) or "")[:10]
             if not d:
                 continue
-            out.append((d, row.get(c_type, ""), row.get(c_region, ""),
-                        row.get(c_price, ""), row.get(c_sold, "")))
+            rec = {"d": d, "region_type": row.get(resolved["region_type"], ""),
+                   "region_name": row.get(resolved["region_name"], "")}
+            for f in NUMERIC_FIELDS:
+                rec[f] = row.get(resolved[f], "") if resolved[f] else ""
+            out.append(rec)
         return out
 
     def to_series(rows, matcher):
-        price, sold, seen = [], [], set()
-        for d, rt, rn, p, h in rows:
-            if not matcher(rt, rn) or d in seen:
+        """One output series per numeric field, {key: [{"d","v"}, ...]}."""
+        series = {f: [] for f in NUMERIC_FIELDS}
+        seen = set()
+        for r in rows:
+            if not matcher(r["region_type"], r["region_name"]) or r["d"] in seen:
                 continue
-            try:
-                if p not in ("", None):
-                    price.append({"d": d, "v": round(float(p), 2)})
-                if h not in ("", None):
-                    sold.append({"d": d, "v": round(float(h), 1)})
-                seen.add(d)
-            except ValueError:
-                continue
-        price.sort(key=lambda o: o["d"]); sold.sort(key=lambda o: o["d"])
-        return price, sold
+            hit = False
+            for f in NUMERIC_FIELDS:
+                v = r.get(f, "")
+                if v not in ("", None):
+                    try:
+                        series[f].append({"d": r["d"], "v": round(float(v), 2)})
+                        hit = True
+                    except ValueError:
+                        continue
+            if hit:
+                seen.add(r["d"])
+        for f in series:
+            series[f].sort(key=lambda o: o["d"])
+        return series
+
+    # internal field names ("price"/"sold") map to the established output
+    # keys the frontend already expects; "dom" and "sale_to_list" are new
+    # fields with no legacy name to preserve.
+    OUTPUT_KEY = {"price": "median_price", "sold": "homes_sold", "dom": "dom", "sale_to_list": "sale_to_list"}
+
+    def trim(series, n=96):
+        return {OUTPUT_KEY[f]: v[-n:] for f, v in series.items()}
 
     levels = []
 
@@ -819,57 +939,59 @@ def pull_resale_data():
     if raw is None:
         note("Resale ca failed: %s" % err)
     else:
-        price, sold = to_series(state_rows, lambda rt, rn: rn.strip().lower() == "california")
-        if price or sold:
-            levels.append({"key": "ca", "label": LABELS["ca"],
-                            "median_price": price[-96:], "homes_sold": sold[-96:]})
-            print("  %-9s %4d price pts, %4d sold pts" % ("ca", len(price), len(sold)))
+        s = to_series(state_rows, lambda rt, rn: rn.strip().lower() == "california")
+        if any(s.values()):
+            levels.append({"key": "ca", "label": LABELS["ca"], **trim(s)})
+            print("  %-9s %4d price pts, %4d sold pts" % ("ca", len(s["price"]), len(s["sold"])))
         else:
             note("Resale ca: file read, columns found, but no rows matched region California")
     time.sleep(0.5)
 
     if national_rows:
-        price, sold = to_series(national_rows, lambda rt, rn: rt.strip().lower() == "national")
-        if price or sold:
-            levels.append({"key": "national", "label": LABELS["national"],
-                            "median_price": price[-96:], "homes_sold": sold[-96:]})
-            print("  %-9s %4d price pts, %4d sold pts (direct)" % ("national", len(price), len(sold)))
+        s = to_series(national_rows, lambda rt, rn: rt.strip().lower() == "national")
+        if any(s.values()):
+            levels.append({"key": "national", "label": LABELS["national"], **trim(s)})
+            print("  %-9s %4d price pts, %4d sold pts (direct)" % ("national", len(s["price"]), len(s["sold"])))
         else:
             national_rows = None  # fall through to the aggregate below
 
     if not national_rows and state_rows:
         by_period = {}
-        for d, rt, rn, p, h in state_rows:
-            if rt.strip().lower() != "state":
+        for r in state_rows:
+            if r["region_type"].strip().lower() != "state":
                 continue
             try:
-                h_val = float(h) if h not in ("", None) else None
-                p_val = float(p) if p not in ("", None) else None
+                h_val = float(r["sold"]) if r.get("sold") not in ("", None) else None
             except ValueError:
-                continue
-            slot = by_period.setdefault(d, {"sold": 0.0, "weighted_price": 0.0, "weight": 0.0})
+                h_val = None
+            slot = by_period.setdefault(r["d"], {"sold": 0.0, "weighted": {f: 0.0 for f in NUMERIC_FIELDS}, "weight": 0.0})
             if h_val is not None:
                 slot["sold"] += h_val
-                if p_val is not None:
-                    slot["weighted_price"] += p_val * h_val
-                    slot["weight"] += h_val
-        price, sold = [], []
+                for f in NUMERIC_FIELDS:
+                    try:
+                        v = float(r[f]) if r.get(f) not in ("", None) else None
+                    except ValueError:
+                        v = None
+                    if v is not None:
+                        slot["weighted"][f] += v * h_val
+                slot["weight"] += h_val
+        agg = {f: [] for f in NUMERIC_FIELDS}
         for d in sorted(by_period):
             slot = by_period[d]
             if slot["sold"] > 0:
-                sold.append({"d": d, "v": round(slot["sold"], 1)})
+                agg["sold"].append({"d": d, "v": round(slot["sold"], 1)})
             if slot["weight"] > 0:
-                price.append({"d": d, "v": round(slot["weighted_price"] / slot["weight"], 2)})
-        if price or sold:
-            levels.append({"key": "national", "label": LABELS["national"],
-                            "median_price": price[-96:], "homes_sold": sold[-96:],
+                for f in ("price", "dom", "sale_to_list"):
+                    agg[f].append({"d": d, "v": round(slot["weighted"][f] / slot["weight"], 2)})
+        if any(agg.values()):
+            levels.append({"key": "national", "label": LABELS["national"], **trim(agg),
                             "estimated": True,
-                            "estimate_note": "Homes sold summed and price averaged across all "
-                                             "states (weighted by volume), since the standalone "
-                                             "national file is currently unavailable. Not "
-                                             "Redfin's own national calculation."})
+                            "estimate_note": "Every figure here is a homes-sold-weighted average "
+                                             "across all states (a straight sum for homes sold "
+                                             "itself), since the standalone national file is "
+                                             "currently unavailable. Not Redfin's own calculation."})
             print("  %-9s %4d price pts, %4d sold pts (aggregated from states)"
-                  % ("national", len(price), len(sold)))
+                  % ("national", len(agg["price"]), len(agg["sold"])))
         else:
             note("Resale national: state file read but no state-level rows found to aggregate")
 
@@ -880,11 +1002,10 @@ def pull_resale_data():
     else:
         rows = parse_rows(raw, "ventura")
         if rows:
-            price, sold = to_series(rows, lambda rt, rn: "ventura" in rn.strip().lower() and "ca" in rn.strip().lower())
-            if price or sold:
-                levels.append({"key": "ventura", "label": LABELS["ventura"],
-                                "median_price": price[-96:], "homes_sold": sold[-96:]})
-                print("  %-9s %4d price pts, %4d sold pts" % ("ventura", len(price), len(sold)))
+            s = to_series(rows, lambda rt, rn: "ventura" in rn.strip().lower() and "ca" in rn.strip().lower())
+            if any(s.values()):
+                levels.append({"key": "ventura", "label": LABELS["ventura"], **trim(s)})
+                print("  %-9s %4d price pts, %4d sold pts" % ("ventura", len(s["price"]), len(s["sold"])))
             else:
                 note("Resale ventura: file read, columns found, but no rows matched region Ventura County, CA")
 
@@ -919,7 +1040,6 @@ def pull_stock_prices():
                 "as_of": series[-1]["d"],
                 "series": series,
                 "currency": meta.get("currency", "USD"),
-                "delisted": tk in DELISTED,
             })
             print("  %-6s $%.2f  YTD %s%%" % (tk, meta.get("regularMarketPrice", last),
                   ytd_pct if ytd_pct is not None else "?"))

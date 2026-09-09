@@ -121,7 +121,7 @@
     letter-spacing: 0.08em; font-size: 18px; margin: 0 0 8px;
   }
   .spine-block p {
-    font-size: 14px; color: var(--paper-dim); max-width: 70ch; margin: 0 0 20px; line-height: 1.65;
+    font-size: 14px; color: var(--paper-dim); margin: 0 0 20px; line-height: 1.65;
   }
   #spine { width: 100%; height: auto; display: block; overflow: visible; }
   .legend {
@@ -133,9 +133,10 @@
   #tip {
     position: fixed; pointer-events: none; z-index: 60;
     background: #3D4F58; color: var(--paper); border: 1px solid var(--line-bright);
-    padding: 9px 12px; font-size: 12.5px; max-width: 290px; line-height: 1.45;
+    padding: 9px 12px; font-size: 12.5px; max-width: 340px; line-height: 1.45;
     opacity: 0; transition: opacity 120ms ease; border-radius: var(--radius);
   }
+  .chart-hover { cursor: help; }
 
   /* ---------- sections ---------- */
   .book-section { margin-bottom: 46px; }
@@ -153,8 +154,12 @@
   }
   .book-note { font-size: 13px; color: var(--paper-dim); }
   .sec-note {
-    font-size: 14px; color: var(--paper-dim); max-width: 74ch;
+    font-size: 14px; color: var(--paper-dim);
     margin: -8px 0 20px; line-height: 1.65;
+  }
+  .sec-summary {
+    font-size: 14px; color: var(--paper); line-height: 1.6;
+    margin: -12px 0 20px; padding-left: 12px; border-left: 2px solid var(--brass);
   }
 
   /* ---------- cards ---------- */
@@ -235,12 +240,13 @@
     font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.1em;
     text-transform: uppercase; color: var(--brass); margin: 0 0 6px;
   }
+  .exec-label.pitch-label { text-transform: none; font-size: 12px; letter-spacing: 0.04em; }
   .exec-pitch {
     font-family: var(--font-display); font-weight: 600; font-size: 19px; line-height: 1.5;
     margin: 0 0 18px; padding-bottom: 18px; border-bottom: 1px solid var(--line);
   }
   .exec-summary { display: flex; flex-direction: column; gap: 11px; }
-  .exec-summary p { font-size: 14px; line-height: 1.65; color: var(--paper-dim); margin: 0; max-width: 82ch; }
+  .exec-summary p { font-size: 14px; line-height: 1.65; color: var(--paper-dim); margin: 0; }
   .exec-summary .exec-label { margin-top: 4px; }
   .exec-asof {
     font-family: var(--font-mono); font-size: 10.5px; color: var(--paper-dim);
@@ -257,7 +263,7 @@
     margin: 26px 0 10px;
   }
   .brief h3:first-of-type { margin-top: 0; }
-  .brief p { font-size: 14.5px; line-height: 1.68; color: var(--paper-dim); margin: 0 0 13px; max-width: 76ch; }
+  .brief p { font-size: 14.5px; line-height: 1.68; color: var(--paper-dim); margin: 0 0 13px; }
   .brief p:last-child { margin-bottom: 0; }
   .brief-meta {
     font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.06em;
@@ -276,7 +282,6 @@
   }
   .map-chip:hover { border-color: var(--line-bright); color: var(--paper); }
   .map-chip.active { background: var(--brass); border-color: var(--brass); color: #2C3035; font-weight: 500; }
-  .map-chip.delisted-chip { border-style: dashed; }
   .map-wrap { background: var(--panel); border: 1px solid var(--line); padding: 20px 20px 16px; }
   .map-svg-box { width: 100%; max-width: 780px; margin: 0 auto; }
   .map-svg-box svg { width: 100%; height: auto; display: block; }
@@ -286,7 +291,7 @@
   .map-legend { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 14px; font-family: var(--font-mono); font-size: 11px; color: var(--paper-dim); }
   .map-scale { display: flex; align-items: center; gap: 3px; }
   .map-scale i { width: 15px; height: 11px; display: inline-block; border-radius: 1px; }
-  .map-caption { font-size: 13.5px; color: var(--paper-dim); line-height: 1.6; margin-top: 14px; max-width: 74ch; }
+  .map-caption { font-size: 13.5px; color: var(--paper-dim); line-height: 1.6; margin-top: 14px; }
   .map-caption b { color: var(--paper); font-weight: 600; }
 
   .state-detail { background: var(--panel); border: 1px solid var(--line); border-top: 2px solid var(--brass); padding: 18px 20px 15px; margin-top: 16px; }
@@ -296,7 +301,6 @@
   .state-detail-note { font-size: 13px; color: var(--paper-dim); margin: 4px 0 14px; }
   .sd-row { display: grid; grid-template-columns: 1.4fr 1fr 2fr auto; gap: 12px; align-items: center; padding: 9px 0; border-top: 1px solid var(--line); font-size: 13px; }
   .sd-row:first-of-type { border-top: none; }
-  .sd-row.sd-historical { opacity: 0.6; }
   .sd-name { font-weight: 600; }
   .sd-name .tk { font-weight: 400; color: var(--paper-dim); }
   .sd-seg { font-family: var(--font-mono); font-size: 11px; color: var(--paper-dim); }
@@ -311,7 +315,6 @@
   .stock-spark { width: 90px; height: 26px; display: block; }
   .stock-price { font-family: var(--font-mono); font-weight: 500; }
   .stock-ytd { font-family: var(--font-mono); font-size: 12.5px; }
-  .stock-final { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.04em; color: var(--paper-dim); text-transform: uppercase; }
 
   .resale-metric { margin-bottom: 26px; }
   .resale-metric:last-child { margin-bottom: 0; }
@@ -370,7 +373,20 @@
   .bm-zero { position: absolute; left: 50%; top: -3px; bottom: -3px; width: 1px; background: var(--line-bright); }
   .bm-val { font-family: var(--font-mono); font-size: 12px; width: 92px; flex: none; text-align: right; white-space: nowrap; }
   .bm-delta { font-family: var(--font-mono); font-size: 10px; margin-left: 5px; }
+  .bm-units { font-family: var(--font-mono); font-size: 10px; margin-left: 5px; color: var(--paper-dim); }
   .bm-note { font-family: var(--font-mono); font-size: 10.5px; color: var(--paper-dim); margin-top: 10px; padding-top: 9px; border-top: 1px solid var(--line); }
+
+  .cq-card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 15px 17px 13px; }
+  .cq-legend { display: flex; gap: 16px; font-family: var(--font-mono); font-size: 10.5px; color: var(--paper-dim); margin: 3px 0 14px; }
+  .cq-legend span { display: flex; align-items: center; gap: 5px; }
+  .cq-legend i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+  .cq-group { margin-bottom: 12px; }
+  .cq-name { font-size: 12.5px; font-weight: 600; margin-bottom: 4px; }
+  .cq-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 3px; }
+  .cq-bar-label { font-family: var(--font-mono); font-size: 9.5px; color: var(--paper-dim); width: 34px; flex: none; }
+  .cq-track { flex: 1; height: 13px; background: rgba(110,147,172,0.08); border-radius: 1px; }
+  .cq-fill { height: 100%; border-radius: 1px; }
+  .cq-bar-val { font-family: var(--font-mono); font-size: 11px; width: 78px; flex: none; text-align: right; }
 
   .tbl-scroll { overflow-x: auto; border: 1px solid var(--line); background: var(--panel); }
   table { border-collapse: collapse; width: 100%; font-size: 13px; min-width: 760px; }
@@ -416,21 +432,21 @@
     <div class="meta" id="meta">LOADING</div>
   </header>
 
+  <div id="notice"></div>
+
   <div class="exec-block" id="exec-block"></div>
 
   <p class="summary-line" id="summary">Reading data file&hellip;</p>
 
   <div class="rates" id="rates"></div>
 
-  <div id="notice"></div>
-
   <div class="spine-block">
     <h2>Lead-time spine</h2>
     <p>Every series on this sheet sits somewhere on a timeline. Permit backlog and builder land decisions see furthest ahead; delinquency and completions only confirm what already happened. Position on this axis is the reason to watch a series, not its headline number.</p>
     <svg id="spine" viewBox="0 0 1120 288" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Indicators plotted by forecasting lead time"></svg>
     <div class="legend">
-      <span><i class="dot" style="background:#D4A865"></i> Expanding</span>
-      <span><i class="dot" style="background:#5C707B"></i> Contracting</span>
+      <span><i class="dot" style="background:#63B08F"></i> Expanding</span>
+      <span><i class="dot" style="background:#CF6E76"></i> Contracting</span>
       <span><i class="dot" style="background:#E8E2D9"></i> Flat</span>
       <span>Hover for detail, click to jump</span>
     </div>
@@ -455,11 +471,14 @@
     <p class="sec-note">Rewritten whenever a builder files a new 10-Q. Lot counts, incentive load and regional commentary sit in MD&amp;A prose rather than tagged data, so this section is read out of the filings themselves rather than scraped.</p>
     <div id="brief"></div>
     <h3 style="margin-top:28px">Source filings</h3>
-    <p class="sec-note">Every tracked builder's most recent 10-Q or 10-K, straight from SEC EDGAR, sorted by whoever filed most recently. The two delisted builders keep their final filing on record. This list stands on its own even if the narrative brief above is behind on a filing.</p>
+    <p class="sec-note">Every tracked builder's most recent 10-Q or 10-K, straight from SEC EDGAR, sorted by whoever filed most recently. This list stands on its own even if the narrative brief above is behind on a filing.</p>
     <div id="source-filings"></div>
     <h3 style="margin-top:28px">Builder metrics, side by side</h3>
     <p class="sec-note">The same four figures across every builder with data, so a strong or weak quarter stands out against the peer group rather than in isolation. Bars compare this quarter to last where two quarters have been read; with only one quarter on file so far, this fills in as more filings are read.</p>
     <div class="bm-grid" id="bm-grid"></div>
+    <h3 style="margin-top:28px">Closings, this quarter vs a year ago</h3>
+    <p class="sec-note">The prior-year figure is computed from each builder's own disclosed year-over-year percentage, not a separate lookup, so it is exact rather than estimated. A genuine multi-quarter trend, and a read on whether a builder is pacing to beat or fall short of its full prior year, both need three or four consecutive quarters of the same fiscal year on file; with one quarter read so far, that view builds up as future filings are read.</p>
+    <div id="closings-body"></div>
   </section>
 
   <section class="book-section">
@@ -484,6 +503,7 @@
       <h2>Land and permit pipeline</h2>
     </div>
     <p class="sec-note">The layer closest to your own work. Authorized-but-not-started backlog is the sharpest series here: when builders hold paper and decline to break ground, starts fall about two quarters later.</p>
+    <p class="sec-summary" id="sum-structural"></p>
     <div class="parcel-grid" id="g-structural"></div>
   </section>
 
@@ -493,6 +513,7 @@
       <h2>Demand and credit</h2>
     </div>
     <p class="sec-note">Watch the gap between the 30-year mortgage rate and the 10-year Treasury separately from the rate itself. That spread has run historically wide since 2022, and compression alone would improve affordability with no Fed move at all.</p>
+    <p class="sec-summary" id="sum-demand"></p>
     <div class="parcel-grid" id="g-demand"></div>
   </section>
 
@@ -503,6 +524,7 @@
       <span class="book-note">the rate complex and credit spreads</span>
     </div>
     <p class="sec-note">USD LIBOR stopped publishing in June 2023, so it is deliberately absent. SOFR replaced it, and the 30-day and 90-day averages here are the free public stand-ins for 1-month and 3-month Term SOFR, which CME licenses and FRED cannot carry. Prime is what smaller land and construction facilities actually price off. The 2s10s curve carries the longest lead of anything on this sheet.</p>
+    <p class="sec-summary" id="sum-capital"></p>
     <div class="parcel-grid" id="g-capital"></div>
   </section>
 
@@ -512,6 +534,7 @@
       <h2>Activity now</h2>
     </div>
     <p class="sec-note">These confirm rather than predict. Their value is calibration: if the leading layer turned three months ago and this layer has not followed, either the signal was noise or the lag is running long.</p>
+    <p class="sec-summary" id="sum-coincident"></p>
     <div class="parcel-grid" id="g-coincident"></div>
   </section>
 
@@ -521,6 +544,7 @@
       <h2>Cost and labor</h2>
     </div>
     <p class="sec-note">Materials cost reaches pro formas before it reaches completed cost. Construction job openings are the better labor read than headline employment, because hiring intent turns before payrolls do.</p>
+    <p class="sec-summary" id="sum-cost"></p>
     <div class="parcel-grid" id="g-cost"></div>
   </section>
 
@@ -530,6 +554,7 @@
       <h2>Distress</h2>
     </div>
     <p class="sec-note">Lagging by construction, but useful for confirming that a turn was real rather than a two-month wobble.</p>
+    <p class="sec-summary" id="sum-distress"></p>
     <div class="parcel-grid" id="g-distress"></div>
   </section>
 
@@ -540,6 +565,7 @@
       <span class="book-note">LA and Ventura context</span>
     </div>
     <p class="sec-note">State-level series that move entitlement throughput before they move price, and that most people watching national housing data never look at.</p>
+    <p class="sec-summary" id="sum-ca"></p>
     <div class="parcel-grid" id="g-ca"></div>
   </section>
 
@@ -572,7 +598,7 @@
       <h2>Share price</h2>
       <span class="book-note">unofficial source, not guaranteed</span>
     </div>
-    <p class="sec-note">Pulled from an unofficial Yahoo Finance endpoint, since neither FRED nor SEC EDGAR carry equity prices. This is the least stable source on the board and can fail or lag without notice; a gap here shows up as a missing row, not a wrong number. Year-to-date is measured from each stock's first close of the current calendar year. The two delisted builders show their final trading price rather than a live quote, since neither trades anymore.</p>
+    <p class="sec-note">Pulled from an unofficial Yahoo Finance endpoint, since neither FRED nor SEC EDGAR carry equity prices. This is the least stable source on the board and can fail or lag without notice; a gap here shows up as a missing row, not a wrong number. Year-to-date is measured from each stock's first close of the current calendar year.</p>
     <div class="tbl-scroll"><table><thead><tr>
       <th>Builder</th><th>Price</th><th>YTD</th><th>Trend</th><th>As of</th>
     </tr></thead><tbody id="stockBody"></tbody></table></div>
@@ -625,6 +651,7 @@ const UNIT_DISPLAY = {
   '$':          {prefix: '$'},
   '$ SAAR':     {prefix: '$'},
   'index':      {suffix: ''},
+  'days':       {suffix: ' days'},
 };
 function unitOf(units){ return UNIT_DISPLAY[units] || {}; }
 function deltaUnitOf(units){
@@ -635,6 +662,25 @@ function fmtDelta(v, units){
   if(v == null) return '';
   const u = deltaUnitOf(units);
   return (u.prefix || '') + fmt(v) + (u.suffix || '');
+}
+// Computed per builder from their actual trend, not a fixed sentence, since
+// a generic line here would be asserting things (like community count
+// holding flat) that this board never actually tracks. A rising figure is
+// genuinely ambiguous without deliveries and cancellations alongside it, so
+// this says that plainly rather than picking one story; falling inventory
+// is the more legible case and gets a more direct read.
+function inventoryRead(ticker, t){
+  if(t.pct == null){
+    return 'Real estate carried on the balance sheet, at cost. Not enough quarters on file yet to read a trend.';
+  }
+  if(t.pct >= 0){
+    return 'Real estate carried on the balance sheet, up ' + t.pct.toFixed(1) + '% from a year ago. '
+      + 'That alone does not say whether ' + esc(ticker) + ' is opening more communities or selling homes '
+      + 'more slowly than it is building them; the deliveries and cancellation figures elsewhere on this '
+      + 'board are what actually separate the two.';
+  }
+  return 'Real estate carried on the balance sheet, down ' + Math.abs(t.pct).toFixed(1) + '% from a year ago, '
+    + 'consistent with converting existing inventory into closings faster than replacing it.';
 }
 function fmtU(v, units){
   if(v == null) return '\u2014';
@@ -703,7 +749,7 @@ function chart(obs, tone, ref, units, w, h){
   const X = i => (i/(pts.length-1))*PW;
   const Y = v => h - pad - ((v - mn)/sp)*(h - pad*2);
   const line = pts.map((p,i) => (i?'L':'M') + X(i).toFixed(1) + ' ' + Y(p.v).toFixed(1)).join(' ');
-  const col = tone === 'up' ? '#D4A865' : tone === 'down' ? '#5C707B' : '#E8E2D9';
+  const col = tone === 'up' ? '#63B08F' : tone === 'down' ? '#CF6E76' : '#E8E2D9';
   const uid = 'g' + Math.random().toString(36).slice(2,8);
   const yR = Y(refV), yT = Y(mx), yB = Y(mn);
   const T = (x,y,t,c,anch) => '<text x="'+x+'" y="'+y+'" fill="'+c+'" font-size="9" '
@@ -791,6 +837,12 @@ function reading(s){
   return '<div class="reading">' + esc(out) + '</div>';
 }
 
+function chartTooltipHtml(s){
+  let html = '<strong>' + esc(s.name) + '</strong><br>' + esc(s.read);
+  if(s.example) html += '<br><br>' + esc(s.example);
+  return html;
+}
+
 function card(id, s){
   const t = trend(s.obs), tone = health(s);
   const lead = s.lead > 0 ? 'leads ~'+s.lead+'mo' : s.lead < 0 ? 'lags ~'+Math.abs(s.lead)+'mo' : 'coincident';
@@ -802,7 +854,9 @@ function card(id, s){
     + '<div class="card-top"><div><div class="card-name">'+esc(s.name)+'</div>'
     + '<div class="card-src">'+esc(s.release_name || 'FRED')+' &middot; '+lead+'</div></div>'
     + '<div class="card-val"><div class="v">'+fmtU(t.last, s.units)+'</div>'+chg+'</div></div>'
+    + '<div class="chart-hover" data-tip="'+esc(chartTooltipHtml(s))+'">'
     + chart(s.obs, tone, s.ref, s.units, 300, 78)
+    + '</div>'
     + scaleNote(s.obs, s.ref, s.units)
     + reading(s)
     + '<div class="card-read">'+esc(s.read)+'</div>'
@@ -835,7 +889,7 @@ function spine(){
     const y = T + (n % rows)*rh + rh/2;
     const x = bx + Math.floor(n / rows) * 14;  // fan right once a column fills
     const st = health(sr);
-    const col = st === 'up' ? '#D4A865' : st === 'down' ? '#5C707B' : '#E8E2D9';
+    const col = st === 'up' ? '#63B08F' : st === 'down' ? '#CF6E76' : '#E8E2D9';
     const has = sr.obs.length > 0;
     s += '<g class="mk" style="cursor:pointer" data-id="'+id+'" data-name="'+esc(sr.name)+'" data-read="'+esc(sr.read)+'">'
       +  '<line x1="'+x+'" y1="'+y+'" x2="'+x+'" y2="'+(H-B)+'" stroke="#3D4F58"/>'
@@ -852,7 +906,7 @@ function spine(){
       tip.style.opacity = '1';
     });
     g.addEventListener('mousemove', e => {
-      tip.style.left = Math.min(e.clientX + 14, innerWidth - 305) + 'px';
+      tip.style.left = Math.min(e.clientX + 14, innerWidth - 355) + 'px';
       tip.style.top  = (e.clientY + 16) + 'px';
     });
     g.addEventListener('mouseleave', () => { tip.style.opacity = '0'; });
@@ -880,7 +934,8 @@ function bmMetric(history, names, key, opts){
     const cur = h[h.length - 1];
     const prior = h.length > 1 ? h[h.length - 2] : null;
     return {ticker: tk, name: (names[tk] || tk), value: cur[key],
-            prior: prior ? prior[key] : null, quarters: h.length};
+            prior: prior ? prior[key] : null, quarters: h.length,
+            units: opts.unitsKey ? cur[opts.unitsKey] : null};
   }).filter(Boolean);
 
   if(!rows.length){
@@ -900,6 +955,16 @@ function bmMetric(history, names, key, opts){
     const col = Math.abs(d) < 0.05 ? 'var(--paper-dim)' : (d >= 0 ? 'var(--up)' : 'var(--down)');
     return '<span class="bm-delta" style="color:' + col + '">' + (d >= 0 ? '+' : '') + d.toFixed(1) + opts.unit + ' vs prior</span>';
   };
+  // When a companion raw-units field is available (deliveries, orders), show
+  // the actual count alongside the percentage rather than the percentage
+  // alone, plus the prior-year count implied by that same percentage - a
+  // computed figure, not fresh research, but a real one rather than none.
+  const unitsHtml = r => {
+    if(r.units == null) return '';
+    const priorUnits = r.value !== -100 ? r.units / (1 + r.value / 100) : null;
+    return '<span class="bm-units">' + Math.round(r.units).toLocaleString() + ' units'
+      + (priorUnits != null ? ' (\u2248' + Math.round(priorUnits).toLocaleString() + ' a year ago)' : '') + '</span>';
+  };
   const valText = r => (opts.signed && r.value >= 0 ? '+' : '') + r.value.toFixed(opts.decimals) + opts.unit;
 
   const bars = rows.map(r => {
@@ -917,7 +982,7 @@ function bmMetric(history, names, key, opts){
     }
     return '<div class="bm-row"><span class="bm-tk">' + esc(r.ticker) + '</span>'
       + '<div class="bm-track">' + fill + '</div>'
-      + '<span class="bm-val">' + valText(r) + deltaHtml(r) + '</span></div>';
+      + '<span class="bm-val">' + valText(r) + deltaHtml(r) + unitsHtml(r) + '</span></div>';
   }).join('');
 
   const anySecond = rows.some(r => r.quarters > 1);
@@ -941,9 +1006,64 @@ function renderBuilderMetrics(){
   host.innerHTML =
       bmMetric(H, names, 'margin_pct',        {label:'Gross margin', sub:'homebuilding gross margin, higher is stronger', unit:'%', decimals:1, mode:'bar', colorMode:'median-high', signed:false})
     + bmMetric(H, names, 'cancel_rate_pct',    {label:'Cancellation rate', sub:'lower reads as healthier demand', unit:'%', decimals:1, mode:'bar', colorMode:'median-low', signed:false})
-    + bmMetric(H, names, 'orders_yoy_pct',     {label:'Net orders, YoY', sub:'year over year change', unit:'%', decimals:1, mode:'diverge', signed:true})
-    + bmMetric(H, names, 'deliveries_yoy_pct', {label:'Deliveries, YoY', sub:'year over year change', unit:'%', decimals:1, mode:'diverge', signed:true});
+    + bmMetric(H, names, 'orders_yoy_pct',     {label:'Net orders, YoY', sub:'year over year change', unit:'%', decimals:1, mode:'diverge', signed:true, unitsKey:'orders_units'})
+    + bmMetric(H, names, 'deliveries_yoy_pct', {label:'Deliveries, YoY', sub:'year over year change', unit:'%', decimals:1, mode:'diverge', signed:true, unitsKey:'deliveries_units'});
 }
+
+// Closings (deliveries) this quarter vs the same quarter a year ago, per
+// builder. The prior-year bar is computed from that builder's own disclosed
+// YoY percentage rather than a second lookup - exact, not estimated - but a
+// genuine multi-quarter trend and a full-year pace read both need three or
+// four consecutive quarters of the same fiscal year, which this board does
+// not have yet with one quarter read per builder.
+function renderClosingsComparison(){
+  const host = document.getElementById('closings-body');
+  const b = D.brief;
+  const H = (b && b.metric_history) || {};
+  const names = ticker_name_map(b && b.metrics);
+
+  const rows = Object.keys(H).map(tk => {
+    const h = (H[tk] || []).filter(x => x.deliveries_units != null && x.deliveries_yoy_pct != null);
+    if(!h.length) return null;
+    const cur = h[h.length - 1];
+    const current = cur.deliveries_units;
+    const pct = cur.deliveries_yoy_pct;
+    if(pct === -100) return null;  // no meaningful prior-year base to divide by
+    const priorYear = current / (1 + pct / 100);
+    return {ticker: tk, name: names[tk] || tk, quarter: cur.quarter, current, priorYear};
+  }).filter(Boolean);
+
+  if(!rows.length){
+    host.innerHTML = '<div class="cq-card"><span class="sd-none">No deliveries data on file yet.</span></div>';
+    return;
+  }
+
+  rows.sort((a, b) => b.current - a.current);
+  const maxVal = Math.max(...rows.map(r => Math.max(r.current, r.priorYear)), 1);
+
+  const bar = (label, val, color) => {
+    const w = Math.max(3, (val / maxVal) * 100);
+    return '<div class="cq-bar-row"><span class="cq-bar-label">' + label + '</span>'
+      + '<div class="cq-track"><div class="cq-fill" style="width:' + w.toFixed(1) + '%;background:' + color + '"></div></div>'
+      + '<span class="cq-bar-val">' + Math.round(val).toLocaleString() + '</span></div>';
+  };
+
+  const groups = rows.map(r => {
+    const growing = r.current >= r.priorYear;
+    return '<div class="cq-group"><div class="cq-name">' + esc(r.name) + ' <span class="tk">' + esc(r.ticker)
+      + '</span> <span style="color:var(--paper-dim);font-weight:400">(' + esc(fmtQ(r.quarter)) + ')</span></div>'
+      + bar('Now', r.current, growing ? 'var(--up)' : 'var(--down)')
+      + bar('Yr ago', r.priorYear, 'var(--flat)')
+      + '</div>';
+  }).join('');
+
+  host.innerHTML = '<div class="cq-card">'
+    + '<div class="cq-legend"><span><i style="background:var(--up)"></i>Growing YoY</span>'
+    + '<span><i style="background:var(--down)"></i>Declining YoY</span>'
+    + '<span><i style="background:var(--flat)"></i>A year ago (computed)</span></div>'
+    + groups + '</div>';
+}
+
 
 
 // Path data for all 50 states + DC, adapted from the @svg-maps/usa package
@@ -959,7 +1079,7 @@ const MAP_VIEWBOX = "192 9 1028 746";
 // static reference data, not pulled by the collector, since it changes only
 // when a company restructures its segments, which is rare. Re-verify against
 // the filing if a builder's coloring here ever looks wrong.
-const REGIONS = {DHI:{name:"D.R. Horton",delisted:false,segments:{"Northwest":["CO","OR","UT","WA"],"Southwest":["AZ","CA","HI","NV","NM"],"South Central":["AR","OK","TX"],"Southeast":["AL","FL","LA","MS"],"East":["GA","NC","SC","TN"],"North":["DE","IL","IN","IA","KS","KY","MD","MN","MO","NE","NJ","OH","PA","VA","WV","WI"]}},LEN:{name:"Lennar",delisted:false,segments:{"East":["FL","NJ","PA"],"Central":["AL","GA","IL","IN","MD","MN","NC","SC","TN","VA"],"South Central":["AR","KS","MO","OK","TX"],"West":["AZ","CA","CO","ID","NV","OR","UT","WA"]}},PHM:{name:"PulteGroup",delisted:false,segments:{"Northeast":["MD","MA","NJ","PA","RI","VA"],"Southeast":["GA","NC","SC","TN"],"Florida":["FL"],"Midwest":["IL","IN","KY","MI","MN","OH"],"Texas":["TX"],"West":["AZ","CA","CO","NV","NM","OR","UT","WA"]}},KBH:{name:"KB Home",delisted:false,segments:{"West Coast":["CA","ID","WA"],"Southwest":["AZ","NV"],"Central":["CO","TX"],"Southeast":["FL","NC"]}},TOL:{name:"Toll Brothers",delisted:false,segments:{"North":["CT","DE","MA","MI","NJ","NY","PA"],"Mid-Atlantic":["GA","MD","NC","TN","VA"],"South":["FL","SC","TX"],"Mountain":["AZ","CO","ID","NV","UT"],"Pacific":["CA","OR","WA"]}},NVR:{name:"NVR",delisted:false,segments:{"Mid Atlantic":["MD","VA","WV","DE","DC"],"North East":["NJ","PA"],"Mid East":["NY","OH","PA","IN","IL"],"South East":["NC","SC","FL","TN"]}},MTH:{name:"Meritage Homes",delisted:false,segments:{"West":["AZ","CA","CO","UT"],"Central":["TX","TN"],"East":["AL","FL","GA","MS","NC","SC"]}},CCS:{name:"Century Communities",delisted:false,segments:{"West":["CA","WA"],"Mountain":["AZ","CO","NV","UT"],"Texas":["TX"],"Southeast":["FL","GA","NC","SC","TN"],"Century Complete":["AL","IN","KY","MI"]}},LGIH:{name:"LGI Homes",delisted:false,segments:{"Central":["TX","OK","MN"],"Southeast":["GA","AL","TN","NC","SC","WV","MD","PA","VA"],"Northwest":["CO","WA","OR"],"West":["AZ","NM","NV","CA","UT"],"Florida":["FL"]}},MHO:{name:"M/I Homes",delisted:false,segments:{"Northern":["OH","IN","IL","MN","MI"],"Southern":["FL","TX","NC","TN"]}},TPH:{name:"Tri Pointe Homes",delisted:true,segments:{"West":["AZ","CA","NV","WA"],"Central":["CO","TX","UT"],"East":["DC","FL","MD","NC","SC","VA"]}},TMHC:{name:"Taylor Morrison",delisted:true,segments:{"East":["FL","GA","NC","SC"],"Central":["TX","CO","IN"],"West":["AZ","CA","NV","OR","WA"]}},};
+const REGIONS = {DHI:{name:"D.R. Horton",segments:{"Northwest":["CO","OR","UT","WA"],"Southwest":["AZ","CA","HI","NV","NM"],"South Central":["AR","OK","TX"],"Southeast":["AL","FL","LA","MS"],"East":["GA","NC","SC","TN"],"North":["DE","IL","IN","IA","KS","KY","MD","MN","MO","NE","NJ","OH","PA","VA","WV","WI"]}},LEN:{name:"Lennar",segments:{"East":["FL","NJ","PA"],"Central":["AL","GA","IL","IN","MD","MN","NC","SC","TN","VA"],"South Central":["AR","KS","MO","OK","TX"],"West":["AZ","CA","CO","ID","NV","OR","UT","WA"]}},PHM:{name:"PulteGroup",segments:{"Northeast":["MD","MA","NJ","PA","RI","VA"],"Southeast":["GA","NC","SC","TN"],"Florida":["FL"],"Midwest":["IL","IN","KY","MI","MN","OH"],"Texas":["TX"],"West":["AZ","CA","CO","NV","NM","OR","UT","WA"]}},KBH:{name:"KB Home",segments:{"West Coast":["CA","ID","WA"],"Southwest":["AZ","NV"],"Central":["CO","TX"],"Southeast":["FL","NC"]}},TOL:{name:"Toll Brothers",segments:{"North":["CT","DE","MA","MI","NJ","NY","PA"],"Mid-Atlantic":["GA","MD","NC","TN","VA"],"South":["FL","SC","TX"],"Mountain":["AZ","CO","ID","NV","UT"],"Pacific":["CA","OR","WA"]}},NVR:{name:"NVR",segments:{"Mid Atlantic":["MD","VA","WV","DE","DC"],"North East":["NJ","PA"],"Mid East":["NY","OH","PA","IN","IL"],"South East":["NC","SC","FL","TN"]}},MTH:{name:"Meritage Homes",segments:{"West":["AZ","CA","CO","UT"],"Central":["TX","TN"],"East":["AL","FL","GA","MS","NC","SC"]}},CCS:{name:"Century Communities",segments:{"West":["CA","WA"],"Mountain":["AZ","CO","NV","UT"],"Texas":["TX"],"Southeast":["FL","GA","NC","SC","TN"],"Century Complete":["AL","IN","KY","MI"]}},LGIH:{name:"LGI Homes",segments:{"Central":["TX","OK","MN"],"Southeast":["GA","AL","TN","NC","SC","WV","MD","PA","VA"],"Northwest":["CO","WA","OR"],"West":["AZ","NM","NV","CA","UT"],"Florida":["FL"]}},MHO:{name:"M/I Homes",segments:{"Northern":["OH","IN","IL","MN","MI"],"Southern":["FL","TX","NC","TN"]}},};
 
 let mapMode = 'ALL';
 let selectedState = 'CA';
@@ -975,7 +1095,6 @@ function segmentsAt(tk, code){
 function activeCoverage(){
   const count = {}, who = {};
   Object.keys(REGIONS).forEach(tk => {
-    if(REGIONS[tk].delisted) return;
     statesForBuilder(tk).forEach(code => {
       count[code] = (count[code] || 0) + 1;
       (who[code] = who[code] || []).push(tk);
@@ -985,14 +1104,9 @@ function activeCoverage(){
 }
 
 function renderMapChips(){
-  const active = Object.keys(REGIONS).filter(tk => !REGIONS[tk].delisted);
-  const delisted = Object.keys(REGIONS).filter(tk => REGIONS[tk].delisted);
   let html = '<span class="map-chip' + (mapMode==='ALL'?' active':'') + '" data-tk="ALL">All builders</span>';
-  active.forEach(tk => {
+  Object.keys(REGIONS).forEach(tk => {
     html += '<span class="map-chip' + (mapMode===tk?' active':'') + '" data-tk="' + tk + '">' + tk + '</span>';
-  });
-  delisted.forEach(tk => {
-    html += '<span class="map-chip delisted-chip' + (mapMode===tk?' active':'') + '" data-tk="' + tk + '">' + tk + ' &middot; delisted</span>';
   });
   document.getElementById('map-chips').innerHTML = html;
   document.querySelectorAll('.map-chip').forEach(el => {
@@ -1071,11 +1185,10 @@ function renderMapLegend(){
       return '<i style="background:rgb(' + rgb.join(',') + ')"></i>';
     }).join('');
     host.innerHTML = '<span>Fewer builders</span><span class="map-scale">' + swatches + '</span><span>More builders</span>'
-      + '<span style="margin-left:10px">10 active builders tracked</span>';
+      + '<span style="margin-left:10px">10 builders tracked</span>';
   } else {
     const info = REGIONS[mapMode];
-    host.innerHTML = '<span class="map-scale"><i style="background:#D4A865"></i></span><span>' + esc(info.name) + '\u2019s reported markets</span>'
-      + (info.delisted ? '<span style="margin-left:10px">' + esc(info.note || 'Last disclosed structure before delisting') + '</span>' : '');
+    host.innerHTML = '<span class="map-scale"><i style="background:#D4A865"></i></span><span>' + esc(info.name) + '\u2019s reported markets</span>';
   }
 }
 
@@ -1119,12 +1232,11 @@ function renderSourceFilings(){
   host.innerHTML = '<div class="filing-list">' + rows.map(b => {
     const meta = [b.form, b.period, b.filed ? 'filed ' + fmtFilingDate(b.filed) : null]
       .filter(Boolean).join(' \u00b7 ');
-    const tag = b.delisted ? ' <span class="tk">\u00b7 final filing, now private</span>' : '';
     const link = b.url
       ? '<a class="filing-link" href="' + esc(b.url) + '" target="_blank" rel="noopener">Read filing</a>'
       : '<span class="filing-link disabled">No link on file</span>';
     return '<div class="filing-row"><div class="filing-name">' + esc(b.name || b.ticker)
-      + ' <span class="tk">' + esc(b.ticker) + '</span>' + tag + '</div>'
+      + ' <span class="tk">' + esc(b.ticker) + '</span></div>'
       + '<div class="filing-meta">' + esc(meta || '\u2014') + '</div>' + link + '</div>';
   }).join('') + '</div>';
 }
@@ -1152,12 +1264,7 @@ function renderStateDetail(){
   (D.builders || []).forEach(b => { builderByTk[b.ticker] = b; });
   const history = (D.brief && D.brief.metric_history) || {};
 
-  const active = [], historical = [];
-  Object.keys(REGIONS).forEach(tk => {
-    const info = REGIONS[tk];
-    if(!statesForBuilder(tk).has(code)) return;
-    (info.delisted ? historical : active).push(tk);
-  });
+  const present = Object.keys(REGIONS).filter(tk => statesForBuilder(tk).has(code));
 
   const statRow = tk => {
     const h = history[tk];
@@ -1172,24 +1279,21 @@ function renderStateDetail(){
       + '<span style="color:var(--paper-dim)">(' + esc(fmtQ(last.quarter)) + ')</span></div>';
   };
 
-  const row = (tk, isHist) => {
+  const row = tk => {
     const info = REGIONS[tk], b = builderByTk[tk];
     const link = (b && b.url) ? '<a class="sd-link" href="' + esc(b.url) + '" target="_blank" rel="noopener">Filing</a>' : '';
-    return '<div class="sd-row' + (isHist ? ' sd-historical' : '') + '">'
-      + '<div class="sd-name">' + esc(info.name) + ' <span class="tk">' + esc(tk) + '</span>'
-      + (isHist ? '<div class="sd-seg">' + esc(info.note || 'Delisted \u2014 historical footprint') + '</div>' : '') + '</div>'
+    return '<div class="sd-row">'
+      + '<div class="sd-name">' + esc(info.name) + ' <span class="tk">' + esc(tk) + '</span></div>'
       + '<div class="sd-seg">' + esc(segmentsAt(tk, code).join(', ')) + '</div>'
-      + (isHist ? '<span class="sd-none">No longer files with the SEC</span>' : statRow(tk))
+      + statRow(tk)
       + '<div>' + link + '</div></div>';
   };
 
-  const count = active.length;
   host.innerHTML = '<div class="state-detail">'
     + '<div class="state-detail-head"><h4>' + esc(st.n) + '</h4>'
-    + '<span class="state-detail-count">' + count + ' of 10 active builders' + (historical.length ? ', ' + historical.length + ' historical' : '') + '</span></div>'
+    + '<span class="state-detail-count">' + present.length + ' of 10 builders</span></div>'
     + '<p class="state-detail-note">Numbers are each builder\u2019s latest company-wide quarter, not broken out by state or segment. Filings don\u2019t disclose it at that level, so this is the finest grain honestly available.</p>'
-    + (active.length ? active.map(tk => row(tk, false)).join('') : '<div class="sd-row"><span class="sd-none">None of the 10 tracked active builders report a presence here.</span></div>')
-    + (historical.length ? historical.map(tk => row(tk, true)).join('') : '')
+    + (present.length ? present.map(row).join('') : '<div class="sd-row"><span class="sd-none">None of the 10 tracked builders report a presence here.</span></div>')
     + '</div>';
 }
 
@@ -1198,7 +1302,7 @@ function stockSpark(series, tone){
   if(!series || series.length < 2) return '<span class="sd-none">\u2014</span>';
   const vals = series.map(p => p.v);
   const mn = Math.min(...vals), mx = Math.max(...vals), sp = (mx - mn) || 1;
-  const col = tone === 'up' ? '#D4A865' : tone === 'down' ? '#5C707B' : '#E8E2D9';
+  const col = tone === 'up' ? '#63B08F' : tone === 'down' ? '#CF6E76' : '#E8E2D9';
   const d = vals.map((v,i) => (i?'L':'M') + ((i/(vals.length-1))*88).toFixed(1)
             + ' ' + (24 - ((v-mn)/sp)*22).toFixed(1)).join(' ');
   return '<svg class="stock-spark" viewBox="0 0 90 26" preserveAspectRatio="none" aria-hidden="true">'
@@ -1218,8 +1322,7 @@ function renderStocks(){
     const tone = r.ytd_pct == null ? 'flat' : (r.ytd_pct >= 0 ? 'up' : 'down');
     const name = (REGIONS[r.ticker] && REGIONS[r.ticker].name) || names[r.ticker] || r.ticker;
     const ytd = r.ytd_pct == null ? '\u2014' : (r.ytd_pct >= 0 ? '+' : '') + r.ytd_pct.toFixed(1) + '%';
-    return '<tr><td>' + esc(name) + ' <span class="tk">' + esc(r.ticker) + '</span>'
-      + (r.delisted ? '<div class="stock-final">final price, delisted</div>' : '') + '</td>'
+    return '<tr><td>' + esc(name) + ' <span class="tk">' + esc(r.ticker) + '</span></td>'
       + '<td class="num stock-price">$' + r.price.toFixed(2) + '</td>'
       + '<td class="num stock-ytd ' + tone + '">' + ytd + '</td>'
       + '<td class="num">' + stockSpark(r.series, tone) + '</td>'
@@ -1255,14 +1358,24 @@ function renderResale(){
   const order = ['national','ca','ventura'];
   const present = order.filter(k => byKey[k]);
 
-  const priceRow = present.filter(k => (byKey[k].median_price||[]).length)
-    .map(k => resaleCard(byKey[k], byKey[k].median_price, '$', 'up')).join('');
-  const soldRow = present.filter(k => (byKey[k].homes_sold||[]).length)
-    .map(k => resaleCard(byKey[k], byKey[k].homes_sold, 'units', 'up')).join('');
+  // Redfin's monthly market tracker: every figure below is one calendar
+  // month's activity for that geography, not a year-to-date or annual sum.
+  // Stated explicitly here since "homes sold" reads as ambiguous otherwise.
+  const metrics = [
+    {field: 'median_price',  label: 'Median sale price, monthly',   units: '$',    good: 'up'},
+    {field: 'homes_sold',    label: 'Homes sold, monthly',          units: 'units', good: 'up'},
+    {field: 'dom',           label: 'Median days on market',        units: 'days', good: 'down'},
+    {field: 'sale_to_list',  label: 'Sale price vs. list price',    units: '%',    good: 'up'},
+  ];
 
-  host.innerHTML =
-      (priceRow ? '<div class="resale-metric"><div class="resale-metric-label">Median sale price</div><div class="resale-row">' + priceRow + '</div></div>' : '')
-    + (soldRow ? '<div class="resale-metric"><div class="resale-metric-label">Homes sold</div><div class="resale-row">' + soldRow + '</div></div>' : '')
+  const rows = metrics.map(m => {
+    const cards = present.filter(k => (byKey[k][m.field]||[]).length)
+      .map(k => resaleCard(byKey[k], byKey[k][m.field], m.units, m.good)).join('');
+    return cards ? '<div class="resale-metric"><div class="resale-metric-label">' + esc(m.label)
+      + '</div><div class="resale-row">' + cards + '</div></div>' : '';
+  }).join('');
+
+  host.innerHTML = rows
     + '<div class="map-caption" style="margin-top:2px">Source: ' + esc(r.source || 'Redfin Data Center') + (r.as_of ? ', as of ' + esc(r.as_of) : '') + '.</div>';
 }
 
@@ -1280,6 +1393,85 @@ function bucketHealth(bucket){
     if(h === 'up') up++; else if(h === 'down') down++; else flat++;
   });
   return {up, down, flat, total: ids.length};
+}
+
+// A live-computed paragraph for one bucket of series, built the same way as
+// the global executive summary: read from whatever D currently holds, never
+// a fixed sentence, so it never goes stale the way a hand-written section
+// blurb would. Takes a bucket name (matching fetch.py's own bucket field)
+// rather than an explicit ID list, so it can never drift out of sync with
+// which series actually belong to that section.
+function sectionExecSummary(bucket){
+  const ids = Object.keys(D.series || {}).filter(id => D.series[id].bucket === bucket);
+  if(!ids.length) return null;
+
+  const items = ids.map(id => {
+    const s = D.series[id];
+    const t = trend(s.obs);
+    return {name: s.name, tone: health(s), t, units: s.units};
+  }).filter(i => i.t.last != null);
+  if(!items.length) return null;
+
+  const up = items.filter(i => i.tone === 'up').length;
+  const down = items.filter(i => i.tone === 'down').length;
+  const flat = items.length - up - down;
+
+  let lead;
+  if(down === 0 && flat === 0) lead = 'Every series here is currently expansionary.';
+  else if(up === 0 && flat === 0) lead = 'Every series here is currently contractionary.';
+  else {
+    lead = up + ' of ' + items.length + ' series here ' + (items.length === 1 ? 'is' : 'are')
+      + ' trending expansionary, ' + down + ' contractionary'
+      + (flat ? ', ' + flat + ' little changed' : '') + '.';
+  }
+
+  const withChange = items.filter(i => (i.t.usePct && i.t.pct != null) || (!i.t.usePct && i.t.abs != null));
+  withChange.sort((a, b) => {
+    const av = a.t.usePct ? Math.abs(a.t.pct) : Math.abs(a.t.abs);
+    const bv = b.t.usePct ? Math.abs(b.t.pct) : Math.abs(b.t.abs);
+    return bv - av;
+  });
+  const standout = withChange[0];
+  if(standout){
+    const chg = standout.t.usePct
+      ? (standout.t.pct >= 0 ? '+' : '') + standout.t.pct.toFixed(1) + '%'
+      : (standout.t.abs >= 0 ? '+' : '') + fmtDelta(standout.t.abs, standout.units);
+    lead += ' ' + standout.name + ' has moved the most over the past year, ' + chg + '.';
+  }
+  return lead;
+}
+
+function renderSectionSummaries(){
+  ['structural','demand','capital','coincident','cost','distress','ca'].forEach(bucket => {
+    const host = document.getElementById('sum-' + bucket);
+    if(!host) return;
+    const summary = sectionExecSummary(bucket);
+    host.textContent = summary || '';
+    host.style.display = summary ? '' : 'none';
+  });
+}
+
+// Attaches the actual hover behavior to every chart wrapped by card() with a
+// data-tip attribute. Runs once after all sections have rendered, since the
+// wrapper divs only exist in the DOM at that point, reusing the same #tip
+// element the spine chart and map already use.
+function wireChartTooltips(){
+  const tip = document.getElementById('tip') || (() => {
+    const t = document.createElement('div'); t.id = 'tip'; document.body.appendChild(t); return t;
+  })();
+  document.querySelectorAll('.chart-hover[data-tip]').forEach(el => {
+    if(el.dataset.wired) return;  // avoid double-binding on re-render
+    el.dataset.wired = '1';
+    el.addEventListener('mouseenter', () => {
+      tip.innerHTML = el.dataset.tip;
+      tip.style.opacity = '1';
+    });
+    el.addEventListener('mousemove', e => {
+      tip.style.left = Math.min(e.clientX + 14, innerWidth - 355) + 'px';
+      tip.style.top  = (e.clientY + 16) + 'px';
+    });
+    el.addEventListener('mouseleave', () => { tip.style.opacity = '0'; });
+  });
 }
 
 function lowerFirst(s){
@@ -1425,7 +1617,7 @@ function renderExecBlock(){
   const g = D.generated ? new Date(D.generated) : null;
 
   host.innerHTML =
-      '<div class="exec-label">Elevator pitch</div>'
+      '<div class="exec-label pitch-label">Elevator pitch</div>'
     + '<p class="exec-pitch">' + esc(pitch) + '</p>'
     + '<div class="exec-label">Executive summary</div>'
     + '<div class="exec-summary">' + paras.map(p => '<p>' + esc(p) + '</p>').join('') + '</div>'
@@ -1501,7 +1693,7 @@ function render(){
     let spark = '';
     if(vals.length > 1){
       const mn = Math.min(...vals), mx = Math.max(...vals), sp = (mx - mn) || 1;
-      const col = tone === 'up' ? '#D4A865' : tone === 'down' ? '#5C707B' : '#E8E2D9';
+      const col = tone === 'up' ? '#63B08F' : tone === 'down' ? '#CF6E76' : '#E8E2D9';
       const d = pts.map((p,i) => (i?'L':'M') + ((i/(pts.length-1))*100).toFixed(1)
                 + ' ' + (20 - ((p.v - mn)/sp)*18).toFixed(1)).join(' ');
       spark = '<svg class="rate-spark" viewBox="0 0 100 22" preserveAspectRatio="none" aria-hidden="true">'
@@ -1525,18 +1717,19 @@ function render(){
   renderBrief();
   renderSourceFilings();
   renderBuilderMetrics();
+  renderClosingsComparison();
   renderMapChips();
   renderMap();
   renderStocks();
   renderResale();
+  renderSectionSummaries();
   renderExecBlock();
 
   document.getElementById('bBody').innerHTML = (D.builders || []).map(b => {
     const inv = b.inventory || [];
     const last = inv[inv.length-1], prev = inv[inv.length-2];
     const ch = (last && prev && prev.v) ? ((last.v - prev.v)/Math.abs(prev.v)*100) : null;
-    const tag = b.delisted ? ' <span class="tk">· delisted, final filing shown</span>' : '';
-    return '<tr><td>'+esc(b.name)+' <span class="tk">'+esc(b.ticker)+'</span>'+tag+'</td>'
+    return '<tr><td>'+esc(b.name)+' <span class="tk">'+esc(b.ticker)+'</span></td>'
       + '<td class="num">'+esc(b.form || '-')+'</td><td class="num">'+esc(b.period || '-')+'</td>'
       + '<td class="num">'+esc(b.filed || '-')+'</td>'
       + '<td class="num">'+(last ? '$'+fmt(last.v) : '-')+'</td>'
@@ -1554,7 +1747,7 @@ function render(){
         + chart(b.inventory, tone, null, '$', 300, 78)
         + scaleNote(b.inventory, null, '$')
         + reading({obs:b.inventory, units:'$', good:'up', lead:0})
-        + '<div class="card-read">Real estate carried on the balance sheet. A build in dollars while community count stays flat means unsold inventory accumulating.</div>'
+        + '<div class="card-read">' + inventoryRead(b.ticker, t) + '</div>'
         + '<div class="card-foot"><span>'+esc(t.date || '')+'</span><span>'+b.inventory.length+' QTRS</span></div></article>';
     }).join('');
 
@@ -1585,6 +1778,7 @@ function render(){
     '<strong>' + ok + '</strong> of ' + Object.keys(D.series).length + ' series carrying data, '
     + '<strong>' + (D.builders || []).length + '</strong> builders tracked, '
     + '<strong>' + (D.markets || []).length + '</strong> live markets.';
+  wireChartTooltips();
 }
 
 fetch('data.json?t=' + Date.now())

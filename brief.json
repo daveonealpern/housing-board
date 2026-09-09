@@ -7,7 +7,6 @@
     "PHM": "2026-06-30",
     "KBH": "2026-05-31",
     "TOL": "2026-07-31",
-    "TPH": "2026-06-30",
     "NVR": "2026-06-30",
     "MTH": "2026-06-30",
     "CCS": "2026-06-30",
@@ -66,15 +65,6 @@
       "orders": "2,508 (+5%)",
       "margin": "25.6% adj",
       "cancels": "2.6%"
-    },
-    {
-      "ticker": "TPH",
-      "name": "Tri Pointe",
-      "quarter": "Jun 2026",
-      "deliveries": "1,013 (-24%)",
-      "orders": "1,147 (+1%)",
-      "margin": "18.0%",
-      "cancels": "11%"
     }
   ],
   "land": [
@@ -155,17 +145,6 @@
         "orders_yoy_pct": 5.0,
         "margin_pct": 25.6,
         "cancel_rate_pct": 2.6
-      }
-    ],
-    "TPH": [
-      {
-        "quarter": "2026-06-30",
-        "deliveries_units": 1013,
-        "deliveries_yoy_pct": -24.0,
-        "orders_units": 1147,
-        "orders_yoy_pct": 1.0,
-        "margin_pct": 18.0,
-        "cancel_rate_pct": 11.0
       }
     ]
   }
