@@ -705,11 +705,14 @@ def pull_resale_data():
     the one free, no-key source confirmed to publish the same two metrics
     at all three levels: https://www.redfin.com/news/data-center/downloads
 
-    This is the newest, least-verified source on this board. The exact
-    column layout was confirmed from documentation and public examples, not
-    from a live file, since the host isn't reachable from this sandbox. If
-    the file's shape has changed, this fails into the errors list with the
-    actual header seen, rather than guessing at columns.
+    Redfin rebuilt this Data Center in May 2026, unifying their monthly and
+    weekly pipelines. Column names changed as part of that rebuild; the
+    mapping below is read from Redfin's own published legacy-to-current
+    column reference (redfin.com/news/data-center/methodology), not assumed.
+    Column matching is case-insensitive and tries several known names per
+    field, since this source has already changed shape once and may again.
+    On any mismatch this logs the FULL header and a sample row rather than
+    guessing, so a future failure is fixable from the log alone.
     """
     BASE = "https://redfin-public-data.s3.us-west-2.amazonaws.com/redfin_market_tracker/"
     TARGETS = [
@@ -718,34 +721,76 @@ def pull_resale_data():
         ("ventura",  "county_market_tracker.tsv000.gz",   lambda rt, rn: "ventura" in rn.strip().lower() and "ca" in rn.strip().lower()),
     ]
     LABELS = {"national": "United States", "ca": "California", "ventura": "Ventura County, CA"}
-    NEED_COLS = ["period_end", "median_sale_price", "homes_sold", "region_type", "region_name"]
+
+    # Each field: acceptable header names, tried in order, matched
+    # case-insensitively. First entry is the current (post-May-2026) name
+    # per Redfin's own legacy-column-reference table; later entries are
+    # older names, kept in case a run hits a not-yet-migrated file.
+    COLS = {
+        "period_end":  ["PERIOD_END", "period_end"],
+        "region_type": ["REGION_TYPE", "region_type"],
+        "region_name": ["REGION", "REGION_NAME", "region_name"],
+        "price":       ["Median Sale Price NSA ($)", "Median Sale Price ($)", "median_sale_price"],
+        "sold":        ["Homes Sold", "homes_sold"],
+    }
+
+    def find_col(header, candidates):
+        lower = {h.strip().lower(): h for h in header}
+        for cand in candidates:
+            if cand.lower() in lower:
+                return lower[cand.lower()]
+        return None
 
     levels = []
     for key, fname, matcher in TARGETS:
+        raw = None
+        last_err = None
+        attempts = 2 if key == "national" else 1  # national has 403'd before; worth one retry
+        for attempt in range(attempts):
+            try:
+                req = urllib.request.Request(BASE + fname, headers={"User-Agent": SEC_UA})
+                with urllib.request.urlopen(req, timeout=120) as r:
+                    raw = gzip.decompress(r.read())
+                break
+            except Exception as e:
+                last_err = e
+                if attempt < attempts - 1:
+                    time.sleep(3)
+        if raw is None:
+            extra = (" Redfin rebuilt this Data Center in May 2026; if this persists, the "
+                     "national file may have been renamed or retired as part of that change "
+                     "rather than this being a transient block." if key == "national" else "")
+            note("Resale %s failed: %s.%s" % (key, last_err, extra))
+            time.sleep(0.5)
+            continue
         try:
-            req = urllib.request.Request(BASE + fname, headers={"User-Agent": SEC_UA})
-            with urllib.request.urlopen(req, timeout=120) as r:
-                raw = gzip.decompress(r.read())
             text = raw.decode("utf-8", "replace")
-            reader = csv.DictReader(text.splitlines(), delimiter="	")
+            lines_ = text.splitlines()
+            reader = csv.DictReader(lines_, delimiter="\t")
             header = reader.fieldnames or []
-            missing = [c for c in NEED_COLS if c not in header]
+
+            resolved = {k: find_col(header, v) for k, v in COLS.items()}
+            missing = [k for k, v in resolved.items() if v is None]
             if missing:
-                note("Resale %s: expected columns missing %s. Actual header starts: %s"
-                     % (key, missing, header[:8]))
+                sample = lines_[1][:300] if len(lines_) > 1 else "(no data rows)"
+                note("Resale %s: could not find column(s) %s. Full header: %s | Sample row: %s"
+                     % (key, missing, header, sample))
                 continue
+            c_end, c_type, c_region, c_price, c_sold = (
+                resolved["period_end"], resolved["region_type"], resolved["region_name"],
+                resolved["price"], resolved["sold"])
 
             price, sold = [], []
             seen_dates = set()
             for row in reader:
-                if not matcher(row.get("region_type", ""), row.get("region_name", "")):
+                if not matcher(row.get(c_type, ""), row.get(c_region, "")):
                     continue
-                d = (row.get("period_end") or "")[:10]
+                d = (row.get(c_end) or "")[:10]
                 if not d or d in seen_dates:
                     continue
                 try:
-                    p = row.get("median_sale_price", "")
-                    h = row.get("homes_sold", "")
+                    p = row.get(c_price, "")
+                    h = row.get(c_sold, "")
                     if p not in ("", None):
                         price.append({"d": d, "v": round(float(p), 2)})
                     if h not in ("", None):
@@ -755,7 +800,8 @@ def pull_resale_data():
                     continue
             price.sort(key=lambda o: o["d"]); sold.sort(key=lambda o: o["d"])
             if not price and not sold:
-                note("Resale %s: file read but no rows matched region_name for %s" % (key, LABELS[key]))
+                note("Resale %s: file read, columns found, but no rows matched region %s (region values may have changed too)"
+                     % (key, LABELS[key]))
                 continue
             levels.append({"key": key, "label": LABELS[key],
                             "median_price": price[-96:], "homes_sold": sold[-96:]})
