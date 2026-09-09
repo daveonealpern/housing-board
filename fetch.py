@@ -713,19 +713,23 @@ def pull_resale_data():
     field, since this source has already changed shape once and may again.
     On any mismatch this logs the FULL header and a sample row rather than
     guessing, so a future failure is fixable from the log alone.
+
+    The standalone national file has 403'd on every attempt, including a
+    retry, which points to it having been retired or renamed as part of the
+    May rebuild rather than a transient block (Redfin's own methodology
+    page describes national counts moving to a direct aggregation of
+    counties rather than a separate pre-built file). Rather than keep
+    guessing at a URL with no confirmed replacement, national is instead
+    derived from the same state file already being pulled for California:
+    homes sold summed across all states, and price taken as a
+    homes-sold-weighted average of state medians. That weighted average is
+    a real approximation, not Redfin's own precise calculation, and is
+    labeled as such on the resulting level so it never reads as equally
+    authoritative to the two directly-sourced levels.
     """
     BASE = "https://redfin-public-data.s3.us-west-2.amazonaws.com/redfin_market_tracker/"
-    TARGETS = [
-        ("national", "national_market_tracker.tsv000.gz", lambda rt, rn: rt.strip().lower() == "national"),
-        ("ca",       "state_market_tracker.tsv000.gz",    lambda rt, rn: rn.strip().lower() == "california"),
-        ("ventura",  "county_market_tracker.tsv000.gz",   lambda rt, rn: "ventura" in rn.strip().lower() and "ca" in rn.strip().lower()),
-    ]
     LABELS = {"national": "United States", "ca": "California", "ventura": "Ventura County, CA"}
 
-    # Each field: acceptable header names, tried in order, matched
-    # case-insensitively. First entry is the current (post-May-2026) name
-    # per Redfin's own legacy-column-reference table; later entries are
-    # older names, kept in case a run hits a not-yet-migrated file.
     COLS = {
         "period_end":  ["PERIOD_END", "period_end"],
         "region_type": ["REGION_TYPE", "region_type"],
@@ -741,74 +745,148 @@ def pull_resale_data():
                 return lower[cand.lower()]
         return None
 
-    levels = []
-    for key, fname, matcher in TARGETS:
-        raw = None
+    def fetch_gz(fname, attempts=1):
         last_err = None
-        attempts = 2 if key == "national" else 1  # national has 403'd before; worth one retry
         for attempt in range(attempts):
             try:
                 req = urllib.request.Request(BASE + fname, headers={"User-Agent": SEC_UA})
                 with urllib.request.urlopen(req, timeout=120) as r:
-                    raw = gzip.decompress(r.read())
-                break
+                    return gzip.decompress(r.read()), None
             except Exception as e:
                 last_err = e
                 if attempt < attempts - 1:
                     time.sleep(3)
-        if raw is None:
-            extra = (" Redfin rebuilt this Data Center in May 2026; if this persists, the "
-                     "national file may have been renamed or retired as part of that change "
-                     "rather than this being a transient block." if key == "national" else "")
-            note("Resale %s failed: %s.%s" % (key, last_err, extra))
-            time.sleep(0.5)
-            continue
-        try:
-            text = raw.decode("utf-8", "replace")
-            lines_ = text.splitlines()
-            reader = csv.DictReader(lines_, delimiter="\t")
-            header = reader.fieldnames or []
+        return None, last_err
 
-            resolved = {k: find_col(header, v) for k, v in COLS.items()}
-            missing = [k for k, v in resolved.items() if v is None]
-            if missing:
-                sample = lines_[1][:300] if len(lines_) > 1 else "(no data rows)"
-                note("Resale %s: could not find column(s) %s. Full header: %s | Sample row: %s"
-                     % (key, missing, header, sample))
+    def parse_rows(raw, key):
+        """Yields (period_end, region_type, region_name, price, sold) tuples,
+        or None (with a note already logged) if the header can't be read."""
+        text = raw.decode("utf-8", "replace")
+        lines_ = text.splitlines()
+        reader = csv.DictReader(lines_, delimiter="\t")
+        header = reader.fieldnames or []
+        resolved = {k: find_col(header, v) for k, v in COLS.items()}
+        missing = [k for k, v in resolved.items() if v is None]
+        if missing:
+            sample = lines_[1][:300] if len(lines_) > 1 else "(no data rows)"
+            note("Resale %s: could not find column(s) %s. Full header: %s | Sample row: %s"
+                 % (key, missing, header, sample))
+            return None
+        c_end, c_type, c_region, c_price, c_sold = (
+            resolved["period_end"], resolved["region_type"], resolved["region_name"],
+            resolved["price"], resolved["sold"])
+        out = []
+        for row in reader:
+            d = (row.get(c_end) or "")[:10]
+            if not d:
                 continue
-            c_end, c_type, c_region, c_price, c_sold = (
-                resolved["period_end"], resolved["region_type"], resolved["region_name"],
-                resolved["price"], resolved["sold"])
+            out.append((d, row.get(c_type, ""), row.get(c_region, ""),
+                        row.get(c_price, ""), row.get(c_sold, "")))
+        return out
 
-            price, sold = [], []
-            seen_dates = set()
-            for row in reader:
-                if not matcher(row.get(c_type, ""), row.get(c_region, "")):
-                    continue
-                d = (row.get(c_end) or "")[:10]
-                if not d or d in seen_dates:
-                    continue
-                try:
-                    p = row.get(c_price, "")
-                    h = row.get(c_sold, "")
-                    if p not in ("", None):
-                        price.append({"d": d, "v": round(float(p), 2)})
-                    if h not in ("", None):
-                        sold.append({"d": d, "v": round(float(h), 1)})
-                    seen_dates.add(d)
-                except ValueError:
-                    continue
-            price.sort(key=lambda o: o["d"]); sold.sort(key=lambda o: o["d"])
-            if not price and not sold:
-                note("Resale %s: file read, columns found, but no rows matched region %s (region values may have changed too)"
-                     % (key, LABELS[key]))
+    def to_series(rows, matcher):
+        price, sold, seen = [], [], set()
+        for d, rt, rn, p, h in rows:
+            if not matcher(rt, rn) or d in seen:
                 continue
-            levels.append({"key": key, "label": LABELS[key],
+            try:
+                if p not in ("", None):
+                    price.append({"d": d, "v": round(float(p), 2)})
+                if h not in ("", None):
+                    sold.append({"d": d, "v": round(float(h), 1)})
+                seen.add(d)
+            except ValueError:
+                continue
+        price.sort(key=lambda o: o["d"]); sold.sort(key=lambda o: o["d"])
+        return price, sold
+
+    levels = []
+
+    # National: try the direct file first, with one retry, since it has
+    # failed before. Do not derive the fallback yet - only do the (heavier)
+    # all-states aggregation below if this genuinely comes up empty.
+    raw, err = fetch_gz("national_market_tracker.tsv000.gz", attempts=2)
+    national_rows = parse_rows(raw, "national") if raw is not None else None
+    if raw is None:
+        note("Resale national failed: %s. Redfin rebuilt this Data Center in May 2026; "
+             "falling back to a state-aggregated estimate below." % err)
+    time.sleep(0.5)
+
+    # California and the all-states rows needed for the national fallback
+    # come from the same file, fetched once.
+    raw, err = fetch_gz("state_market_tracker.tsv000.gz")
+    state_rows = parse_rows(raw, "ca") if raw is not None else None
+    if raw is None:
+        note("Resale ca failed: %s" % err)
+    else:
+        price, sold = to_series(state_rows, lambda rt, rn: rn.strip().lower() == "california")
+        if price or sold:
+            levels.append({"key": "ca", "label": LABELS["ca"],
                             "median_price": price[-96:], "homes_sold": sold[-96:]})
-            print("  %-9s %4d price pts, %4d sold pts" % (key, len(price), len(sold)))
-        except Exception as e:
-            note("Resale %s failed: %s" % (key, e))
-        time.sleep(0.5)
+            print("  %-9s %4d price pts, %4d sold pts" % ("ca", len(price), len(sold)))
+        else:
+            note("Resale ca: file read, columns found, but no rows matched region California")
+    time.sleep(0.5)
+
+    if national_rows:
+        price, sold = to_series(national_rows, lambda rt, rn: rt.strip().lower() == "national")
+        if price or sold:
+            levels.append({"key": "national", "label": LABELS["national"],
+                            "median_price": price[-96:], "homes_sold": sold[-96:]})
+            print("  %-9s %4d price pts, %4d sold pts (direct)" % ("national", len(price), len(sold)))
+        else:
+            national_rows = None  # fall through to the aggregate below
+
+    if not national_rows and state_rows:
+        by_period = {}
+        for d, rt, rn, p, h in state_rows:
+            if rt.strip().lower() != "state":
+                continue
+            try:
+                h_val = float(h) if h not in ("", None) else None
+                p_val = float(p) if p not in ("", None) else None
+            except ValueError:
+                continue
+            slot = by_period.setdefault(d, {"sold": 0.0, "weighted_price": 0.0, "weight": 0.0})
+            if h_val is not None:
+                slot["sold"] += h_val
+                if p_val is not None:
+                    slot["weighted_price"] += p_val * h_val
+                    slot["weight"] += h_val
+        price, sold = [], []
+        for d in sorted(by_period):
+            slot = by_period[d]
+            if slot["sold"] > 0:
+                sold.append({"d": d, "v": round(slot["sold"], 1)})
+            if slot["weight"] > 0:
+                price.append({"d": d, "v": round(slot["weighted_price"] / slot["weight"], 2)})
+        if price or sold:
+            levels.append({"key": "national", "label": LABELS["national"],
+                            "median_price": price[-96:], "homes_sold": sold[-96:],
+                            "estimated": True,
+                            "estimate_note": "Homes sold summed and price averaged across all "
+                                             "states (weighted by volume), since the standalone "
+                                             "national file is currently unavailable. Not "
+                                             "Redfin's own national calculation."})
+            print("  %-9s %4d price pts, %4d sold pts (aggregated from states)"
+                  % ("national", len(price), len(sold)))
+        else:
+            note("Resale national: state file read but no state-level rows found to aggregate")
+
+    # Ventura, its own file, independent of the above.
+    raw, err = fetch_gz("county_market_tracker.tsv000.gz")
+    if raw is None:
+        note("Resale ventura failed: %s" % err)
+    else:
+        rows = parse_rows(raw, "ventura")
+        if rows:
+            price, sold = to_series(rows, lambda rt, rn: "ventura" in rn.strip().lower() and "ca" in rn.strip().lower())
+            if price or sold:
+                levels.append({"key": "ventura", "label": LABELS["ventura"],
+                                "median_price": price[-96:], "homes_sold": sold[-96:]})
+                print("  %-9s %4d price pts, %4d sold pts" % ("ventura", len(price), len(sold)))
+            else:
+                note("Resale ventura: file read, columns found, but no rows matched region Ventura County, CA")
 
     return {"as_of": TODAY.isoformat(), "levels": levels,
             "source": "Redfin Data Center, redfin.com/news/data-center/downloads"}
