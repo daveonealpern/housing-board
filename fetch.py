@@ -7,7 +7,7 @@ Nothing here needs a human. If a source fails it is recorded in data.json
 under "errors" and shows on the page, rather than disappearing quietly.
 """
 
-import os, sys, json, time, gzip, datetime, urllib.request, urllib.parse, urllib.error
+import os, sys, json, time, gzip, csv, datetime, urllib.request, urllib.parse, urllib.error
 
 FRED_KEY = os.environ.get("FRED_API_KEY", "").strip()
 SEC_UA   = os.environ.get("SEC_USER_AGENT", "").strip() or "Housing Signal Board research contact@example.com"
@@ -346,6 +346,17 @@ INVENTORY_TAGS = ["InventoryRealEstate", "InventoryOperativeBuilders",
                   "RealEstateInventoryConstructionInProcess", "InventoryNet"]
 SEC_HEADERS = {"User-Agent": SEC_UA, "Accept": "application/json"}
 
+# Yahoo Finance's chart endpoint. Unlike FRED and SEC EDGAR, this is genuinely
+# unofficial: no published API, no key, no SLA, and it is known to change
+# shape or rate-limit without notice. It remains the best available no-key
+# option; Stooq's free CSV route now sits behind a CAPTCHA-issued key as of
+# early 2026, which is unusable from an unattended script. A failure here
+# surfaces in the errors list like any other source rather than breaking the
+# run, and is the one part of this collector that could not be verified
+# against a live response before shipping.
+YAHOO_HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                                "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"}
+
 # Builders whose SEC reporting has ended for good, taken private by
 # acquisition. Their CIK stays valid forever, since the SEC's historical
 # record does not disappear when a ticker delists, so their final filing and
@@ -681,6 +692,120 @@ def refresh_brief(builders):
 
 
 # ---------------------------------------------------------------------------
+# Stock prices
+# ---------------------------------------------------------------------------
+def pull_resale_data():
+    """Existing-home resale market: median sale price and homes sold, at
+    national, California, and Ventura County level, from one consistent
+    source so the three levels are actually comparable to each other.
+
+    Neither FRED nor SEC EDGAR carry closed-sale data below the national
+    level; FRED's Ventura County series (via Realtor.com) is inventory and
+    days-on-market only, not sales volume or price. Redfin's Data Center is
+    the one free, no-key source confirmed to publish the same two metrics
+    at all three levels: https://www.redfin.com/news/data-center/downloads
+
+    This is the newest, least-verified source on this board. The exact
+    column layout was confirmed from documentation and public examples, not
+    from a live file, since the host isn't reachable from this sandbox. If
+    the file's shape has changed, this fails into the errors list with the
+    actual header seen, rather than guessing at columns.
+    """
+    BASE = "https://redfin-public-data.s3.us-west-2.amazonaws.com/redfin_market_tracker/"
+    TARGETS = [
+        ("national", "national_market_tracker.tsv000.gz", lambda rt, rn: rt.strip().lower() == "national"),
+        ("ca",       "state_market_tracker.tsv000.gz",    lambda rt, rn: rn.strip().lower() == "california"),
+        ("ventura",  "county_market_tracker.tsv000.gz",   lambda rt, rn: "ventura" in rn.strip().lower() and "ca" in rn.strip().lower()),
+    ]
+    LABELS = {"national": "United States", "ca": "California", "ventura": "Ventura County, CA"}
+    NEED_COLS = ["period_end", "median_sale_price", "homes_sold", "region_type", "region_name"]
+
+    levels = []
+    for key, fname, matcher in TARGETS:
+        try:
+            req = urllib.request.Request(BASE + fname, headers={"User-Agent": SEC_UA})
+            with urllib.request.urlopen(req, timeout=120) as r:
+                raw = gzip.decompress(r.read())
+            text = raw.decode("utf-8", "replace")
+            reader = csv.DictReader(text.splitlines(), delimiter="	")
+            header = reader.fieldnames or []
+            missing = [c for c in NEED_COLS if c not in header]
+            if missing:
+                note("Resale %s: expected columns missing %s. Actual header starts: %s"
+                     % (key, missing, header[:8]))
+                continue
+
+            price, sold = [], []
+            seen_dates = set()
+            for row in reader:
+                if not matcher(row.get("region_type", ""), row.get("region_name", "")):
+                    continue
+                d = (row.get("period_end") or "")[:10]
+                if not d or d in seen_dates:
+                    continue
+                try:
+                    p = row.get("median_sale_price", "")
+                    h = row.get("homes_sold", "")
+                    if p not in ("", None):
+                        price.append({"d": d, "v": round(float(p), 2)})
+                    if h not in ("", None):
+                        sold.append({"d": d, "v": round(float(h), 1)})
+                    seen_dates.add(d)
+                except ValueError:
+                    continue
+            price.sort(key=lambda o: o["d"]); sold.sort(key=lambda o: o["d"])
+            if not price and not sold:
+                note("Resale %s: file read but no rows matched region_name for %s" % (key, LABELS[key]))
+                continue
+            levels.append({"key": key, "label": LABELS[key],
+                            "median_price": price[-96:], "homes_sold": sold[-96:]})
+            print("  %-9s %4d price pts, %4d sold pts" % (key, len(price), len(sold)))
+        except Exception as e:
+            note("Resale %s failed: %s" % (key, e))
+        time.sleep(0.5)
+
+    return {"as_of": TODAY.isoformat(), "levels": levels,
+            "source": "Redfin Data Center, redfin.com/news/data-center/downloads"}
+
+
+def pull_stock_prices():
+    out = []
+    for tk in BUILDERS:
+        try:
+            j = get_json("https://query1.finance.yahoo.com/v8/finance/chart/%s"
+                         "?range=ytd&interval=1d" % tk, headers=YAHOO_HEADERS)
+            res = (j.get("chart") or {}).get("result") or []
+            if not res:
+                note("No price data returned for %s" % tk); continue
+            res = res[0]
+            ts = res.get("timestamp") or []
+            closes = ((res.get("indicators") or {}).get("quote") or [{}])[0].get("close") or []
+            pairs = [(t, c) for t, c in zip(ts, closes) if c is not None]
+            if not pairs:
+                note("Price series for %s came back empty" % tk); continue
+            series = [{"d": datetime.datetime.utcfromtimestamp(t).date().isoformat(), "v": round(c, 2)}
+                      for t, c in pairs]
+            meta = res.get("meta") or {}
+            first, last = series[0]["v"], series[-1]["v"]
+            ytd_pct = round((last - first) / first * 100, 1) if first else None
+            out.append({
+                "ticker": tk,
+                "price": meta.get("regularMarketPrice", last),
+                "ytd_pct": ytd_pct,
+                "as_of": series[-1]["d"],
+                "series": series,
+                "currency": meta.get("currency", "USD"),
+                "delisted": tk in DELISTED,
+            })
+            print("  %-6s $%.2f  YTD %s%%" % (tk, meta.get("regularMarketPrice", last),
+                  ytd_pct if ytd_pct is not None else "?"))
+        except Exception as e:
+            note("Stock price for %s failed: %s" % (tk, e))
+        time.sleep(0.4)
+    return out
+
+
+# ---------------------------------------------------------------------------
 def main():
     if not FRED_KEY:
         print("FRED_API_KEY is not set. Add it under Settings > Secrets and variables > Actions.",
@@ -693,6 +818,8 @@ def main():
     print("SEC EDGAR...");        builders = pull_builders()
     print("Polymarket...");       markets  = pull_markets()
     print("Builder brief...");   brief    = refresh_brief(builders)
+    print("Resale market...");   resale   = pull_resale_data()
+    print("Stock prices...");    stocks   = pull_stock_prices()
 
     payload = {
         "generated": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
@@ -701,6 +828,8 @@ def main():
         "calendar": calendar,
         "builders": builders,
         "brief": brief,
+        "stocks": stocks,
+        "resale": resale,
         "markets": markets,
         "errors": ERRORS,
     }

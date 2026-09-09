@@ -274,6 +274,25 @@
   @media (max-width: 700px) {
     .sd-row { grid-template-columns: 1fr; gap: 4px; }
   }
+  .stock-spark { width: 90px; height: 26px; display: block; }
+  .stock-price { font-family: var(--font-mono); font-weight: 500; }
+  .stock-ytd { font-family: var(--font-mono); font-size: 12.5px; }
+  .stock-final { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.04em; color: var(--paper-dim); text-transform: uppercase; }
+
+  .resale-metric { margin-bottom: 26px; }
+  .resale-metric:last-child { margin-bottom: 0; }
+  .resale-metric-label {
+    font-family: var(--font-display); font-weight: 600; font-size: 15px;
+    margin: 0 0 10px; color: var(--paper);
+  }
+  .resale-row { display: grid; gap: 14px; grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 760px) { .resale-row { grid-template-columns: 1fr; } }
+  .resale-card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 13px 15px 11px; }
+  .resale-card-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 2px; }
+  .resale-geo { font-weight: 600; font-size: 13.5px; }
+  .resale-val { font-family: var(--font-mono); font-size: 17px; font-weight: 500; }
+  .resale-delta { font-family: var(--font-mono); font-size: 11px; margin-top: 1px; }
+
   .filing-list { display: flex; flex-direction: column; gap: 1px; background: var(--line); border: 1px solid var(--line); }
   .filing-row {
     display: grid; grid-template-columns: 1fr auto auto; gap: 14px; align-items: center;
@@ -489,6 +508,16 @@
 
   <section class="book-section">
     <div class="book-heading">
+      <span class="book-num">Resale market</span>
+      <h2>Existing homes, three levels</h2>
+      <span class="book-note">National, California, Ventura County</span>
+    </div>
+    <p class="sec-note">Existing-home sales, not new construction, which the rest of this board already covers through the builders themselves. All three levels come from one consistent source (Redfin's Data Center) rather than three different ones, so the comparison across geography is actually apples to apples. Neither FRED nor SEC EDGAR carry closed-sale price or volume below the national level.</p>
+    <div id="resale-body"></div>
+  </section>
+
+  <section class="book-section">
+    <div class="book-heading">
       <span class="book-num">SEC EDGAR</span>
       <h2>Public homebuilders</h2>
     </div>
@@ -498,6 +527,18 @@
       <th>Real estate inventory</th><th>Change</th><th>Filing</th>
     </tr></thead><tbody id="bBody"></tbody></table></div>
     <div class="parcel-grid" id="g-builders" style="margin-top:16px"></div>
+  </section>
+
+  <section class="book-section">
+    <div class="book-heading">
+      <span class="book-num">Equity</span>
+      <h2>Share price</h2>
+      <span class="book-note">unofficial source, not guaranteed</span>
+    </div>
+    <p class="sec-note">Pulled from an unofficial Yahoo Finance endpoint, since neither FRED nor SEC EDGAR carry equity prices. This is the least stable source on the board and can fail or lag without notice; a gap here shows up as a missing row, not a wrong number. Year-to-date is measured from each stock's first close of the current calendar year. The two delisted builders show their final trading price rather than a live quote, since neither trades anymore.</p>
+    <div class="tbl-scroll"><table><thead><tr>
+      <th>Builder</th><th>Price</th><th>YTD</th><th>Trend</th><th>As of</th>
+    </tr></thead><tbody id="stockBody"></tbody></table></div>
   </section>
 
   <section class="book-section">
@@ -621,7 +662,7 @@ function chart(obs, tone, ref, units, w, h){
   const refL = (ref && ref.label) ? ref.label : 'median';
   mn = Math.min(mn, refV); mx = Math.max(mx, refV);
   const sp = (mx - mn) || 1;
-  const GUT = 46, PW = w - GUT, pad = 8;
+  const GUT = 62, PW = w - GUT, pad = 8;
   const X = i => (i/(pts.length-1))*PW;
   const Y = v => h - pad - ((v - mn)/sp)*(h - pad*2);
   const line = pts.map((p,i) => (i?'L':'M') + X(i).toFixed(1) + ' ' + Y(p.v).toFixed(1)).join(' ');
@@ -1115,6 +1156,77 @@ function renderStateDetail(){
     + '</div>';
 }
 
+
+function stockSpark(series, tone){
+  if(!series || series.length < 2) return '<span class="sd-none">\u2014</span>';
+  const vals = series.map(p => p.v);
+  const mn = Math.min(...vals), mx = Math.max(...vals), sp = (mx - mn) || 1;
+  const col = tone === 'up' ? '#63B08F' : tone === 'down' ? '#CF6E76' : '#93AAC0';
+  const d = vals.map((v,i) => (i?'L':'M') + ((i/(vals.length-1))*88).toFixed(1)
+            + ' ' + (24 - ((v-mn)/sp)*22).toFixed(1)).join(' ');
+  return '<svg class="stock-spark" viewBox="0 0 90 26" preserveAspectRatio="none" aria-hidden="true">'
+    + '<path d="' + d + '" fill="none" stroke="' + col + '" stroke-width="1.3"/></svg>';
+}
+
+function renderStocks(){
+  const host = document.getElementById('stockBody');
+  const rows = (D.stocks || []).slice();
+  if(!rows.length){
+    host.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--paper-dim);padding:24px">No price data returned on the last run.</td></tr>';
+    return;
+  }
+  const names = ticker_name_map(D.brief && D.brief.metrics);
+  rows.sort((a, b) => (b.ytd_pct ?? -999) - (a.ytd_pct ?? -999));
+  host.innerHTML = rows.map(r => {
+    const tone = r.ytd_pct == null ? 'flat' : (r.ytd_pct >= 0 ? 'up' : 'down');
+    const name = (REGIONS[r.ticker] && REGIONS[r.ticker].name) || names[r.ticker] || r.ticker;
+    const ytd = r.ytd_pct == null ? '\u2014' : (r.ytd_pct >= 0 ? '+' : '') + r.ytd_pct.toFixed(1) + '%';
+    return '<tr><td>' + esc(name) + ' <span class="tk">' + esc(r.ticker) + '</span>'
+      + (r.delisted ? '<div class="stock-final">final price, delisted</div>' : '') + '</td>'
+      + '<td class="num stock-price">$' + r.price.toFixed(2) + '</td>'
+      + '<td class="num stock-ytd ' + tone + '">' + ytd + '</td>'
+      + '<td class="num">' + stockSpark(r.series, tone) + '</td>'
+      + '<td class="num">' + esc(r.as_of || '\u2014') + '</td></tr>';
+  }).join('');
+}
+
+
+function resaleCard(level, series, units, good){
+  const t = trend(series);
+  const tone = health({obs: series, good});
+  const chg = (t.usePct && t.pct != null)
+    ? '<div class="resale-delta '+tone+'">'+(t.pct>=0?'+':'')+t.pct.toFixed(1)+'% YoY</div>'
+    : (t.abs != null ? '<div class="resale-delta '+tone+'">'+(t.abs>=0?'+':'')+fmtDelta(t.abs, units)+' YoY</div>' : '');
+  return '<div class="resale-card">'
+    + '<div class="resale-card-top"><span class="resale-geo">' + esc(level.label) + '</span>'
+    + '<span class="resale-val">' + fmtU(t.last, units) + '</span></div>'
+    + chg
+    + chart(series, tone, null, units, 300, 56)
+    + '</div>';
+}
+
+function renderResale(){
+  const host = document.getElementById('resale-body');
+  const r = D.resale;
+  if(!r || !r.levels || !r.levels.length){
+    host.innerHTML = '<div class="resale-card"><span class="sd-none">No resale data on the last run. Check the issues banner above for the source error.</span></div>';
+    return;
+  }
+  const byKey = {}; r.levels.forEach(l => byKey[l.key] = l);
+  const order = ['national','ca','ventura'];
+  const present = order.filter(k => byKey[k]);
+
+  const priceRow = present.filter(k => (byKey[k].median_price||[]).length)
+    .map(k => resaleCard(byKey[k], byKey[k].median_price, '$', 'up')).join('');
+  const soldRow = present.filter(k => (byKey[k].homes_sold||[]).length)
+    .map(k => resaleCard(byKey[k], byKey[k].homes_sold, 'units', 'up')).join('');
+
+  host.innerHTML =
+      (priceRow ? '<div class="resale-metric"><div class="resale-metric-label">Median sale price</div><div class="resale-row">' + priceRow + '</div></div>' : '')
+    + (soldRow ? '<div class="resale-metric"><div class="resale-metric-label">Homes sold</div><div class="resale-row">' + soldRow + '</div></div>' : '')
+    + '<div class="map-caption" style="margin-top:2px">Source: ' + esc(r.source || 'Redfin Data Center') + (r.as_of ? ', as of ' + esc(r.as_of) : '') + '.</div>';
+}
+
 function paras(a){
   return (a || []).map(p => '<p>' + esc(p) + '</p>').join('');
 }
@@ -1210,6 +1322,8 @@ function render(){
   renderBuilderMetrics();
   renderMapChips();
   renderMap();
+  renderStocks();
+  renderResale();
 
   document.getElementById('bBody').innerHTML = (D.builders || []).map(b => {
     const inv = b.inventory || [];
