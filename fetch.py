@@ -7,7 +7,8 @@ Nothing here needs a human. If a source fails it is recorded in data.json
 under "errors" and shows on the page, rather than disappearing quietly.
 """
 
-import os, sys, json, time, gzip, csv, datetime, urllib.request, urllib.parse, urllib.error
+import os, sys, json, time, gzip, csv, re, datetime, urllib.request, urllib.parse, urllib.error
+import xml.etree.ElementTree as ET
 
 FRED_KEY = os.environ.get("FRED_API_KEY", "").strip()
 SEC_UA   = os.environ.get("SEC_USER_AGENT", "").strip() or "Housing Signal Board research contact@example.com"
@@ -168,10 +169,12 @@ SERIES = [
      "Recorded at contract signing, so slightly ahead of existing sales.",
      "new one family houses sold united states"),
     ("MSACSR",        "Months supply, new homes",     "coincident",  1, "months",       "down",
-     "Above roughly six months has historically preceded builder discounting.",
+     "How many months it would take to sell every new home currently on the market at the current sales pace. A rising number means inventory is building up faster than it is selling; above roughly six months has historically preceded builders cutting prices to move it.",
      "monthly supply of new houses"),
     ("EXHOSLUSM495S", "Existing home sales",          "coincident", -1, "units SAAR",       "up",
-     "Records at closing, so it reflects decisions made a month or two earlier.",
+     "Previously owned homes changing hands, the resale market, as opposed to new construction. "
+     "Counted at closing, so a home that went under contract in one month often does not show "
+     "up here until the next, a month or two after the buyer actually decided.",
      "existing home sales"),
     ("COMPUTSA",      "Housing completions",          "coincident", -2, "units SAAR",       "up",
      "Supply arriving now from starts twelve to eighteen months ago.",
@@ -180,7 +183,7 @@ SERIES = [
      "Mix-sensitive. A falling median can mean cheaper homes selling, not falling values.",
      "median sales price of houses sold"),
     ("CSUSHPINSA",    "Case-Shiller national",        "coincident", -3, "index",        "up",
-     "Two-month lag on a three-month moving average, so it confirms very late.",
+     "An index of home prices nationally, tracking the same houses as they resell over time rather than a raw median of whatever happened to sell. Built from a three-month moving average and published two months late, so it confirms a price turn well after it already happened.",
      "s&p case-shiller u.s. national home price index"),
 
     # --- cost and labor ---
@@ -191,7 +194,7 @@ SERIES = [
      "Hiring intent turns before payrolls. Better labor read than employment level.",
      "job openings construction"),
     ("USCONS",      "Construction employment",        "cost",        0, "jobs",            "up",
-     "Coincident. Useful mainly as a check on the openings series.",
+     "How many people are actually on construction payrolls, as opposed to job openings, which measures hiring intent. Useful mainly as a check on whether posted openings are actually turning into hires.",
      "all employees construction"),
     ("PRRESCONS",   "Residential construction spend", "cost",       -1, "$ SAAR",      "up",
      "The dollar value of construction work actually completed in the period, not contracts signed or work planned, so it reflects work already underway.",
@@ -202,7 +205,11 @@ SERIES = [
      "Lags badly but confirms turns. Watch the rate of change, not the level.",
      "delinquency rate single-family residential mortgages commercial banks"),
     ("DRCRELEXFACBS",  "CRE loan delinquency",        "distress",   -7, "%",            "down",
-     "Multifamily is the segment to watch: a large batch of apartment projects that broke ground during the last construction boom are finishing around the same time, and that surge of new supply pressures rents and loan performance together.",
+     "Banks classify loans on income-producing properties like apartment buildings, offices, "
+     "and retail centers as commercial real estate, separate from a single-family home "
+     "mortgage. Apartment buildings are the sub-segment to watch here: many broke ground in "
+     "the same building boom and are finishing construction around the same time, so a wave "
+     "of new units ends up competing for renters in the same local markets at once.",
      "delinquency rate commercial real estate loans banks"),
 
     # --- california ---
@@ -210,7 +217,7 @@ SERIES = [
      "State pipeline. Compare against national permits to see if California is diverging.",
      "new private housing units authorized california"),
     ("CASTHPI",  "California house price index",      "ca",         -3, "index",        "up",
-     "FHFA all-transactions, quarterly. Slow but consistent.",
+     "A home price index for California specifically, built from every recorded sale and refinance appraisal the regulator can access, not just a sample. Published quarterly, slower to update than Case-Shiller but consistent over time.",
      "all-transactions house price index for california"),
     ("LXXRSA",   "Los Angeles Case-Shiller",          "ca",         -3, "index",        "up",
      "Your metro, same two-month lag as the national index.",
@@ -306,9 +313,12 @@ EXAMPLES = {
     "DRSFRMACBS": "For example: this rate was still near normal levels well after the 2008 "
                   "housing bust had already begun, since missed payments take months to show "
                   "up as a formally delinquent loan.",
-    "DRCRELEXFACBS": "For example: an apartment building that leased up slower than expected, "
-                     "in a market with lots of other new buildings competing for the same "
-                     "renters, is exactly the kind of loan that shows up as delinquent here.",
+    "DRCRELEXFACBS": "For example: a 300-unit apartment building takes out a commercial loan "
+                     "to get built, then opens into a neighborhood where several similar "
+                     "buildings just finished too. All of them are chasing the same renters, "
+                     "so it fills more slowly than planned, rents come under pressure to "
+                     "attract tenants, and the building's income falls short of what its loan "
+                     "payment assumed.",
     "CABPPRIV": "For example: if California's permit count falls while the national number "
                 "holds steady, that is a sign the state's slowdown is more severe, or "
                 "starting earlier, than the rest of the country.",
@@ -786,6 +796,74 @@ def refresh_brief(builders):
 # ---------------------------------------------------------------------------
 # Stock prices
 # ---------------------------------------------------------------------------
+def pull_headlines():
+    """Recent real estate headlines, for the six-tile section on the board.
+
+    Source: HousingWire's own RSS feed (housingwire.com/feed/), verified by
+    fetching it directly rather than assumed - confirmed standard RSS 2.0,
+    updated roughly hourly, with real current items at verification time.
+    HousingWire is the standard trade publication for US housing and
+    mortgage lending, and its feed already covers exactly this board's
+    subject matter (rates, builders, policy, CEQA-adjacent stories) without
+    needing a second source. Title and a short publisher-provided summary
+    are shown with a link back to the original, the standard RSS-reader
+    pattern; no article body is fetched or reproduced.
+
+    Deliberately a single source: RSS is a stable, decades-old format with
+    no key and no rate limit, a different risk profile than Yahoo or
+    Redfin's unofficial endpoints, so the added complexity of a second
+    source for redundancy is not worth it here. If this feed ever changes
+    shape, the error below carries the raw XML root tag so a future fix
+    starts from an actual data point, not a guess.
+    """
+    URL = "https://www.housingwire.com/feed/"
+    try:
+        req = urllib.request.Request(URL, headers={"User-Agent": SEC_UA})
+        with urllib.request.urlopen(req, timeout=30) as r:
+            raw = r.read()
+        root = ET.fromstring(raw)
+        channel = root.find("channel")
+        if channel is None:
+            note("Headlines: RSS root has no <channel> element (tag was <%s>)" % root.tag)
+            return []
+        items = channel.findall("item")
+        if not items:
+            note("Headlines: feed parsed but contained zero <item> entries")
+            return []
+
+        out = []
+        for item in items[:6]:
+            title = (item.findtext("title") or "").strip()
+            link = (item.findtext("link") or "").strip()
+            desc_raw = item.findtext("description") or ""
+            desc = re.sub(r"<[^>]+>", "", desc_raw).strip()  # strip the <p> wrapper RSS descriptions carry
+            cats = [c.text for c in item.findall("category") if c.text]
+            # skip HousingWire's own internal membership/tag categories, keep
+            # the first genuinely descriptive one if present
+            skip = {"HWmember", "Columnist", "The Builder's Daily"}
+            category = next((c for c in cats if c not in skip), (cats[0] if cats else None))
+            pub_raw = item.findtext("pubDate") or ""
+            pub_iso = None
+            try:
+                pub_iso = datetime.datetime.strptime(pub_raw, "%a, %d %b %Y %H:%M:%S %z").isoformat()
+            except ValueError:
+                pass
+            if not title or not link:
+                continue
+            out.append({"title": title, "link": link, "description": desc,
+                        "category": category, "published": pub_iso})
+
+        if not out:
+            note("Headlines: items were present but none had both a title and a link")
+        return out
+    except ET.ParseError as e:
+        note("Headlines: feed did not parse as XML: %s" % e)
+        return []
+    except Exception as e:
+        note("Headlines failed: %s" % e)
+        return []
+
+
 def pull_resale_data():
     """Existing-home resale market: median sale price, homes sold, median
     days on market, and the sale-to-list price ratio, at national,
@@ -1063,6 +1141,7 @@ def main():
     print("Polymarket...");       markets  = pull_markets()
     print("Builder brief...");   brief    = refresh_brief(builders)
     print("Resale market...");   resale   = pull_resale_data()
+    print("Headlines...");       headlines = pull_headlines()
     print("Stock prices...");    stocks   = pull_stock_prices()
 
     payload = {
@@ -1074,6 +1153,7 @@ def main():
         "brief": brief,
         "stocks": stocks,
         "resale": resale,
+        "headlines": headlines,
         "markets": markets,
         "errors": ERRORS,
     }

@@ -104,6 +104,26 @@
   .rate-sub { font-family: var(--font-mono); font-size: 11px; margin-top: 2px; }
   .rate-spark { width: 100%; height: 22px; display: block; margin-top: 8px; }
 
+  .headlines-block { margin-bottom: 40px; }
+  .headlines-grid {
+    display: grid; gap: 14px; grid-template-columns: repeat(3, 1fr);
+  }
+  @media (max-width: 860px) { .headlines-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px) { .headlines-grid { grid-template-columns: 1fr; } }
+  .hl-tile {
+    background: var(--panel); border: 1px solid var(--line); border-top: 2px solid var(--brass);
+    border-radius: var(--radius); padding: 14px 15px 12px; display: flex; flex-direction: column;
+  }
+  .hl-cat {
+    font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--brass); margin-bottom: 6px;
+  }
+  .hl-title { font-size: 14px; font-weight: 600; line-height: 1.35; margin-bottom: 7px; }
+  .hl-title a { color: var(--paper); text-decoration: none; }
+  .hl-title a:hover { color: var(--brass); text-decoration: underline; }
+  .hl-desc { font-size: 12.5px; color: var(--paper-dim); line-height: 1.5; flex: 1; margin-bottom: 8px; }
+  .hl-when { font-family: var(--font-mono); font-size: 10px; color: var(--paper-dim); }
+
   .notice {
     border: 1px solid var(--brass); border-left-width: 3px;
     background: rgba(199, 161, 92, 0.07);
@@ -376,18 +396,6 @@
   .bm-units { font-family: var(--font-mono); font-size: 10px; margin-left: 5px; color: var(--paper-dim); }
   .bm-note { font-family: var(--font-mono); font-size: 10.5px; color: var(--paper-dim); margin-top: 10px; padding-top: 9px; border-top: 1px solid var(--line); }
 
-  .cq-card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 15px 17px 13px; }
-  .cq-legend { display: flex; gap: 16px; font-family: var(--font-mono); font-size: 10.5px; color: var(--paper-dim); margin: 3px 0 14px; }
-  .cq-legend span { display: flex; align-items: center; gap: 5px; }
-  .cq-legend i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
-  .cq-group { margin-bottom: 12px; }
-  .cq-name { font-size: 12.5px; font-weight: 600; margin-bottom: 4px; }
-  .cq-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 3px; }
-  .cq-bar-label { font-family: var(--font-mono); font-size: 9.5px; color: var(--paper-dim); width: 34px; flex: none; }
-  .cq-track { flex: 1; height: 13px; background: rgba(110,147,172,0.08); border-radius: 1px; }
-  .cq-fill { height: 100%; border-radius: 1px; }
-  .cq-bar-val { font-family: var(--font-mono); font-size: 11px; width: 78px; flex: none; text-align: right; }
-
   .tbl-scroll { overflow-x: auto; border: 1px solid var(--line); background: var(--panel); }
   table { border-collapse: collapse; width: 100%; font-size: 13px; min-width: 760px; }
   th, td { padding: 9px 13px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
@@ -440,6 +448,16 @@
 
   <div class="rates" id="rates"></div>
 
+  <div class="headlines-block">
+    <div class="book-heading">
+      <span class="book-num">Real estate</span>
+      <h2>Top headlines</h2>
+      <span class="book-note">HousingWire, most recent</span>
+    </div>
+    <p class="sec-note">The six most recent items from HousingWire's own feed, title and their short summary, linking straight to the source. Not curated for importance, just recency; judge significance yourself the way you would skimming any trade press.</p>
+    <div class="headlines-grid" id="headlines-grid"></div>
+  </div>
+
   <div class="spine-block">
     <h2>Lead-time spine</h2>
     <p>Every series on this sheet sits somewhere on a timeline. Permit backlog and builder land decisions see furthest ahead; delinquency and completions only confirm what already happened. Position on this axis is the reason to watch a series, not its headline number.</p>
@@ -474,11 +492,8 @@
     <p class="sec-note">Every tracked builder's most recent 10-Q or 10-K, straight from SEC EDGAR, sorted by whoever filed most recently. This list stands on its own even if the narrative brief above is behind on a filing.</p>
     <div id="source-filings"></div>
     <h3 style="margin-top:28px">Builder metrics, side by side</h3>
-    <p class="sec-note">The same four figures across every builder with data, so a strong or weak quarter stands out against the peer group rather than in isolation. Bars compare this quarter to last where two quarters have been read; with only one quarter on file so far, this fills in as more filings are read.</p>
+    <p class="sec-note">Six figures across every builder with data, so a strong or weak quarter stands out against the peer group rather than in isolation. The first four compare builders to each other; the last two, closings and net orders, are sized by actual volume, so D.R. Horton's bar reads far larger than KB Home's or Toll Brothers's, a real and verified difference in scale, not a display error, colored by that builder's own growth rather than the peer comparison. The unit figures shown alongside deliveries and orders include the same quarter a year ago, computed from each builder's own disclosed year-over-year percentage rather than a separate lookup, so it is exact rather than estimated. A genuine multi-quarter trend, and a read on whether a builder is pacing to beat or fall short of its full prior year, both need three or four consecutive quarters of the same fiscal year on file; with one quarter read so far, that view builds up as future filings are read.</p>
     <div class="bm-grid" id="bm-grid"></div>
-    <h3 style="margin-top:28px">Closings, this quarter vs a year ago</h3>
-    <p class="sec-note">The prior-year figure is computed from each builder's own disclosed year-over-year percentage, not a separate lookup, so it is exact rather than estimated. A genuine multi-quarter trend, and a read on whether a builder is pacing to beat or fall short of its full prior year, both need three or four consecutive quarters of the same fiscal year on file; with one quarter read so far, that view builds up as future filings are read.</p>
-    <div id="closings-body"></div>
   </section>
 
   <section class="book-section">
@@ -935,7 +950,8 @@ function bmMetric(history, names, key, opts){
     const prior = h.length > 1 ? h[h.length - 2] : null;
     return {ticker: tk, name: (names[tk] || tk), value: cur[key],
             prior: prior ? prior[key] : null, quarters: h.length,
-            units: opts.unitsKey ? cur[opts.unitsKey] : null};
+            units: opts.unitsKey ? cur[opts.unitsKey] : null,
+            yoy: opts.yoyKey ? cur[opts.yoyKey] : null};
   }).filter(Boolean);
 
   if(!rows.length){
@@ -952,7 +968,7 @@ function bmMetric(history, names, key, opts){
   const deltaHtml = r => {
     if(r.prior == null) return '';
     const d = r.value - r.prior;
-    const col = Math.abs(d) < 0.05 ? 'var(--paper-dim)' : (d >= 0 ? 'var(--up)' : 'var(--down)');
+    const col = Math.abs(d) < 0.05 ? 'var(--flat)' : (d >= 0 ? 'var(--up)' : 'var(--down)');
     return '<span class="bm-delta" style="color:' + col + '">' + (d >= 0 ? '+' : '') + d.toFixed(1) + opts.unit + ' vs prior</span>';
   };
   // When a companion raw-units field is available (deliveries, orders), show
@@ -968,21 +984,36 @@ function bmMetric(history, names, key, opts){
   const valText = r => (opts.signed && r.value >= 0 ? '+' : '') + r.value.toFixed(opts.decimals) + opts.unit;
 
   const bars = rows.map(r => {
-    let fill;
-    if(opts.mode === 'diverge'){
-      const half = (Math.abs(r.value) / maxAbs) * 50;
-      const col = r.value >= 0 ? 'var(--up)' : 'var(--down)';
-      fill = '<div class="bm-zero"></div><div class="bm-fill" style="background:' + col + ';'
-        + (r.value >= 0 ? 'left:50%;width:' + half.toFixed(1) + '%' : 'right:50%;width:' + half.toFixed(1) + '%') + '"></div>';
-    } else {
-      const col = opts.colorMode === 'median-low' ? (r.value <= med ? 'var(--up)' : 'var(--down)')
-                                                    : (r.value >= med ? 'var(--up)' : 'var(--down)');
+    let fill, col, valueHtml;
+    if(opts.mode === 'scale'){
+      // Bars sized by raw volume, so DHI reads far larger than KBH or TOL -
+      // that gap is real market scale, not a display bug. Colored by this
+      // builder's OWN year-over-year direction rather than a cross-builder
+      // median, since "biggest" and "growing" are different questions; the
+      // YoY figure printed alongside is driven by the exact same `col`
+      // variable as the bar, so the two can never show conflicting colors.
+      const flatBand = 1.5;  // within +/-1.5% counts as flat, not up or down
+      col = (r.yoy == null || Math.abs(r.yoy) < flatBand) ? 'var(--flat)' : (r.yoy >= 0 ? 'var(--up)' : 'var(--down)');
       const w = Math.max(4, (Math.abs(r.value) / maxAbs) * 100);
       fill = '<div class="bm-fill" style="left:0;width:' + w.toFixed(1) + '%;background:' + col + '"></div>';
+      const yoyText = r.yoy == null ? '' : ' <span style="color:' + col + '">(' + (r.yoy >= 0 ? '+' : '') + r.yoy.toFixed(1) + '% YoY)</span>';
+      valueHtml = Math.round(r.value).toLocaleString() + yoyText;
+    } else if(opts.mode === 'diverge'){
+      const half = (Math.abs(r.value) / maxAbs) * 50;
+      col = r.value >= 0 ? 'var(--up)' : 'var(--down)';
+      fill = '<div class="bm-zero"></div><div class="bm-fill" style="background:' + col + ';'
+        + (r.value >= 0 ? 'left:50%;width:' + half.toFixed(1) + '%' : 'right:50%;width:' + half.toFixed(1) + '%') + '"></div>';
+      valueHtml = valText(r) + deltaHtml(r) + unitsHtml(r);
+    } else {
+      col = opts.colorMode === 'median-low' ? (r.value <= med ? 'var(--up)' : 'var(--down)')
+                                              : (r.value >= med ? 'var(--up)' : 'var(--down)');
+      const w = Math.max(4, (Math.abs(r.value) / maxAbs) * 100);
+      fill = '<div class="bm-fill" style="left:0;width:' + w.toFixed(1) + '%;background:' + col + '"></div>';
+      valueHtml = valText(r) + deltaHtml(r) + unitsHtml(r);
     }
     return '<div class="bm-row"><span class="bm-tk">' + esc(r.ticker) + '</span>'
       + '<div class="bm-track">' + fill + '</div>'
-      + '<span class="bm-val">' + valText(r) + deltaHtml(r) + unitsHtml(r) + '</span></div>';
+      + '<span class="bm-val">' + valueHtml + '</span></div>';
   }).join('');
 
   const anySecond = rows.some(r => r.quarters > 1);
@@ -1007,63 +1038,10 @@ function renderBuilderMetrics(){
       bmMetric(H, names, 'margin_pct',        {label:'Gross margin', sub:'homebuilding gross margin, higher is stronger', unit:'%', decimals:1, mode:'bar', colorMode:'median-high', signed:false})
     + bmMetric(H, names, 'cancel_rate_pct',    {label:'Cancellation rate', sub:'lower reads as healthier demand', unit:'%', decimals:1, mode:'bar', colorMode:'median-low', signed:false})
     + bmMetric(H, names, 'orders_yoy_pct',     {label:'Net orders, YoY', sub:'year over year change', unit:'%', decimals:1, mode:'diverge', signed:true, unitsKey:'orders_units'})
-    + bmMetric(H, names, 'deliveries_yoy_pct', {label:'Deliveries, YoY', sub:'year over year change', unit:'%', decimals:1, mode:'diverge', signed:true, unitsKey:'deliveries_units'});
+    + bmMetric(H, names, 'deliveries_yoy_pct', {label:'Deliveries, YoY', sub:'year over year change', unit:'%', decimals:1, mode:'diverge', signed:true, unitsKey:'deliveries_units'})
+    + bmMetric(H, names, 'deliveries_units',   {label:'Closings, this quarter', sub:'actual homes delivered, sized by volume', unit:'', decimals:0, mode:'scale', yoyKey:'deliveries_yoy_pct'})
+    + bmMetric(H, names, 'orders_units',       {label:'Net orders, this quarter', sub:'actual homes ordered, sized by volume', unit:'', decimals:0, mode:'scale', yoyKey:'orders_yoy_pct'});
 }
-
-// Closings (deliveries) this quarter vs the same quarter a year ago, per
-// builder. The prior-year bar is computed from that builder's own disclosed
-// YoY percentage rather than a second lookup - exact, not estimated - but a
-// genuine multi-quarter trend and a full-year pace read both need three or
-// four consecutive quarters of the same fiscal year, which this board does
-// not have yet with one quarter read per builder.
-function renderClosingsComparison(){
-  const host = document.getElementById('closings-body');
-  const b = D.brief;
-  const H = (b && b.metric_history) || {};
-  const names = ticker_name_map(b && b.metrics);
-
-  const rows = Object.keys(H).map(tk => {
-    const h = (H[tk] || []).filter(x => x.deliveries_units != null && x.deliveries_yoy_pct != null);
-    if(!h.length) return null;
-    const cur = h[h.length - 1];
-    const current = cur.deliveries_units;
-    const pct = cur.deliveries_yoy_pct;
-    if(pct === -100) return null;  // no meaningful prior-year base to divide by
-    const priorYear = current / (1 + pct / 100);
-    return {ticker: tk, name: names[tk] || tk, quarter: cur.quarter, current, priorYear};
-  }).filter(Boolean);
-
-  if(!rows.length){
-    host.innerHTML = '<div class="cq-card"><span class="sd-none">No deliveries data on file yet.</span></div>';
-    return;
-  }
-
-  rows.sort((a, b) => b.current - a.current);
-  const maxVal = Math.max(...rows.map(r => Math.max(r.current, r.priorYear)), 1);
-
-  const bar = (label, val, color) => {
-    const w = Math.max(3, (val / maxVal) * 100);
-    return '<div class="cq-bar-row"><span class="cq-bar-label">' + label + '</span>'
-      + '<div class="cq-track"><div class="cq-fill" style="width:' + w.toFixed(1) + '%;background:' + color + '"></div></div>'
-      + '<span class="cq-bar-val">' + Math.round(val).toLocaleString() + '</span></div>';
-  };
-
-  const groups = rows.map(r => {
-    const growing = r.current >= r.priorYear;
-    return '<div class="cq-group"><div class="cq-name">' + esc(r.name) + ' <span class="tk">' + esc(r.ticker)
-      + '</span> <span style="color:var(--paper-dim);font-weight:400">(' + esc(fmtQ(r.quarter)) + ')</span></div>'
-      + bar('Now', r.current, growing ? 'var(--up)' : 'var(--down)')
-      + bar('Yr ago', r.priorYear, 'var(--flat)')
-      + '</div>';
-  }).join('');
-
-  host.innerHTML = '<div class="cq-card">'
-    + '<div class="cq-legend"><span><i style="background:var(--up)"></i>Growing YoY</span>'
-    + '<span><i style="background:var(--down)"></i>Declining YoY</span>'
-    + '<span><i style="background:var(--flat)"></i>A year ago (computed)</span></div>'
-    + groups + '</div>';
-}
-
 
 
 // Path data for all 50 states + DC, adapted from the @svg-maps/usa package
@@ -1345,6 +1323,36 @@ function resaleCard(level, series, units, good){
     + chg
     + chart(series, tone, null, units, 300, 56)
     + '</div>';
+}
+
+function timeAgo(iso){
+  if(!iso) return '';
+  const then = new Date(iso), now = new Date();
+  const mins = Math.round((now - then) / 60000);
+  if(mins < 1) return 'just now';
+  if(mins < 60) return mins + 'm ago';
+  const hrs = Math.round(mins / 60);
+  if(hrs < 24) return hrs + 'h ago';
+  const days = Math.round(hrs / 24);
+  if(days < 7) return days + 'd ago';
+  return then.toLocaleDateString(undefined, {month:'short', day:'numeric'});
+}
+
+function renderHeadlines(){
+  const host = document.getElementById('headlines-grid');
+  const items = D.headlines || [];
+  if(!items.length){
+    host.innerHTML = '<div class="hl-tile"><span class="sd-none">No headlines on the last run. Check the issues banner above for the source error.</span></div>';
+    return;
+  }
+  host.innerHTML = items.slice(0, 6).map(h => {
+    return '<div class="hl-tile">'
+      + (h.category ? '<div class="hl-cat">' + esc(h.category) + '</div>' : '')
+      + '<div class="hl-title"><a href="' + esc(h.link) + '" target="_blank" rel="noopener">' + esc(h.title) + '</a></div>'
+      + (h.description ? '<div class="hl-desc">' + esc(h.description) + '</div>' : '')
+      + '<div class="hl-when">' + esc(timeAgo(h.published)) + '</div>'
+      + '</div>';
+  }).join('');
 }
 
 function renderResale(){
@@ -1717,11 +1725,11 @@ function render(){
   renderBrief();
   renderSourceFilings();
   renderBuilderMetrics();
-  renderClosingsComparison();
   renderMapChips();
   renderMap();
   renderStocks();
   renderResale();
+  renderHeadlines();
   renderSectionSummaries();
   renderExecBlock();
 
