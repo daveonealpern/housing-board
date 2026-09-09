@@ -1393,7 +1393,14 @@ function execSummary(sig){
       return bits.length ? label + ' ' + bits.join(', ') : null;
     };
     const parts = [line('national','nationally'), line('ca','in California'), line('ventura','in Ventura County')].filter(Boolean);
-    if(parts.length) paras.push('In the resale market, ' + parts.join('; ') + ' over the past year.');
+    if(parts.length){
+      let sentence = 'In the resale market, ' + parts.join('; ') + ' over the past year.';
+      if(r.national && r.national.estimated){
+        sentence += ' The national figure is an estimate, aggregated from state-level data '
+          + 'because the Redfin national file is currently unavailable, not their own calculation.';
+      }
+      paras.push(sentence);
+    }
   }
 
   // 5. equity close
