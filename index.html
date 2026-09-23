@@ -160,9 +160,23 @@
 
   /* ---------- sections ---------- */
   .book-section { margin-bottom: 46px; }
+  details.book-section > summary {
+    list-style: none; cursor: pointer;
+  }
+  details.book-section > summary::-webkit-details-marker { display: none; }
+  details.book-section > summary::marker { content: ''; }
   .book-heading {
     display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap;
     border-bottom: 1px solid var(--line); padding-bottom: 12px; margin-bottom: 20px;
+  }
+  .book-chevron {
+    margin-left: auto; font-family: var(--font-mono); font-size: 13px; color: var(--paper-dim);
+    transition: transform 160ms ease; flex: none;
+  }
+  details.book-section[open] > summary .book-chevron { transform: rotate(90deg); }
+  .book-asof {
+    font-family: var(--font-mono); font-size: 10.5px; color: var(--paper-dim);
+    letter-spacing: 0.02em; white-space: nowrap;
   }
   .book-num {
     font-family: var(--font-display); font-weight: 400; font-size: 11.5px; letter-spacing: 0.12em;
@@ -448,18 +462,25 @@
 
   <div class="rates" id="rates"></div>
 
-  <div class="headlines-block">
-    <div class="book-heading">
+  <details class="book-section" open>
+    <summary><div class="book-heading">
       <span class="book-num">Real estate</span>
       <h2>Top headlines</h2>
       <span class="book-note">HousingWire, most recent</span>
-    </div>
+      <span class="book-asof" data-asof></span>
+      <span class="book-chevron">&#9656;</span>
+    </div></summary>
     <p class="sec-note">The six most recent items from HousingWire's own feed, title and their short summary, linking straight to the source. Not curated for importance, just recency; judge significance yourself the way you would skimming any trade press.</p>
     <div class="headlines-grid" id="headlines-grid"></div>
-  </div>
+  </details>
 
-  <div class="spine-block">
-    <h2>Lead-time spine</h2>
+  <details class="book-section spine-block" open>
+    <summary><div class="book-heading">
+      <span class="book-num">Timeline</span>
+      <h2>Lead-time spine</h2>
+      <span class="book-asof" data-asof></span>
+      <span class="book-chevron">&#9656;</span>
+    </div></summary>
     <p>Every series on this sheet sits somewhere on a timeline. Permit backlog and builder land decisions see furthest ahead; delinquency and completions only confirm what already happened. Position on this axis is the reason to watch a series, not its headline number.</p>
     <svg id="spine" viewBox="0 0 1120 288" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Indicators plotted by forecasting lead time"></svg>
     <div class="legend">
@@ -468,24 +489,24 @@
       <span><i class="dot" style="background:#E8E2D9"></i> Flat</span>
       <span>Hover for detail, click to jump</span>
     </div>
-  </div>
+  </details>
 
-  <section class="book-section">
-    <div class="book-heading">
+  <details class="book-section" open>
+    <summary><div class="book-heading">
       <span class="book-num">Release Schedule</span>
       <h2>What publishes next</h2>
       <span class="book-note">from FRED's own calendar</span>
-    </div>
+    <span class="book-asof" data-asof></span><span class="book-chevron">&#9656;</span></div></summary>
     <p class="sec-note">These are the agencies' filed release dates, not estimates. The sheet reads them each morning, so a shifted or cancelled release shows up here without anyone adjusting anything.</p>
     <div class="cal" id="cal"></div>
-  </section>
+  </details>
 
-  <section class="book-section" id="brief-section">
-    <div class="book-heading">
+  <details class="book-section" id="brief-section" open>
+    <summary><div class="book-heading">
       <span class="book-num">Builder brief</span>
       <h2>What the public builders are saying</h2>
       <span class="book-note" id="brief-asof"></span>
-    </div>
+    <span class="book-asof" data-asof></span><span class="book-chevron">&#9656;</span></div></summary>
     <p class="sec-note">Rewritten whenever a builder files a new 10-Q. Lot counts, incentive load and regional commentary sit in MD&amp;A prose rather than tagged data, so this section is read out of the filings themselves rather than scraped.</p>
     <div id="brief"></div>
     <h3 style="margin-top:28px">Source filings</h3>
@@ -494,14 +515,14 @@
     <h3 style="margin-top:28px">Builder metrics, side by side</h3>
     <p class="sec-note">Six figures across every builder with data, so a strong or weak quarter stands out against the peer group rather than in isolation. The first four compare builders to each other; the last two, closings and net orders, are sized by actual volume, so D.R. Horton's bar reads far larger than KB Home's or Toll Brothers's, a real and verified difference in scale, not a display error, colored by that builder's own growth rather than the peer comparison. The unit figures shown alongside deliveries and orders include the same quarter a year ago, computed from each builder's own disclosed year-over-year percentage rather than a separate lookup, so it is exact rather than estimated. A genuine multi-quarter trend, and a read on whether a builder is pacing to beat or fall short of its full prior year, both need three or four consecutive quarters of the same fiscal year on file; with one quarter read so far, that view builds up as future filings are read.</p>
     <div class="bm-grid" id="bm-grid"></div>
-  </section>
+  </details>
 
-  <section class="book-section">
-    <div class="book-heading">
+  <details class="book-section" open>
+    <summary><div class="book-heading">
       <span class="book-num">Regional footprint</span>
       <h2>Where each builder actually operates</h2>
       <span class="book-note">state-level, read from each 10-K</span>
-    </div>
+    <span class="book-asof" data-asof></span><span class="book-chevron">&#9656;</span></div></summary>
     <p class="sec-note">Builders do not share a common map. Horton's "Southeast" and Toll's "South" cover different states entirely, so the segment names on a filing mean nothing without the underlying states behind them. Every boundary below comes from each company's own most recent SEC filing, not an estimate. Select a builder to see its own reporting segments, or leave "All builders" selected for a density read of who touches which state.</p>
     <div class="map-chips" id="map-chips"></div>
     <div class="map-wrap">
@@ -510,124 +531,134 @@
     </div>
     <p class="map-caption" id="map-caption"></p>
     <div id="state-detail"></div>
-  </section>
+  </details>
 
-  <section class="book-section">
-    <div class="book-heading">
-      <span class="book-num">+6 to +18 mo</span>
-      <h2>Land and permit pipeline</h2>
-    </div>
-    <p class="sec-note">The layer closest to your own work. Authorized-but-not-started backlog is the sharpest series here: when builders hold paper and decline to break ground, starts fall about two quarters later.</p>
-    <p class="sec-summary" id="sum-structural"></p>
-    <div class="parcel-grid" id="g-structural"></div>
-  </section>
-
-  <section class="book-section">
-    <div class="book-heading">
-      <span class="book-num">+1 to +3 mo</span>
-      <h2>Demand and credit</h2>
-    </div>
-    <p class="sec-note">Watch the gap between the 30-year mortgage rate and the 10-year Treasury separately from the rate itself. That spread has run historically wide since 2022, and compression alone would improve affordability with no Fed move at all.</p>
-    <p class="sec-summary" id="sum-demand"></p>
-    <div class="parcel-grid" id="g-demand"></div>
-  </section>
-
-  <section class="book-section">
-    <div class="book-heading">
-      <span class="book-num">+3 to +12 mo</span>
-      <h2>Capital markets</h2>
-      <span class="book-note">the rate complex and credit spreads</span>
-    </div>
-    <p class="sec-note">USD LIBOR stopped publishing in June 2023, so it is deliberately absent. SOFR replaced it, and the 30-day and 90-day averages here are the free public stand-ins for 1-month and 3-month Term SOFR, which CME licenses and FRED cannot carry. Prime is what smaller land and construction facilities actually price off. The 2s10s curve carries the longest lead of anything on this sheet.</p>
-    <p class="sec-summary" id="sum-capital"></p>
-    <div class="parcel-grid" id="g-capital"></div>
-  </section>
-
-  <section class="book-section">
-    <div class="book-heading">
-      <span class="book-num">Coincident</span>
-      <h2>Activity now</h2>
-    </div>
-    <p class="sec-note">These confirm rather than predict. Their value is calibration: if the leading layer turned three months ago and this layer has not followed, either the signal was noise or the lag is running long.</p>
-    <p class="sec-summary" id="sum-coincident"></p>
-    <div class="parcel-grid" id="g-coincident"></div>
-  </section>
-
-  <section class="book-section">
-    <div class="book-heading">
-      <span class="book-num">Inputs</span>
-      <h2>Cost and labor</h2>
-    </div>
-    <p class="sec-note">Materials cost reaches pro formas before it reaches completed cost. Construction job openings are the better labor read than headline employment, because hiring intent turns before payrolls do.</p>
-    <p class="sec-summary" id="sum-cost"></p>
-    <div class="parcel-grid" id="g-cost"></div>
-  </section>
-
-  <section class="book-section">
-    <div class="book-heading">
-      <span class="book-num">&minus;6 to &minus;12 mo</span>
-      <h2>Distress</h2>
-    </div>
-    <p class="sec-note">Lagging by construction, but useful for confirming that a turn was real rather than a two-month wobble.</p>
-    <p class="sec-summary" id="sum-distress"></p>
-    <div class="parcel-grid" id="g-distress"></div>
-  </section>
-
-  <section class="book-section">
-    <div class="book-heading">
-      <span class="book-num">State</span>
-      <h2>California</h2>
-      <span class="book-note">LA and Ventura context</span>
-    </div>
-    <p class="sec-note">State-level series that move entitlement throughput before they move price, and that most people watching national housing data never look at.</p>
-    <p class="sec-summary" id="sum-ca"></p>
-    <div class="parcel-grid" id="g-ca"></div>
-  </section>
-
-  <section class="book-section">
-    <div class="book-heading">
-      <span class="book-num">Resale market</span>
-      <h2>Existing homes, three levels</h2>
-      <span class="book-note">National, California, Ventura County</span>
-    </div>
-    <p class="sec-note">Existing-home sales, not new construction, which the rest of this board already covers through the builders themselves. All three levels come from one consistent source (Redfin's Data Center) rather than three different ones, so the comparison across geography is actually apples to apples. Neither FRED nor SEC EDGAR carry closed-sale price or volume below the national level.</p>
-    <div id="resale-body"></div>
-  </section>
-
-  <section class="book-section">
-    <div class="book-heading">
+  <details class="book-section" open>
+    <summary><div class="book-heading">
       <span class="book-num">SEC EDGAR</span>
       <h2>Public homebuilders</h2>
-    </div>
+    <span class="book-asof" data-asof></span><span class="book-chevron">&#9656;</span></div></summary>
     <p class="sec-note">Latest filing and real estate inventory carried on the balance sheet, pulled from each company's XBRL data the day it files. Lot counts owned versus optioned are disclosed in prose rather than tagged data, so those are not here. Ask for them when a quarter lands and they get read by hand.</p>
     <div class="tbl-scroll"><table><thead><tr>
       <th>Builder</th><th>Form</th><th>Period</th><th>Filed</th>
       <th>Real estate inventory</th><th>Change</th><th>Filing</th>
     </tr></thead><tbody id="bBody"></tbody></table></div>
     <div class="parcel-grid" id="g-builders" style="margin-top:16px"></div>
-  </section>
+  </details>
 
-  <section class="book-section">
-    <div class="book-heading">
+  <details class="book-section" open>
+    <summary><div class="book-heading">
       <span class="book-num">Equity</span>
       <h2>Share price</h2>
       <span class="book-note">unofficial source, not guaranteed</span>
-    </div>
+    <span class="book-asof" data-asof></span><span class="book-chevron">&#9656;</span></div></summary>
     <p class="sec-note">Pulled from an unofficial Yahoo Finance endpoint, since neither FRED nor SEC EDGAR carry equity prices. This is the least stable source on the board and can fail or lag without notice; a gap here shows up as a missing row, not a wrong number. Year-to-date is measured from each stock's first close of the current calendar year.</p>
     <div class="tbl-scroll"><table><thead><tr>
       <th>Builder</th><th>Price</th><th>YTD</th><th>Trend</th><th>As of</th>
     </tr></thead><tbody id="stockBody"></tbody></table></div>
-  </section>
+  </details>
 
-  <section class="book-section">
-    <div class="book-heading">
+  <details class="book-section" open>
+    <summary><div class="book-heading">
+      <span class="book-num">+6 to +18 mo</span>
+      <h2>Land and permit pipeline</h2>
+    <span class="book-asof" data-asof></span><span class="book-chevron">&#9656;</span></div></summary>
+    <p class="sec-note">The layer closest to your own work. Authorized-but-not-started backlog is the sharpest series here: when builders hold paper and decline to break ground, starts fall about two quarters later.</p>
+    <p class="sec-summary" id="sum-structural"></p>
+    <div class="parcel-grid" id="g-structural"></div>
+  </details>
+
+  <details class="book-section" open>
+    <summary><div class="book-heading">
+      <span class="book-num">+1 to +3 mo</span>
+      <h2>Demand and credit</h2>
+    <span class="book-asof" data-asof></span><span class="book-chevron">&#9656;</span></div></summary>
+    <p class="sec-note">Watch the gap between the 30-year mortgage rate and the 10-year Treasury separately from the rate itself. That spread has run historically wide since 2022, and compression alone would improve affordability with no Fed move at all.</p>
+    <p class="sec-summary" id="sum-demand"></p>
+    <div class="parcel-grid" id="g-demand"></div>
+  </details>
+
+  <details class="book-section" open>
+    <summary><div class="book-heading">
+      <span class="book-num">+3 to +12 mo</span>
+      <h2>Capital markets</h2>
+      <span class="book-note">the rate complex and credit spreads</span>
+    <span class="book-asof" data-asof></span><span class="book-chevron">&#9656;</span></div></summary>
+    <p class="sec-note">USD LIBOR stopped publishing in June 2023, so it is deliberately absent. SOFR replaced it, and the 30-day and 90-day averages here are the free public stand-ins for 1-month and 3-month Term SOFR, which CME licenses and FRED cannot carry. Prime is what smaller land and construction facilities actually price off. The 2s10s curve carries the longest lead of anything on this sheet.</p>
+    <p class="sec-summary" id="sum-capital"></p>
+    <div class="parcel-grid" id="g-capital"></div>
+  </details>
+
+  <details class="book-section" open>
+    <summary><div class="book-heading">
+      <span class="book-num">Coincident</span>
+      <h2>Activity now</h2>
+    <span class="book-asof" data-asof></span><span class="book-chevron">&#9656;</span></div></summary>
+    <p class="sec-note">These confirm rather than predict. Their value is calibration: if the leading layer turned three months ago and this layer has not followed, either the signal was noise or the lag is running long.</p>
+    <p class="sec-summary" id="sum-coincident"></p>
+    <div class="parcel-grid" id="g-coincident"></div>
+  </details>
+
+  <details class="book-section" open>
+    <summary><div class="book-heading">
+      <span class="book-num">Inputs</span>
+      <h2>Cost and labor</h2>
+    <span class="book-asof" data-asof></span><span class="book-chevron">&#9656;</span></div></summary>
+    <p class="sec-note">Materials cost reaches pro formas before it reaches completed cost. Construction job openings are the better labor read than headline employment, because hiring intent turns before payrolls do.</p>
+    <p class="sec-summary" id="sum-cost"></p>
+    <div class="parcel-grid" id="g-cost"></div>
+  </details>
+
+  <details class="book-section" open>
+    <summary><div class="book-heading">
+      <span class="book-num">+1 to +2 mo</span>
+      <h2>Commodity pricing</h2>
+    <span class="book-asof" data-asof></span><span class="book-chevron">&#9656;</span></div></summary>
+    <p class="sec-note">The raw inputs behind the materials cost index above, broken out individually. Oil is only indirectly a construction cost, through fuel and asphalt; lumber, steel, and copper go directly into a home's frame, structure, and wiring. All four are set in global commodity markets and can move on news that has nothing to do with US housing.</p>
+    <p class="sec-summary" id="sum-commodity"></p>
+    <div class="parcel-grid" id="g-commodity"></div>
+  </details>
+
+  <details class="book-section" open>
+    <summary><div class="book-heading">
+      <span class="book-num">&minus;6 to &minus;12 mo</span>
+      <h2>Distress</h2>
+    <span class="book-asof" data-asof></span><span class="book-chevron">&#9656;</span></div></summary>
+    <p class="sec-note">Lagging by construction, but useful for confirming that a turn was real rather than a two-month wobble.</p>
+    <p class="sec-summary" id="sum-distress"></p>
+    <div class="parcel-grid" id="g-distress"></div>
+  </details>
+
+  <details class="book-section" open>
+    <summary><div class="book-heading">
+      <span class="book-num">State</span>
+      <h2>California</h2>
+      <span class="book-note">LA and Ventura context</span>
+    <span class="book-asof" data-asof></span><span class="book-chevron">&#9656;</span></div></summary>
+    <p class="sec-note">State-level series that move entitlement throughput before they move price, and that most people watching national housing data never look at.</p>
+    <p class="sec-summary" id="sum-ca"></p>
+    <div class="parcel-grid" id="g-ca"></div>
+  </details>
+
+  <details class="book-section" open>
+    <summary><div class="book-heading">
+      <span class="book-num">Resale market</span>
+      <h2>Existing homes, three levels</h2>
+      <span class="book-note">National, California, Ventura County</span>
+    <span class="book-asof" data-asof></span><span class="book-chevron">&#9656;</span></div></summary>
+    <p class="sec-note">Existing-home sales, not new construction, which the rest of this board already covers through the builders themselves. All three levels come from one consistent source (Redfin's Data Center) rather than three different ones, so the comparison across geography is actually apples to apples. Neither FRED nor SEC EDGAR carry closed-sale price or volume below the national level.</p>
+    <div id="resale-body"></div>
+  </details>
+
+  <details class="book-section" open>
+    <summary><div class="book-heading">
       <span class="book-num">Sentiment</span>
       <h2>Prediction markets</h2>
       <span class="book-note">thin liquidity, read with caution</span>
-    </div>
+    <span class="book-asof" data-asof></span><span class="book-chevron">&#9656;</span></div></summary>
     <p class="sec-note">Kept small on purpose. Total housing volume across these venues runs under a million dollars, so a few traders can move an implied probability several points. A crowd mood ring, not a forecast.</p>
     <div class="parcel-grid" id="g-markets"></div>
-  </section>
+  </details>
 
   <footer class="hub-footer">
     Rebuilt automatically each morning from FRED, SEC EDGAR and Polymarket by a scheduled job in the <span class="tk">housing-board</span> repository. Nothing on this sheet is entered by hand.<br>
@@ -1450,13 +1481,27 @@ function sectionExecSummary(bucket){
 }
 
 function renderSectionSummaries(){
-  ['structural','demand','capital','coincident','cost','distress','ca'].forEach(bucket => {
+  ['structural','demand','capital','coincident','cost','distress','ca','commodity'].forEach(bucket => {
     const host = document.getElementById('sum-' + bucket);
     if(!host) return;
     const summary = sectionExecSummary(bucket);
     host.textContent = summary || '';
     host.style.display = summary ? '' : 'none';
   });
+}
+
+// Every section on this board is refreshed atomically from one collector
+// run, so every "as of" badge shares the same source timestamp - D.generated
+// - rather than each section tracking its own. That is a deliberate choice,
+// not a shortcut: a per-section badge that could show a DIFFERENT time than
+// its neighbor, from the same run, would suggest a partial-refresh model
+// this board doesn't actually have and would invite exactly the kind of
+// "why does this look stale" confusion the badges exist to prevent.
+function renderSectionTimestamps(){
+  if(!D.generated) return;
+  const g = new Date(D.generated);
+  const label = 'as of ' + g.toLocaleDateString(undefined, {month:'2-digit', day:'2-digit', year:'2-digit'});
+  document.querySelectorAll('.book-asof').forEach(el => { el.textContent = label; });
 }
 
 // Attaches the actual hover behavior to every chart wrapped by card() with a
@@ -1681,12 +1726,13 @@ function renderBrief(){
     + '<div class="brief-meta"><span>' + (b.source === 'auto' ? 'Read from filings automatically' : 'Read from filings by hand')
     + '</span><span>' + Object.keys(b.covered || {}).length + ' builders covered</span></div></div>';
 
-  document.getElementById('brief-asof').textContent = b.as_of ? 'as of ' + b.as_of : '';
+  document.getElementById('brief-asof').textContent = b.as_of ? 'narrative as of ' + b.as_of : '';
 }
 
 function render(){
   const buckets = {structural:'g-structural', demand:'g-demand', capital:'g-capital',
-                   coincident:'g-coincident', cost:'g-cost', distress:'g-distress', ca:'g-ca'};
+                   coincident:'g-coincident', cost:'g-cost', distress:'g-distress', ca:'g-ca',
+                   commodity:'g-commodity'};
   Object.keys(buckets).forEach(b => {
     document.getElementById(buckets[b]).innerHTML =
       Object.keys(D.series).filter(id => D.series[id].bucket === b)
@@ -1731,6 +1777,7 @@ function render(){
   renderResale();
   renderHeadlines();
   renderSectionSummaries();
+  renderSectionTimestamps();
   renderExecBlock();
 
   document.getElementById('bBody').innerHTML = (D.builders || []).map(b => {

@@ -225,6 +225,27 @@ SERIES = [
     ("CAUR",     "California unemployment",           "ca",         -1, "%",            "down",
      "Context for how fast homes actually sell. Rising unemployment shrinks the pool of qualified buyers before prices move.",
      "unemployment rate in california"),
+    ("DCOILWTICO",   "Crude oil, WTI",                 "commodity",   1, "$",     "down",
+     "The US benchmark oil price. Feeds construction costs indirectly, through diesel for "
+     "equipment and trucking, asphalt for paving, and the plastics and adhesives used "
+     "throughout a home, more than through any single material directly.",
+     "wti crude oil price"),
+    ("WPU081",       "Lumber",                         "commodity",   2, "index", "down",
+     "Producer price index for softwood and hardwood lumber. The most volatile major input "
+     "in home construction: framing lumber prices have swung by more than half within a "
+     "single year before, driven by mill capacity, tariffs, and wildfire or beetle damage "
+     "to timber supply.",
+     "producer price index lumber"),
+    ("WPU101704",    "Steel, structural",              "commodity",   2, "index", "down",
+     "Producer price index for hot rolled steel bars, plates, and structural shapes, the "
+     "form steel takes in a building's frame and rebar rather than sheet steel used in cars "
+     "or appliances.",
+     "producer price index hot rolled steel bars plates structural shapes"),
+    ("WPUSI019011",  "Copper",                         "commodity",   2, "index", "down",
+     "Producer price index across copper and copper products. Runs through electrical "
+     "wiring and plumbing pipe and fittings; a global industrial metal, so it moves with "
+     "worldwide demand and mine supply more than with US housing activity specifically.",
+     "producer price index copper and copper products"),
 ]
 
 # A concrete, illustrative scenario per series, shown on hover alongside the
@@ -331,6 +352,19 @@ EXAMPLES = {
     "CAUR": "For example: a local employer announcing layoffs shrinks the pool of people who "
             "can qualify for a mortgage in that area, months before it shows up as softer "
             "home sales.",
+    "DCOILWTICO": "For example: a $20 jump in the price of a barrel of oil raises the diesel "
+                  "cost of running excavators and delivery trucks on a job site, and pushes up "
+                  "asphalt prices for driveways and roads, without a single stick of lumber "
+                  "changing price.",
+    "WPU081": "For example: lumber prices roughly tripled in a few months during 2021, adding "
+              "an estimated $20,000 or more to the cost of building a typical new single-family "
+              "home before falling back just as fast.",
+    "WPU101704": "For example: a builder pricing out a large custom home with steel beam "
+                 "supports gets a materials quote that is only valid for 30 days, because the "
+                 "mill's own price can move meaningfully before the steel is even delivered.",
+    "WPUSI019011": "For example: a spike in global copper prices, driven by demand from data "
+                   "centers or electric vehicles rather than anything happening in US housing, "
+                   "still raises the cost of wiring a new home.",
 }
 
 # ---------------------------------------------------------------------------
