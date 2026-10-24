@@ -13,7 +13,7 @@ import xml.etree.ElementTree as ET
 FRED_KEY = os.environ.get("FRED_API_KEY", "").strip()
 SEC_UA   = os.environ.get("SEC_USER_AGENT", "").strip() or "Housing Signal Board research contact@example.com"
 ANTHROPIC_KEY   = os.environ.get("ANTHROPIC_API_KEY", "").strip()
-ANTHROPIC_MODEL = os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-5").strip()
+ANTHROPIC_MODEL = os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-5-5").strip()
 BRIEF_PATH      = os.environ.get("BRIEF_PATH", "brief.json")
 FRED_BASE = "https://api.stlouisfed.org/fred"
 OUT_PATH  = os.environ.get("OUT_PATH", "data.json")
@@ -907,222 +907,122 @@ def pull_resale_data():
     Neither FRED nor SEC EDGAR carry closed-sale data below the national
     level; FRED's Ventura County series (via Realtor.com) is inventory and
     days-on-market only, not sale price, volume, or the list-price ratio.
-    Redfin's Data Center is the one free, no-key source confirmed to
-    publish all four at every level:
-    https://www.redfin.com/news/data-center/downloads
+    Redfin's Data Center is the one free, no-key source that publishes all
+    four at every level: https://www.redfin.com/news/data-center/downloads
 
-    Redfin rebuilt this Data Center in May 2026, unifying their monthly and
-    weekly pipelines. Column names changed as part of that rebuild; the
-    mapping below is read from Redfin's own published legacy-to-current
-    column reference (redfin.com/news/data-center/methodology), not assumed.
-    Column matching is case-insensitive and tries several known names per
-    field, since this source has already changed shape once and may again.
-    On any mismatch this logs the FULL header and a sample row rather than
-    guessing, so a future failure is fixable from the log alone.
-
-    The standalone national file has 403'd on every attempt, including a
-    retry, which points to it having been retired or renamed as part of the
-    May rebuild rather than a transient block (Redfin's own methodology
-    page describes national counts moving to a direct aggregation of
-    counties rather than a separate pre-built file). Rather than keep
-    guessing at a URL with no confirmed replacement, national is instead
-    derived from the same state file already being pulled for California:
-    every numeric field is a homes-sold-weighted average across states
-    (a straight sum for homes sold itself). That is a real approximation,
-    not Redfin's own precise calculation, and is labeled as such on the
-    resulting level so it never reads as equally authoritative to the two
-    directly-sourced levels.
+    Source history, so the next fix starts from facts:
+      - Through May 2026 this read the legacy files under
+        redfin_market_tracker/ (state_market_tracker.tsv000.gz etc.). Those
+        files stopped updating on 2026-06-02 and are frozen at May 2026. The
+        national one was always named us_national_market_tracker.tsv000.gz;
+        national_market_tracker.tsv000.gz never existed, which is what the
+        recurring 403 was (S3 answers 403, not 404, for a missing key).
+      - The legacy files carried one row per property type per month and
+        the old parser kept whichever row came first, so the board was
+        showing a single property-type slice (California "homes sold" of
+        about 1,100 a month), not all residential.
+      - Since the May 2026 rebuild, Redfin's own Downloads page reads
+        pre-built CSVs from redfin_data_center/housing_market/monthly/ in
+        the same public bucket (verified 2026-10-23: country.csv,
+        all_states.csv, all_counties.csv, refreshed monthly). These are
+        All Residential, all construction, one row per region per month,
+        and they are exactly what that page serves. No key, no bot wall.
+      - Redfin publishes national and state rows seasonally adjusted where
+        it can and county rows unadjusted; median sale price is unadjusted
+        at every level. That is stated on the sheet.
     """
-    BASE = "https://redfin-public-data.s3.us-west-2.amazonaws.com/redfin_market_tracker/"
-    LABELS = {"national": "United States", "ca": "California", "ventura": "Ventura County, CA"}
-
+    BASE = "https://redfin-public-data.s3.us-west-2.amazonaws.com/redfin_data_center/housing_market/monthly/"
+    LEVELS = [
+        # key, label, file, region name as Redfin writes it
+        ("national", "United States",      "country.csv",      None),
+        ("ca",       "California",         "all_states.csv",   "California"),
+        ("ventura",  "Ventura County, CA", "all_counties.csv", "Ventura County, CA"),
+    ]
     COLS = {
-        "period_end":   ["PERIOD_END", "period_end"],
-        "region_type":  ["REGION_TYPE", "region_type"],
-        "region_name":  ["REGION", "REGION_NAME", "region_name"],
-        "price":        ["Median Sale Price NSA ($)", "Median Sale Price ($)", "median_sale_price"],
-        "sold":         ["Homes Sold", "homes_sold"],
-        "dom":          ["Median Days On Market (days)", "median_dom"],
-        "sale_to_list": ["Average Sale To List Ratio (%)", "avg_sale_to_list"],
+        "period_end":   ["PERIOD END", "PERIOD_END"],
+        "region_name":  ["REGION NAME", "REGION"],
+        "price":        ["MEDIAN SALE PRICE NSA ($)", "MEDIAN SALE PRICE ($)"],
+        "sold":         ["HOMES SOLD"],
+        "dom":          ["MEDIAN DAYS ON MARKET (DAYS)"],
+        "sale_to_list": ["AVERAGE SALE TO LIST RATIO (%)"],
     }
     NUMERIC_FIELDS = ["price", "sold", "dom", "sale_to_list"]
+    OUTPUT_KEY = {"price": "median_price", "sold": "homes_sold", "dom": "dom", "sale_to_list": "sale_to_list"}
 
     def find_col(header, candidates):
-        lower = {h.strip().lower(): h for h in header}
+        lower = {h.strip().lower(): i for i, h in enumerate(header)}
         for cand in candidates:
             if cand.lower() in lower:
                 return lower[cand.lower()]
         return None
 
-    def fetch_gz(fname, attempts=1):
-        last_err = None
-        for attempt in range(attempts):
-            try:
-                req = urllib.request.Request(BASE + fname, headers={"User-Agent": SEC_UA})
-                with urllib.request.urlopen(req, timeout=120) as r:
-                    return gzip.decompress(r.read()), None
-            except Exception as e:
-                last_err = e
-                if attempt < attempts - 1:
-                    time.sleep(3)
-        return None, last_err
-
-    def parse_rows(raw, key):
-        """Returns a list of dicts, one per data row, keyed by the logical
-        field names above (not the raw header text), or None (with a note
-        already logged) if a required column can't be found."""
-        text = raw.decode("utf-8", "replace")
-        lines_ = text.splitlines()
-        reader = csv.DictReader(lines_, delimiter="\t")
-        header = reader.fieldnames or []
-        resolved = {k: find_col(header, v) for k, v in COLS.items()}
-        # only the identifying columns are truly required; a metric column
-        # going missing (Redfin adding/renaming one field) shouldn't take
-        # down the other three metrics along with it
-        required = ["period_end", "region_type", "region_name"]
-        missing = [k for k in required if resolved[k] is None]
-        if missing:
-            sample = lines_[1][:300] if len(lines_) > 1 else "(no data rows)"
-            note("Resale %s: could not find column(s) %s. Full header: %s | Sample row: %s"
-                 % (key, missing, header, sample))
+    def read_level(key, fname, region):
+        """Streams the file and keeps only the lines for this region, so the
+        150 MB county file never has to sit in memory."""
+        req = urllib.request.Request(BASE + fname, headers={"User-Agent": SEC_UA})
+        header, rows = None, []
+        needle = region.encode() if region else None
+        with urllib.request.urlopen(req, timeout=300) as r:
+            for raw in r:
+                if header is None:
+                    header = next(csv.reader([raw.decode("utf-8-sig", "replace")]))
+                    continue
+                if needle and needle not in raw:
+                    continue
+                rows.append(next(csv.reader([raw.decode("utf-8", "replace")])))
+        if not header:
+            note("Resale %s: %s came back empty" % (key, fname))
             return None
-        missing_metrics = [k for k in NUMERIC_FIELDS if resolved[k] is None]
-        if missing_metrics:
-            note("Resale %s: metric column(s) %s not found, continuing without them. Full header: %s"
-                 % (key, missing_metrics, header))
-        out = []
-        for row in reader:
-            d = (row.get(resolved["period_end"]) or "")[:10]
+        idx = {k: find_col(header, v) for k, v in COLS.items()}
+        if idx["period_end"] is None:
+            note("Resale %s: no PERIOD END column in %s. Full header: %s" % (key, fname, header))
+            return None
+        missing = [k for k in NUMERIC_FIELDS if idx[k] is None]
+        if missing:
+            note("Resale %s: column(s) %s not found in %s, continuing without them. Full header: %s"
+                 % (key, missing, fname, header))
+        series = {f: {} for f in NUMERIC_FIELDS}
+        for row in rows:
+            if region and idx["region_name"] is not None and row[idx["region_name"]].strip() != region:
+                continue
+            d = row[idx["period_end"]][:10]
             if not d:
                 continue
-            rec = {"d": d, "region_type": row.get(resolved["region_type"], ""),
-                   "region_name": row.get(resolved["region_name"], "")}
             for f in NUMERIC_FIELDS:
-                rec[f] = row.get(resolved[f], "") if resolved[f] else ""
-            out.append(rec)
+                if idx[f] is None:
+                    continue
+                v = row[idx[f]].strip()
+                if v in ("", "NA", "null"):
+                    continue
+                try:
+                    series[f][d] = round(float(v), 2)
+                except ValueError:
+                    continue
+        out = {OUTPUT_KEY[f]: [{"d": d, "v": v} for d, v in sorted(s.items())][-96:]
+               for f, s in series.items()}
+        if not any(out.values()):
+            note("Resale %s: %s read, but no rows matched %s" % (key, fname, region or "the country"))
+            return None
         return out
 
-    def to_series(rows, matcher):
-        """One output series per numeric field, {key: [{"d","v"}, ...]}."""
-        series = {f: [] for f in NUMERIC_FIELDS}
-        seen = set()
-        for r in rows:
-            if not matcher(r["region_type"], r["region_name"]) or r["d"] in seen:
-                continue
-            hit = False
-            for f in NUMERIC_FIELDS:
-                v = r.get(f, "")
-                if v not in ("", None):
-                    try:
-                        series[f].append({"d": r["d"], "v": round(float(v), 2)})
-                        hit = True
-                    except ValueError:
-                        continue
-            if hit:
-                seen.add(r["d"])
-        for f in series:
-            series[f].sort(key=lambda o: o["d"])
-        return series
-
-    # internal field names ("price"/"sold") map to the established output
-    # keys the frontend already expects; "dom" and "sale_to_list" are new
-    # fields with no legacy name to preserve.
-    OUTPUT_KEY = {"price": "median_price", "sold": "homes_sold", "dom": "dom", "sale_to_list": "sale_to_list"}
-
-    def trim(series, n=96):
-        return {OUTPUT_KEY[f]: v[-n:] for f, v in series.items()}
-
     levels = []
-
-    # National: try the direct file first, with one retry, since it has
-    # failed before. Do not derive the fallback yet - only do the (heavier)
-    # all-states aggregation below if this genuinely comes up empty.
-    raw, err = fetch_gz("national_market_tracker.tsv000.gz", attempts=2)
-    national_rows = parse_rows(raw, "national") if raw is not None else None
-    if raw is None:
-        note("Resale national failed: %s. Redfin rebuilt this Data Center in May 2026; "
-             "falling back to a state-aggregated estimate below." % err)
-    time.sleep(0.5)
-
-    # California and the all-states rows needed for the national fallback
-    # come from the same file, fetched once.
-    raw, err = fetch_gz("state_market_tracker.tsv000.gz")
-    state_rows = parse_rows(raw, "ca") if raw is not None else None
-    if raw is None:
-        note("Resale ca failed: %s" % err)
-    else:
-        s = to_series(state_rows, lambda rt, rn: rn.strip().lower() == "california")
-        if any(s.values()):
-            levels.append({"key": "ca", "label": LABELS["ca"], **trim(s)})
-            print("  %-9s %4d price pts, %4d sold pts" % ("ca", len(s["price"]), len(s["sold"])))
-        else:
-            note("Resale ca: file read, columns found, but no rows matched region California")
-    time.sleep(0.5)
-
-    if national_rows:
-        s = to_series(national_rows, lambda rt, rn: rt.strip().lower() == "national")
-        if any(s.values()):
-            levels.append({"key": "national", "label": LABELS["national"], **trim(s)})
-            print("  %-9s %4d price pts, %4d sold pts (direct)" % ("national", len(s["price"]), len(s["sold"])))
-        else:
-            national_rows = None  # fall through to the aggregate below
-
-    if not national_rows and state_rows:
-        by_period = {}
-        for r in state_rows:
-            if r["region_type"].strip().lower() != "state":
-                continue
-            try:
-                h_val = float(r["sold"]) if r.get("sold") not in ("", None) else None
-            except ValueError:
-                h_val = None
-            slot = by_period.setdefault(r["d"], {"sold": 0.0, "weighted": {f: 0.0 for f in NUMERIC_FIELDS}, "weight": 0.0})
-            if h_val is not None:
-                slot["sold"] += h_val
-                for f in NUMERIC_FIELDS:
-                    try:
-                        v = float(r[f]) if r.get(f) not in ("", None) else None
-                    except ValueError:
-                        v = None
-                    if v is not None:
-                        slot["weighted"][f] += v * h_val
-                slot["weight"] += h_val
-        agg = {f: [] for f in NUMERIC_FIELDS}
-        for d in sorted(by_period):
-            slot = by_period[d]
-            if slot["sold"] > 0:
-                agg["sold"].append({"d": d, "v": round(slot["sold"], 1)})
-            if slot["weight"] > 0:
-                for f in ("price", "dom", "sale_to_list"):
-                    agg[f].append({"d": d, "v": round(slot["weighted"][f] / slot["weight"], 2)})
-        if any(agg.values()):
-            levels.append({"key": "national", "label": LABELS["national"], **trim(agg),
-                            "estimated": True,
-                            "estimate_note": "Every figure here is a homes-sold-weighted average "
-                                             "across all states (a straight sum for homes sold "
-                                             "itself), since the standalone national file is "
-                                             "currently unavailable. Not Redfin's own calculation."})
-            print("  %-9s %4d price pts, %4d sold pts (aggregated from states)"
-                  % ("national", len(agg["price"]), len(agg["sold"])))
-        else:
-            note("Resale national: state file read but no state-level rows found to aggregate")
-
-    # Ventura, its own file, independent of the above.
-    raw, err = fetch_gz("county_market_tracker.tsv000.gz")
-    if raw is None:
-        note("Resale ventura failed: %s" % err)
-    else:
-        rows = parse_rows(raw, "ventura")
-        if rows:
-            s = to_series(rows, lambda rt, rn: "ventura" in rn.strip().lower() and "ca" in rn.strip().lower())
-            if any(s.values()):
-                levels.append({"key": "ventura", "label": LABELS["ventura"], **trim(s)})
-                print("  %-9s %4d price pts, %4d sold pts" % ("ventura", len(s["price"]), len(s["sold"])))
-            else:
-                note("Resale ventura: file read, columns found, but no rows matched region Ventura County, CA")
+    for key, label, fname, region in LEVELS:
+        try:
+            s = read_level(key, fname, region)
+        except Exception as e:
+            note("Resale %s failed: %s" % (key, e))
+            s = None
+        if s:
+            levels.append({"key": key, "label": label, **s})
+            last = (s.get("median_price") or [{}])[-1]
+            print("  %-9s %4d price pts, latest %s" % (key, len(s.get("median_price", [])), last.get("d")))
+        time.sleep(0.5)
 
     return {"as_of": TODAY.isoformat(), "levels": levels,
-            "source": "Redfin Data Center, redfin.com/news/data-center/downloads"}
+            "source": "Redfin Data Center, Housing Market Tracker (monthly, all residential), "
+                      "redfin.com/news/data-center/downloads. National and California figures are "
+                      "seasonally adjusted where Redfin adjusts them; Ventura County is unadjusted; "
+                      "median sale price is unadjusted at every level"}
 
 
 def pull_stock_prices():
