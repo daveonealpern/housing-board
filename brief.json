@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-11-02",
+  "as_of": "2026-11-12",
   "source": "manual",
   "covered": {
     "DHI": "2026-06-30",
@@ -7,17 +7,17 @@
     "PHM": "2026-09-30",
     "KBH": "2026-08-31",
     "TOL": "2026-07-31",
-    "NVR": "2026-06-30",
+    "NVR": "2026-09-30",
     "MTH": "2026-09-30",
     "CCS": "2026-09-30",
-    "LGIH": "2026-06-30",
+    "LGIH": "2026-09-30",
     "MHO": "2026-09-30"
   },
-  "headline": "All six third-quarter filings show weaker demand and more option walk-aways, and impairments have reached California product.",
+  "headline": "Eight third-quarter filings show weaker demand and rising cancellations, and impairments have reached California product.",
   "national": [
-    "Six builders have now filed for the third quarter: Lennar and KB Home for quarters ended August 31, and PulteGroup, M/I Homes, Meritage and Century Communities for September 30. All six describe it as weaker than the quarter before. Every one delivered fewer homes than a year earlier (Lennar down 3%, Pulte down 9%, KB down 19%, M/I down 2%, Meritage down 14%, Century down 2%) and took fewer net orders (Lennar down 9%, Pulte down 6%, KB down 12%, M/I down 2%, Meritage down 15%, Century down 4%). Margins are still compressed year over year: Lennar 15.8% against 17.5%, Pulte 24.8% against 26.2%, KB 16.5% against 18.2%, M/I homebuilding 18.4% against 21.5%, Meritage 17.4% against 19.1%, Century 15.0% against 17.9%. Lennar and KB did improve on their second quarters.",
+    "Eight builders have now filed for the third quarter: Lennar and KB Home for quarters ended August 31, and PulteGroup, M/I Homes, Meritage, Century Communities, NVR and LGI Homes for September 30. All eight describe it as weaker than the quarter before. Every one but LGI delivered fewer homes than a year earlier (Lennar down 3%, Pulte down 9%, KB down 19%, M/I down 2%, Meritage down 14%, Century down 2%, NVR down 7%); LGI's closings rose 12% only because wholesale sales to rental operators climbed to 215 homes, 18% of the total. Net orders fell everywhere they are reported (Lennar down 9%, Pulte down 6%, KB down 12%, M/I down 2%, Meritage down 15%, Century down 4%, NVR down 7%), and LGI's are down 30% for the year to date. Margins are still compressed year over year: Lennar 15.8% against 17.5%, Pulte 24.8% against 26.2%, KB 16.5% against 18.2%, M/I homebuilding 18.4% against 21.5%, Meritage 17.4% against 19.1%, Century 15.0% against 17.9%, NVR 18.3% against 21.1%, LGI 20.2% against 21.5%. Lennar and KB did improve on their second quarters.",
     "Rates are the stated cause. Lennar puts the 30-year mortgage at about 7% and the 10-year Treasury near 5%, up from 6.4% to 6.5% earlier in the year, and ties the move to energy-driven inflation from tension with Iran. M/I says mortgage rates topped 7% by quarter end, and Pulte says they rose sharply, most of all in September. Resale competition is building at the same time. KB says resale inventory is at its highest level in a decade with prices trending down in several of its markets, and Lennar reports rising resales in Texas and Florida. Meritage says buyers worried about the market and their own finances are in less of a hurry to commit, and Century reports that adjustable-rate loans were nearly 35% of its mortgage originations, up from under 5% in early 2025. Buyers are stretching for the payment.",
-    "Cancellations moved up in the middle of the group. Pulte held at 16%, Lennar rose to 15% from 14%, KB to 18% from 17%, Meritage to 13% from 11%, and M/I sat at 12.3% against 12.2%; Century does not disclose a rate. Alongside Horton's 20% and Toll's 2.6% from the last edition (June and July quarters), the gradient still sorts by buyer segment, but the entry-level and first move-up builders are converging on Horton rather than on Toll.",
+    "Cancellations are where the third quarter breaks from the second. In the middle of the group, Pulte held at 16%, Lennar rose to 15% from 14%, KB to 18% from 17%, Meritage to 13% from 11%, and M/I sat at 12.3% against 12.2%; Century does not disclose a rate. The entry-level end has now passed Horton's June-quarter 20%. NVR's rate rose to 21.0% from 19.4%, and LGI's reached 48.9% for the first nine months against 28.1% a year earlier, which LGI attributes to more buyers being unable to secure or keep mortgage financing. Its backlog fell 48% to 685 homes. Toll's 2.6% from the July quarter is still the other end of the gradient.",
     "Incentives are now pulling in two directions. Lennar's fell again, to 12.0% of revenue from 14.3% a year earlier and 12.9% in its prior quarter, although its West segment went the other way. M/I's incentives and closing costs rose to $73.2 million from $53.5 million, with mortgage rate buydowns up $23.2 million, Pulte expects its incentives to stay elevated, Meritage expects to need higher incentive use, and Century's average delivered price fell 10% on incentives alone. Nobody is building into it. Pulte's unsold homes in production fell to 6,627 from 7,369 and its completed specs to 1,696 from 2,027. KB delivered 74% built-to-order and posted its first year-over-year backlog increase in four years. Lennar guides fourth-quarter orders of 19,500 to 20,500 against deliveries of 22,000 to 23,000, converting inventory to cash."
   ],
   "metrics": [
@@ -79,17 +79,17 @@
       "cancels": "2.6%"
     },
     {
-      "ticker": "MHO",
-      "name": "M/I Homes",
+      "ticker": "NVR",
+      "name": "NVR",
       "quarter": "Sep 2026",
-      "deliveries": "2,241 (-2%)",
-      "orders": "1,861 (-2%)",
-      "margin": "18.4% homebuilding",
-      "cancels": "12.3%",
+      "deliveries": "5,268 (-7%)",
+      "orders": "4,391 (-7%)",
+      "margin": "18.3%",
+      "cancels": "21.0%",
       "lots_owned": null,
-      "lots_optioned": "25,509 of ~48,900 controlled",
-      "communities": "246 (+6%)",
-      "incentives": "$73.2M (vs $53.5M)"
+      "lots_optioned": "~176,000 under purchase agreements",
+      "communities": "454 avg",
+      "incentives": "new-order price $442K vs $465K"
     },
     {
       "ticker": "MTH",
@@ -116,19 +116,45 @@
       "lots_optioned": "27,496",
       "communities": "343 (+7%)",
       "incentives": "ASP -10% on incentives"
+    },
+    {
+      "ticker": "MHO",
+      "name": "M/I Homes",
+      "quarter": "Sep 2026",
+      "deliveries": "2,241 (-2%)",
+      "orders": "1,861 (-2%)",
+      "margin": "18.4% homebuilding",
+      "cancels": "12.3%",
+      "lots_owned": null,
+      "lots_optioned": "25,509 of ~48,900 controlled",
+      "communities": "246 (+6%)",
+      "incentives": "$73.2M (vs $53.5M)"
+    },
+    {
+      "ticker": "LGIH",
+      "name": "LGI Homes",
+      "quarter": "Sep 2026",
+      "deliveries": "1,189 (+12%, 18% wholesale)",
+      "orders": "n/d for quarter (YTD -30%)",
+      "margin": "20.2% (23.7% adj)",
+      "cancels": "48.9% YTD",
+      "lots_owned": "50,270",
+      "lots_optioned": "8,130",
+      "communities": "151 (+7%)",
+      "incentives": "rising in most segments"
     }
   ],
   "land": [
-    "The new development this quarter is builders using the option to exit. KB abandoned 8,777 previously controlled lots in its first nine months; its lots owned or controlled fell 5% to 61,581 since November, and the share held under option fell to 40% from 43%. Pulte says it has walked away from a number of land option agreements and is re-underwriting options before buying more land. Its controlled lots fell to 224,275 from 234,632 at year end, with 55% optioned against 57%, and its third-quarter land-related charges rose to $37.5 million from $27.6 million. Meritage has not finished evaluating, or committed to, 18,025 of the 36,644 lots it holds under purchase and option contracts, and it recovered deposits this quarter on deals it had already terminated.",
-    "Lennar stays at the land-light extreme: 11,808 homesites owned against 476,153 controlled, 98% of the total, and the total is down from more than 511,000 a year ago. About 86% of its third-quarter deliveries came through land banking. The cost of that model is now visible. Lennar says land cost per home has risen, partly through option maintenance fees on extended deal durations, and expects that to weigh on margin while it works through positions underwritten under earlier market conditions. M/I controls about 48,900 lots, roughly five years of supply and 3% fewer than a year ago, with 25,509 of them under option at an aggregate $1.74 billion. Century moved the other way on mix: of 60,969 lots, 54.9% are owned against 57.1% at year end, with controlled lots up 5.3%.",
+    "The new development this quarter is builders using the option to exit. KB abandoned 8,777 previously controlled lots in its first nine months; its lots owned or controlled fell 5% to 61,581 since November, and the share held under option fell to 40% from 43%. Pulte says it has walked away from a number of land option agreements and is re-underwriting options before buying more land. Its controlled lots fell to 224,275 from 234,632 at year end, with 55% optioned against 57%, and its third-quarter land-related charges rose to $37.5 million from $27.6 million. Meritage has not finished evaluating, or committed to, 18,025 of the 36,644 lots it holds under purchase and option contracts, and it recovered deposits this quarter on deals it had already terminated. NVR, which buys finished lots rather than land, controls about 176,000 lots under purchase agreements backed by about $1.03 billion of deposits, and it wrote off $24.8 million of those deposits in the quarter against $18.9 million a year earlier.",
+    "Lennar stays at the land-light extreme: 11,808 homesites owned against 476,153 controlled, 98% of the total, and the total is down from more than 511,000 a year ago. About 86% of its third-quarter deliveries came through land banking. The cost of that model is now visible. Lennar says land cost per home has risen, partly through option maintenance fees on extended deal durations, and expects that to weigh on margin while it works through positions underwritten under earlier market conditions. M/I controls about 48,900 lots, roughly five years of supply and 3% fewer than a year ago, with 25,509 of them under option at an aggregate $1.74 billion. Century moved the other way on mix: of 60,969 lots, 54.9% are owned against 57.1% at year end, with controlled lots up 5.3%. LGI is the opposite model and the most exposed: it owns 50,270 of its 58,400 lots, while its backlog has halved.",
     "They are still buying selectively. KB put $722.3 million into land in the quarter, up 40% from a year earlier, and ended with 277 communities, up 5%. Meritage bought about 6,500 lots for $410.9 million and spent $601.4 million on development in nine months, ending with 348 communities against 334. Century bought HistoryMaker Homes in Dallas on October 7 for about $160.2 million, adding 29 communities, and ended the quarter at 343 against 321. Pulte's average community count rose 7%, and M/I expects to finish the year about 5% higher. Toll, from the last edition, held 75,500 lots with 58% under option.",
-    "The land pricing note has turned more cautious. The last edition carried Pulte's second-quarter comment that land inflation was easing. Its third-quarter 10-Q says instead that it continues to face pressure in the cost of land acquisition and development, and KB, M/I, Lennar and Meritage all name higher land or lot costs as a margin drag; Meritage says land costs remain elevated after years of high acquisition and development costs. None of the six filings reports falling land prices."
+    "The land pricing note has turned more cautious. The last edition carried Pulte's second-quarter comment that land inflation was easing. Its third-quarter 10-Q says instead that it continues to face pressure in the cost of land acquisition and development, and KB, M/I, Lennar and Meritage all name higher land or lot costs as a margin drag; Meritage says land costs remain elevated after years of high acquisition and development costs. NVR goes further and says it expects more margin pressure from higher land prices. None of the eight filings reports falling land prices."
   ],
   "socal": [
     "The filings do speak to California this quarter, through each builder's western segment, and the read splits by builder.",
     "Lennar's West segment, which includes California, is its weakest. Gross margin was 12.1% against 16.3% a year earlier, the lowest of its four segments, and the filing cites lower average prices in California among other states from base price cuts and more incentives. West deliveries fell 8% to 4,529 and orders 9% to 4,319. It is also the one Lennar segment where incentives rose, to 10.9% of revenue from 10.5%.",
     "Pulte's West segment, which also includes California, had closings down 18%, orders down 15% and a 21% cancellation rate, the highest of its six segments, and pre-tax income fell 57%. Average price rose 2% only because of closing mix in its California markets. West is where Pulte owns most of its land: 25,681 lots owned against 12,447 optioned, the reverse of its company-wide split.",
-    "KB's West Coast segment (California, Idaho and Washington) is the exception. Net orders rose 8% to 937, backlog value rose 22% to $1.02 billion, average community count rose 25% to 111, and the cancellation rate improved to 16% from 18%. Prices are giving: average selling price fell 6% to $641,800 and segment gross margin slipped to 16.7%. KB carries 20,471 West Coast lots at $3.21 billion, its largest land position by value. M/I has no California operations.",
+    "KB's West Coast segment (California, Idaho and Washington) is the exception. Net orders rose 8% to 937, backlog value rose 22% to $1.02 billion, average community count rose 25% to 111, and the cancellation rate improved to 16% from 18%. Prices are giving: average selling price fell 6% to $641,800 and segment gross margin slipped to 16.7%. KB carries 20,471 West Coast lots at $3.21 billion, its largest land position by value. M/I and NVR have no California operations. LGI's West segment, which includes California, closed 239 homes against 203 at about $454,000 each, but the filing gives no West orders figure.",
     "Century's West segment is California and Washington, and it is where the first real write-down landed. It lost $13.5 million before tax in the quarter, against a $21.2 million profit a year earlier, after $19.1 million of impairment charges. Deliveries fell 25%, orders 20.5% to 268, and average price 6.8% to $550,700 on heavier incentives. Century holds 3,562 owned and 2,309 controlled lots there.",
     "Meritage's West region, which includes California, closed 20% fewer homes and took 19% fewer orders, with its sales pace down to 2.6 a month per community from 3.4 and cancellations up to 12% from 9%. Its West margin held up better than the company's at 18.0%.",
     "One structural change: Sumitomo Forestry completed its acquisition of Tri Pointe on May 14, 2026 at $47 per share, delisting the company and making the group roughly the fifth largest U.S. builder at about 15,000 units annually. Tri Pointe reports Homebuilding Southern California as a named segment, so one of the most active regional counterparties is now a private subsidiary of a Japanese parent. Expect a different capital posture and no more quarterly segment disclosure."
@@ -140,9 +166,9 @@
     "The two items that belong on the radar are regulatory, not corporate. The 2025 California Building Standards Code and local County amendments took effect for all applications submitted on or after January 1, 2026, and AB 1308 now requires the County to inspect completed residential work of one to ten units within ten business days, with a miss treated as a Housing Accountability Act violation. That second one is real leverage on close-out timing."
   ],
   "takeaway": [
-    "Four more filings, all weaker, strengthen the case against entitling entry-level detached product for a near-term sale. Finished lots in attainable price ranges are still the gap, but builders will now pay for them only on option terms they can walk away from.",
+    "Eight third-quarter filings, all pointing weaker, strengthen the case against entitling entry-level detached product for a near-term sale. Finished lots in attainable price ranges are still the gap, but builders will now pay for them only on option terms they can walk away from.",
     "Expect re-trades and walk-aways on options underwritten in 2024 and 2025. KB's 8,777 abandoned lots and Pulte's walk-aways are the evidence, and Lennar's rising option fees show the land bankers are pricing the extensions. For a land seller, deposit and extension terms now matter as much as headline price.",
-    "In California, KB's West Coast segment is the one builder book adding communities and orders, while Century's $19.1 million impairment is the first write-down in this group aimed at California and Washington product. Watch whether others follow in fourth-quarter filings. Horton's 20% cancellation rate from the June quarter is still the weakest signal in the group; its fiscal-year 10-K, due in November, is the next read that matters for anyone holding a PSA with it."
+    "In California, KB's West Coast segment is the one builder book adding communities and orders, while Century's $19.1 million impairment is the first write-down in this group aimed at California and Washington product. Watch whether others follow in fourth-quarter filings. Buyer financing is the new stress point: NVR's 21% and LGI's 49% cancellation rates now exceed Horton's June-quarter 20%, so anyone holding a PSA with an entry-level builder should expect slower takedowns. Horton's fiscal-year 10-K, due this month, is the next read."
   ],
   "metric_history": {
     "DHI": [
@@ -257,6 +283,28 @@
         "orders_units": 2284,
         "orders_yoy_pct": -4.3,
         "margin_pct": 15.0,
+        "cancel_rate_pct": null
+      }
+    ],
+    "NVR": [
+      {
+        "quarter": "2026-09-30",
+        "deliveries_units": 5268,
+        "deliveries_yoy_pct": -6.6,
+        "orders_units": 4391,
+        "orders_yoy_pct": -7.3,
+        "margin_pct": 18.3,
+        "cancel_rate_pct": 21.0
+      }
+    ],
+    "LGIH": [
+      {
+        "quarter": "2026-09-30",
+        "deliveries_units": 1189,
+        "deliveries_yoy_pct": 11.6,
+        "orders_units": null,
+        "orders_yoy_pct": null,
+        "margin_pct": 20.2,
         "cancel_rate_pct": null
       }
     ]
