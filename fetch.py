@@ -36,13 +36,16 @@ RATES = ["MORTGAGE30US", "SPREAD", "DGS10", "T10Y2Y", "SOFR", "DPRIME", "FEDFUND
 
 # sid -> multiplier to convert FRED's native value into a true, real-world
 # number. Verified against each series' own FRED units field:
-#   - permits/starts/sales/completions/employment are reported in thousands
+#   - permits/starts/new home sales/completions/employment are reported in thousands
+#   - existing home sales (EXHOSLUSM495S) is the exception: FRED reports it in
+#     whole units (about 4,000,000), so it takes no multiplier. It was scaled
+#     by 1,000 here until 2026-11-13, which showed 3.75 billion sales a year.
 #   - construction spend is reported in millions of dollars
 #   - BAML spread series are reported in PERCENT, not basis points, despite
 #     the market convention of quoting credit spreads in bp
 SCALE = {
     "AUTHNOTT": 1000, "PERMIT": 1000, "PERMIT1": 1000, "HOUST1F": 1000, "HOUST": 1000,
-    "HSN1F": 1000, "EXHOSLUSM495S": 1000, "COMPUTSA": 1000,
+    "HSN1F": 1000, "COMPUTSA": 1000,
     "JTS2300JOL": 1000, "USCONS": 1000,
     "PRRESCONS": 1_000_000,
     "BAMLC0A4CBBB": 100, "BAMLH0A0HYM2": 100,
@@ -705,8 +708,24 @@ Return ONLY a JSON object, no prose and no code fence:
   "land": ["2 to 4 paragraphs on lot positions and land strategy"],
   "socal": ["2 to 4 paragraphs, or one paragraph saying the filings are silent on it"],
   "ventura": ["carry forward or refine the prior section"],
-  "takeaway": ["2 to 3 short paragraphs of implications for a land seller"]
+  "takeaway": ["2 to 3 short paragraphs of implications for a land seller"],
+  "app": {{
+    "signals": [{{"value": "a short figure such as 8,777 or $24.8M", "text": "under 15 words on what it is"}}],
+    "west": [{{"name": "Builder · segment", "stat": "one short figure", "tone": "better, worse or flat", "text": "under 20 words"}}],
+    "watch": [{{"label": "one or two words", "text": "one or two sentences"}}],
+    "cost_notes": [{{"who": "builder name or names", "text": "one or two sentences on build costs, labor or lot costs"}}],
+    "cost_summary": "one or two sentences on what builders say about costs",
+    "macro_note": "one sentence on what builders say about rates and demand",
+    "next_filings": [{{"name": "e.g. D.R. Horton annual report", "when": "month"}}]
+  }}
 }}
+
+The "app" block feeds the phone version of this brief. signals: 3 to 5 land or balance
+sheet figures from the data (lot walk-aways, deposit write-offs, impairments, land charges).
+west: one entry per builder whose western or California segment the data describes; keep the
+prior entry for any builder not in this data. watch: carry the prior entries forward unless the
+data changes them. next_filings: the next reports expected from tracked builders, dropping any
+already covered by this data.
 
 EXTRACTED DATA:
 {data}
@@ -773,6 +792,7 @@ def refresh_brief(builders):
         return brief
 
     prior = {k: brief.get(k, []) for k in ("national", "land", "socal", "ventura", "takeaway")}
+    prior["app"] = brief.get("app", {})
     try:
         new = parse_json_reply(anthropic(SYNTH_PROMPT.format(
             data=json.dumps(extracts, indent=1)[:120000],
@@ -814,6 +834,7 @@ def refresh_brief(builders):
         "socal": new.get("socal", brief.get("socal", [])),
         "ventura": new.get("ventura", brief.get("ventura", [])),
         "takeaway": new.get("takeaway", brief.get("takeaway", [])),
+        "app": {**(brief.get("app") or {}), **(new.get("app") or {})},
         "metrics": rows,
         "stale": [],
     })
@@ -1062,6 +1083,70 @@ def pull_stock_prices():
 
 
 # ---------------------------------------------------------------------------
+def refresh_resale_paragraph(brief, resale):
+    """Keeps the brief's Ventura resale paragraph in step with the resale panel.
+
+    That paragraph used to be written by hand in brief.json, so it went stale the
+    month after it was written (it still quoted September after the board had
+    October). It is now rebuilt from the same Redfin data on every run. The
+    paragraph is found by its mention of Redfin; if none exists it is added as the
+    second paragraph of the Ventura section. brief.json on disk is left alone.
+    """
+    level = next((l for l in (resale or {}).get("levels", []) if l.get("key") == "ventura"), None)
+    if not level or not level.get("median_price"):
+        return brief
+
+    def latest_and_year_ago(obs):
+        if not obs:
+            return None, None
+        last = obs[-1]
+        target = "%d%s" % (int(last["d"][:4]) - 1, last["d"][4:])
+        prior = [o for o in obs if o["d"] <= target]
+        return last, (prior[-1] if prior else None)
+
+    def change(last, prior):
+        if not last or not prior or not prior["v"]:
+            return None
+        return (last["v"] / prior["v"] - 1) * 100
+
+    price, price_ya = latest_and_year_ago(level.get("median_price"))
+    sold, sold_ya = latest_and_year_ago(level.get("homes_sold"))
+    dom = (level.get("dom") or [None])[-1]
+    stl = (level.get("sale_to_list") or [None])[-1]
+    month = datetime.date.fromisoformat(price["d"]).strftime("%B")
+
+    def moved(pct):
+        return ("up %.1f%%" % pct) if pct >= 0 else ("down %.1f%%" % abs(pct))
+
+    bits = ["median sale price $%s" % format(int(round(price["v"])), ",")]
+    pc = change(price, price_ya)
+    if pc is not None:
+        bits[-1] += ", %s from a year earlier" % moved(pc)
+    if sold:
+        sc = change(sold, sold_ya)
+        bits.append("on %s sales%s" % (format(int(round(sold["v"])), ","),
+                                        (", " + moved(sc)) if sc is not None else ""))
+    tail = []
+    if dom:
+        tail.append("a %d-day median time on market" % round(dom["v"]))
+    if stl:
+        tail.append("sales at %.1f%% of list" % stl["v"])
+    text = ("The resale side, from Redfin's %s county data in the resale panel on this board: %s"
+            % (month, ", ".join(bits)))
+    if tail:
+        text += ", with " + " and ".join(tail)
+    text += "."
+
+    paras = list(brief.get("ventura") or [])
+    idx = next((i for i, p in enumerate(paras) if "Redfin" in p), None)
+    if idx is None:
+        paras.insert(min(1, len(paras)), text)
+    else:
+        paras[idx] = text
+    brief["ventura"] = paras
+    return brief
+
+
 def main():
     if not FRED_KEY:
         print("FRED_API_KEY is not set. Add it under Settings > Secrets and variables > Actions.",
@@ -1075,6 +1160,7 @@ def main():
     print("Polymarket...");       markets  = pull_markets()
     print("Builder brief...");   brief    = refresh_brief(builders)
     print("Resale market...");   resale   = pull_resale_data()
+    brief = refresh_resale_paragraph(brief, resale)
     print("Headlines...");       headlines = pull_headlines()
     print("Stock prices...");    stocks   = pull_stock_prices()
 

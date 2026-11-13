@@ -1,0 +1,16 @@
+{
+  "name": "Housing Signal Board",
+  "short_name": "Signal Board",
+  "description": "Public homebuilders, Southern California, construction costs and macro, from the Colton Lee Communities Housing Signal Board.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#2C3035",
+  "theme_color": "#2C3035",
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png"},
+    {"src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}

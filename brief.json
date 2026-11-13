@@ -161,7 +161,7 @@
   ],
   "ventura": [
     "No public builder discloses at county level. Ventura appears in none of these filings. Anything county-specific attributed to a builder filing is extrapolation.",
-    "The resale side, from Redfin's September county data in the resale panel on this board: median sale price $873,795, up 3.7% from a year earlier, on 513 sales, up 3.5%, with a 51-day median time on market and sales at 98.5% of list. The forward-looking pieces are softer. Pending sales were down 9.1% year over year, active listings up 4.2%, and months of supply at 3.7. That is the early local version of what the builders describe nationally.",
+    "The resale side, from Redfin's October county data in the resale panel on this board: median sale price $862,100, up 0.5% from a year earlier, on 509 sales, down 12.7%, with a 52-day median time on market and sales at 98.2% of list.",
     "From the last edition: KB Home is actively selling at Beltramo Ranch in the county, and the new-home pipeline countywide is thin for a county of this size.",
     "The two items that belong on the radar are regulatory, not corporate. The 2025 California Building Standards Code and local County amendments took effect for all applications submitted on or after January 1, 2026, and AB 1308 now requires the County to inspect completed residential work of one to ten units within ten business days, with a miss treated as a Housing Accountability Act violation. That second one is real leverage on close-out timing."
   ],
@@ -306,6 +306,108 @@
         "orders_yoy_pct": null,
         "margin_pct": 20.2,
         "cancel_rate_pct": null
+      }
+    ]
+  },
+  "app": {
+    "signals": [
+      {
+        "value": "8,777",
+        "text": "optioned lots KB Home walked away from this year"
+      },
+      {
+        "value": "$24.8M",
+        "text": "of lot deposits NVR wrote off in Q3, up from $18.9M"
+      },
+      {
+        "value": "$19.1M",
+        "text": "impairment in Century's West segment (California and Washington)"
+      },
+      {
+        "value": "$37.5M",
+        "text": "Pulte land charges in Q3, up from $27.6M, as it walks away from options"
+      }
+    ],
+    "west": [
+      {
+        "name": "KB Home \u00b7 West Coast",
+        "stat": "Orders up 8%",
+        "tone": "better",
+        "text": "Backlog value up 22%, communities up 25%. The one western book that is growing."
+      },
+      {
+        "name": "Century \u00b7 West (CA, WA)",
+        "stat": "\u2212$13.5M pre-tax",
+        "tone": "worse",
+        "text": "$19.1M impairment; orders down 20.5%, average price down 6.8%."
+      },
+      {
+        "name": "PulteGroup \u00b7 West",
+        "stat": "21% cancels",
+        "tone": "worse",
+        "text": "Orders down 15%, pre-tax income down 57%."
+      },
+      {
+        "name": "Lennar \u00b7 West",
+        "stat": "12.1% margin",
+        "tone": "worse",
+        "text": "Lowest of its segments, down from 16.3%; incentives rising here."
+      },
+      {
+        "name": "Meritage \u00b7 West",
+        "stat": "Orders down 19%",
+        "tone": "worse",
+        "text": "Cancellations up to 12% from 9%."
+      },
+      {
+        "name": "LGI Homes \u00b7 West",
+        "stat": "239 closings",
+        "tone": "flat",
+        "text": "Up from 203 at about $454,000 each; no West orders figure given."
+      }
+    ],
+    "watch": [
+      {
+        "label": "AB 1308",
+        "text": "The County must inspect completed residential work of one to ten units within ten business days. A miss is treated as a Housing Accountability Act violation."
+      },
+      {
+        "label": "Building code",
+        "text": "The 2025 California Building Standards Code and County amendments apply to applications submitted on or after January 1, 2026."
+      },
+      {
+        "label": "Counterparty",
+        "text": "Tri Pointe is now a private subsidiary of Sumitomo Forestry. Its Southern California segment no longer reports quarterly."
+      }
+    ],
+    "cost_notes": [
+      {
+        "who": "Lennar",
+        "text": "Build cost near $80 a square foot, down 6%; cycle time a record 116 days. Labor is tighter where immigration enforcement is active."
+      },
+      {
+        "who": "Meritage and Century",
+        "text": "Direct construction cost savings from national vendor volume; cycle times of about three to four months."
+      },
+      {
+        "who": "NVR, Pulte, M/I, KB",
+        "text": "Higher lot and land costs are the main margin drag. NVR expects more pressure from land prices."
+      }
+    ],
+    "cost_summary": "Builders are absorbing material costs through scale for now. Land and lot costs, not sticks and bricks, are what they name as the margin drag.",
+    "macro_note": "Every builder that filed this quarter names rates as the reason demand weakened.",
+    "next_filings": [
+      {
+        "name": "D.R. Horton annual report",
+        "when": "November"
+      },
+      {
+        "name": "Toll Brothers annual report",
+        "when": "December"
+      },
+      {
+        "name": "Lennar and KB Home annual reports",
+        "when": "January"
       }
     ]
   }

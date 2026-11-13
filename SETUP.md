@@ -144,3 +144,19 @@ back lot counts, specs per community, and cancellation rates.
 
 If you would rather not have even that step, there is a version where the collector
 calls Claude to read each filing itself. One more key, a few cents a quarter.
+
+## Phone app
+
+The board has a phone version at `https://daveonealpern.github.io/housing-board/app/`,
+also linked from the top of the board. It reads the same `data.json` the board does,
+so it updates with the same nightly run and needs no setup of its own.
+
+To put it on an iPhone home screen: open that link in Safari, tap Share, then
+Add to Home Screen. It opens full screen with its own icon and keeps the last data
+it saw for when there is no signal.
+
+The app's market summary uses `summary.js`, the same code that writes the board's
+executive summary, so the two always match. The extra phone sections (land signals,
+builders in the West, regulatory watch, cost notes, next filings) come from the `app`
+block in `brief.json`, which the automatic brief refresh maintains once
+`ANTHROPIC_API_KEY` is set.
