@@ -700,6 +700,11 @@ Rules:
 - No public builder discloses at county level, so never attribute a Ventura County claim to a
   filing. Carry forward the prior ventura section unless the new data genuinely changes it.
 - Write plainly. No em dashes. Short direct sentences.
+- The brief is read for weeks after it is written, so anchor every time reference to a fixed
+  period or date: "the September quarter", "fiscal 2026", "due in late November". Never write
+  relative time ("this month", "this quarter", "recently", "last edition", "upcoming"), and never
+  refer to the brief itself or to earlier editions. Carried-forward facts get their own period
+  ("at the end of its July quarter"), not "from the last edition".
 
 Return ONLY a JSON object, no prose and no code fence:
 {{

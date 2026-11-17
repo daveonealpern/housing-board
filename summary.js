@@ -5,8 +5,6 @@
 // the board and the app always say exactly the same thing. They read the
 // page's global D (the parsed data.json), which each page declares itself.
 
-// sid -> how to decorate a formatted number for that series' actual unit.
-// Mirrors fetch.py's own unit strings exactly, so a change there is the only
 const fmt = v => v == null ? '-'
   : Math.abs(v) >= 1e9   ? (v/1e9).toFixed(1) + 'B'
   : Math.abs(v) >= 1e6   ? (v/1e6).toFixed(2) + 'M'
@@ -209,11 +207,130 @@ function execSummary(sig){
 
   // 5. equity close
   if(sig.avgYtd != null){
-    paras.push('The tracked public builders are averaging ' + (sig.avgYtd >= 0 ? '+' : '') + sig.avgYtd.toFixed(1)
+    let p = 'The tracked public builders are averaging ' + (sig.avgYtd >= 0 ? '+' : '') + sig.avgYtd.toFixed(1)
       + '% year to date, ' + (sig.avgYtd >= 0 ? 'a market that is still giving the group credit' : 'a market that has been marking the group down')
-      + ' despite the mixed operating picture above.');
+      + ' despite the mixed operating picture above.';
+    const lv = D.live;
+    if(lv && lv.avgDay != null && lv.sessionIsToday){
+      const mv = Math.abs(lv.avgDay) < 0.05 ? 'flat on average' : (lv.avgDay > 0 ? 'up ' : 'down ') + Math.abs(lv.avgDay).toFixed(1) + '% on average';
+      p += lv.open ? ' As of ' + liveTime(lv.time) + ' they are trading ' + mv + ' today.'
+                   : ' They closed ' + mv + ' today.';
+    }
+    paras.push(p);
   }
 
   return paras;
 }
 
+
+
+// ---------------------------------------------------------------------------
+// Live share prices
+//
+// data.json carries each builder's previous close from the nightly run, which
+// goes stale the moment the market opens. When a page opens, and every minute
+// while the regular session is open, it asks the hsb-live Cloudflare Worker
+// (worker/ in this repository) for current quotes and lays them over
+// D.stocks: price, today's move, and year to date recomputed the way fetch.py
+// does it (from each stock's first close of the year). Everything that reads
+// D.stocks, including the executive summary's equity sentence, then reads the
+// live numbers. With LIVE_QUOTES_URL empty, or the Worker unreachable, the
+// pages show the nightly close exactly as before.
+const LIVE_QUOTES_URL = '';
+
+const LIVE = {last: null, timer: null, fetchedAt: 0};
+
+const nyDate = sec => new Intl.DateTimeFormat('en-CA',
+  {timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit'}).format(new Date(sec * 1000));
+const liveTime = sec => new Date(sec * 1000).toLocaleTimeString('en-US', {hour: 'numeric', minute: '2-digit'});
+const round1 = v => Math.round(v * 10) / 10;
+
+function fetchLiveQuotes(){
+  if(!LIVE_QUOTES_URL) return Promise.resolve(null);
+  return fetch(LIVE_QUOTES_URL, {cache: 'no-store'})
+    .then(r => r.ok ? r.json() : null)
+    .catch(() => null);
+}
+
+// Lays a /quotes payload over D.stocks. Safe to call again on the same D, or
+// on a freshly loaded D, with the same payload. Returns true if any price moved
+// onto the board.
+function applyLiveQuotes(live){
+  if(!live || !Array.isArray(live.quotes) || !D || !Array.isArray(D.stocks)) return false;
+  const by = {};
+  live.quotes.forEach(q => { if(q && q.symbol && typeof q.price === 'number' && q.time) by[q.symbol] = q; });
+  let applied = 0, latest = 0, daySum = 0, dayN = 0, session = null;
+  D.stocks.forEach(r => {
+    const q = by[r.ticker];
+    if(!q) return;
+    const day = nyDate(q.time);
+    const series = r.series || (r.series = []);
+    const last = series[series.length - 1];
+    if(last && day < last.d) return;                  // older than the nightly close already on file
+    const v = Math.round(q.price * 100) / 100;
+    if(last && last.d === day) last.v = v; else series.push({d: day, v});
+    r.price = q.price;
+    r.as_of = day;
+    const base = series[0];
+    if(base && base.v && base.d.slice(0, 4) === day.slice(0, 4)) r.ytd_pct = round1((q.price - base.v) / base.v * 100);
+    r.day_pct = q.prevClose ? round1((q.price - q.prevClose) / q.prevClose * 100) : null;
+    r.live_time = q.time;
+    if(r.day_pct != null){ daySum += (q.price - q.prevClose) / q.prevClose * 100; dayN++; }
+    if(q.time > latest){ latest = q.time; session = day; }
+    applied++;
+  });
+  if(!applied) return false;
+  D.live = {
+    time: latest,
+    session,
+    sessionIsToday: session === nyDate(Date.now() / 1000),
+    open: !!(live.market && live.market.open),
+    avgDay: dayN ? daySum / dayN : null,
+    count: applied,
+    fetched: live.fetched || null,
+  };
+  return true;
+}
+
+// Short label for wherever prices are shown: "Live 10:47 AM", "Close 1:00 PM"
+// on an early-close day, or "Nov 14 close" when the last trade is not today.
+function liveLabel(){
+  const lv = D && D.live;
+  if(!lv) return '';
+  if(lv.open) return 'Live ' + liveTime(lv.time);
+  if(lv.sessionIsToday) return 'Today’s close';
+  const [y, m, d] = lv.session.split('-').map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString('en-US', {month: 'short', day: 'numeric'}) + ' close';
+}
+
+// Runs the live-price loop for a page: fetch now, then every minute while the
+// page is visible and the market is open, and at the next open otherwise.
+// onUpdate() is the page's own redraw of whatever shows prices.
+function startLiveQuotes(onUpdate){
+  if(!LIVE_QUOTES_URL) return;
+  const schedule = live => {
+    clearTimeout(LIVE.timer);
+    if(document.hidden) return;
+    const m = live && live.market, now = Date.now() / 1000;
+    let wait = 15 * 60;                                          // closed, or no answer: look again in 15 min
+    if(m && m.open) wait = 60;
+    else if(m && m.start && m.start > now) wait = Math.min(wait, Math.max(60, m.start - now + 30));
+    LIVE.timer = setTimeout(tick, wait * 1000);
+  };
+  const tick = () => {
+    LIVE.fetchedAt = Date.now();
+    fetchLiveQuotes().then(live => {
+      if(live && applyLiveQuotes(live)){ LIVE.last = live; onUpdate(); }
+      schedule(live || LIVE.last);
+    });
+  };
+  document.addEventListener('visibilitychange', () => {
+    if(document.hidden){ clearTimeout(LIVE.timer); return; }
+    if(Date.now() - LIVE.fetchedAt > 30 * 1000) tick(); else schedule(LIVE.last);
+  });
+  tick();
+}
+
+// After a page reloads data.json, the nightly close replaces the live prices;
+// this puts the most recent quotes back on top.
+function reapplyLiveQuotes(){ return LIVE.last ? applyLiveQuotes(LIVE.last) : false; }

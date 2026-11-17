@@ -206,7 +206,7 @@
 <script>
 "use strict";
 let D = null;
-let loadedAt = 0;
+let loadedAt = 0, liveStarted = false;
 const view = document.getElementById('view');
 
 // ---------------------------------------------------------------- formatting
@@ -347,9 +347,9 @@ function renderBuilders(){
   let h = '<section class="card accent summary" aria-label="Market summary"><div class="summary-head">'
     + '<div class="sec-head"><p class="eyebrow">Market summary</p><span>' + esc(shortDate(D.generated.slice(0, 10))) + '</span></div>'
     + '<p class="lede">' + esc(pitch) + '</p></div>'
-    + acc('Executive summary', 'Indicators, rates, resale, builder stocks', paras, 'Computed fresh from this run')
-    + acc('California and the West', "Each builder's western segment", b.socal)
-    + acc('Ventura County', 'Resale, pipeline, regulatory', b.ventura)
+    + acc('Executive summary', 'Indicators, rates, resale, builder stocks', paras, 'Computed from the ' + runWhen() + ' data run' + (D.live ? '; share prices ' + lowerFirst(priceWhen()) + '.' : '.'))
+    + acc('California and the West', "Each builder's western segment", b.socal, briefFoot(b))
+    + acc('Ventura County', 'Resale, pipeline, regulatory', b.ventura, briefFoot(b, true))
     + '</section>';
 
   const chips = [];
@@ -379,7 +379,7 @@ function renderBuilders(){
         + '<span class="num ' + r.orders.tone + '">' + esc(r.orders.txt) + '</span>'
         + '<span class="mg"><span class="num">' + (r.margin != null ? r.margin.toFixed(1) + '%' : '—') + '</span><small>' + esc(r.msub) + '</small></span>'
         + '<span class="num r ' + (r.stock == null ? 'flat' : r.stock >= 0 ? 'better' : 'worse') + '">' + (r.stock == null ? '—' : signed(r.stock)) + '</span></a>').join('')
-    + '<p class="note" style="margin-top:8px">Orders are net orders versus the same quarter last year. Stock is year to date. Tap a builder for its filing.</p></section>';
+    + '<p class="note" style="margin-top:8px">Orders are net orders versus the same quarter last year. Stock is year to date' + (D.live ? ', ' + esc(lowerFirst(priceWhen())) : ', at the last close') + '. Tap a builder for its filing.</p></section>';
 
   if((app.signals || []).length){
     h += '<section class="sec"><h2>Land and balance sheet</h2>' + app.signals.map(s => '<div class="card signal"><b>' + esc(s.value) + '</b><span>' + esc(s.text) + '</span></div>').join('') + '</section>';
@@ -408,7 +408,10 @@ function renderBuilder(tk){
   const hist = ((b.metric_history || {})[tk] || []).slice().reverse();
   const back = '<a class="back" href="#builders"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>Builders</a>';
   let h = back + '<section class="detail-head"><div class="sec" style="gap:6px"><p class="eyebrow">' + esc(tk) + ' · quarter ended ' + esc(m.quarter || '') + '</p><h1 class="title">' + esc(m.name) + '</h1></div>'
-    + (stock.price != null ? '<div class="px"><b>$' + stock.price.toFixed(2) + '</b><span class="note ' + (stock.ytd_pct >= 0 ? 'better' : 'worse') + '">' + signed(stock.ytd_pct) + ' this year</span></div>' : '') + '</section>';
+    + (stock.price != null ? '<div class="px"><b>$' + stock.price.toFixed(2) + '</b>'
+        + (stock.day_pct != null ? '<span class="note ' + (stock.day_pct >= 0 ? 'better' : 'worse') + '">' + signed(stock.day_pct) + ' ' + (D.live && D.live.sessionIsToday ? 'today' : 'last session') + '</span>' : '')
+        + '<span class="note ' + (stock.ytd_pct >= 0 ? 'better' : 'worse') + '">' + signed(stock.ytd_pct) + ' this year</span>'
+        + '<span class="note dim">' + esc(priceWhen()) + '</span></div>' : '') + '</section>';
   if(stock.series) h += spark(stock.series);
 
   const tiles = [['Deliveries', m.deliveries], ['Net orders', m.orders], ['Gross margin', m.margin], ['Cancellation rate', m.cancels], ['Communities', m.communities], ['Incentives', m.incentives]]
@@ -563,6 +566,24 @@ function renderMacro(){
 }
 
 // -------------------------------------------------------------- shell, data
+// When the numbers on screen were taken, in words.
+function runWhen(){
+  const g = new Date(D.generated);
+  return MONTHS[g.getMonth()] + ' ' + g.getDate() + ', ' + g.toLocaleTimeString('en-US', {hour: 'numeric', minute: '2-digit'});
+}
+function priceWhen(){
+  const lv = D.live;
+  if(!lv) return 'Close of ' + shortDate(((D.stocks || [])[0] || {}).as_of || D.generated.slice(0, 10));
+  return lv.open ? 'Live as of ' + liveTime(lv.time) : lv.sessionIsToday ? 'As of today\u2019s close' : 'As of the ' + liveLabel();
+}
+// The written brief changes when a builder files, not daily, so it says when
+// it was written and what it was written from.
+function briefFoot(b, resale){
+  if(!b.as_of) return '';
+  return 'Written ' + shortDate(b.as_of) + ' from builder 10-Q and 10-K filings; rewritten after the next one.'
+    + (resale ? ' The resale figures refresh with each monthly Redfin release.' : '');
+}
+
 function setStatus(){
   const el = document.getElementById('status'), txt = document.getElementById('status-text');
   const n = (D.errors || []).length, age = (Date.now() - new Date(D.generated).getTime()) / 36e5;
@@ -585,13 +606,22 @@ function render(){
   document.querySelectorAll('.tabs a').forEach(a => { if(a.dataset.tab === tab) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
   setStatus();
 }
+// Redraw after a live price update without closing anything the reader opened.
+function refreshView(){
+  const open = [...view.querySelectorAll('details')].map(d => d.open), y = window.scrollY;
+  render();
+  view.querySelectorAll('details').forEach((d, i) => { if(open[i]) d.open = true; });
+  window.scrollTo(0, y);
+}
 async function load(){
   try {
     const r = await fetch('../data.json', {cache: 'no-cache'});
     if(!r.ok) throw new Error('HTTP ' + r.status);
     D = await r.json();
     loadedAt = Date.now();
+    reapplyLiveQuotes();
     render();
+    if(!liveStarted){ liveStarted = true; startLiveQuotes(refreshView); }
   } catch(e){
     if(!D) view.innerHTML = '<div class="loading">Could not load the board’s data. Check your connection and tap the status button to try again.</div>';
   }

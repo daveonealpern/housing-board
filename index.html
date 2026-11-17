@@ -306,6 +306,10 @@
     display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
   }
   .brief .tbl-scroll { margin: 4px 0 6px; }
+  .brief p.brief-when {
+    font-family: var(--font-mono); font-size: 11px; line-height: 1.6; color: var(--brass);
+    margin: 0 0 14px;
+  }
 
   .map-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 16px; }
   .map-chip {
@@ -508,7 +512,7 @@
       <h2>What the public builders are saying</h2>
       <span class="book-note" id="brief-asof"></span>
     <span class="book-asof" data-asof></span><span class="book-chevron">&#9656;</span></div></summary>
-    <p class="sec-note">Rewritten whenever a builder files a new 10-Q. Lot counts, incentive load and regional commentary sit in MD&amp;A prose rather than tagged data, so this section is read out of the filings themselves rather than scraped.</p>
+    <p class="sec-note">Rewritten whenever a builder files a new 10-Q or 10-K, so it moves with the filing calendar rather than daily; the date on it is when it was written. Lot counts, incentive load and regional commentary sit in MD&amp;A prose rather than tagged data, so this section is read out of the filings themselves rather than scraped.</p>
     <div id="brief"></div>
     <h3 style="margin-top:28px">Source filings</h3>
     <p class="sec-note">Every tracked builder's most recent 10-Q or 10-K, straight from SEC EDGAR, sorted by whoever filed most recently. This list stands on its own even if the narrative brief above is behind on a filing.</p>
@@ -552,10 +556,10 @@
       <span class="book-num">Equity</span>
       <h2>Share price</h2>
       <span class="book-note">unofficial source, not guaranteed</span>
-    <span class="book-asof" data-asof></span><span class="book-chevron">&#9656;</span></div></summary>
-    <p class="sec-note">Pulled from an unofficial Yahoo Finance endpoint, since neither FRED nor SEC EDGAR carry equity prices. This is the least stable source on the board and can fail or lag without notice; a gap here shows up as a missing row, not a wrong number. Year-to-date is measured from each stock's first close of the current calendar year.</p>
+    <span class="book-asof" id="stock-asof" data-asof></span><span class="book-chevron">&#9656;</span></div></summary>
+    <p class="sec-note">Pulled from an unofficial Yahoo Finance endpoint, since neither FRED nor SEC EDGAR carry equity prices. The nightly run stores each stock's close; when this page is open, prices refresh every minute during market hours, so Today and YTD reflect the latest trade. This is the least stable source on the board and can fail or lag without notice; if the live feed is down the table falls back to the last close, and a gap shows up as a missing row, not a wrong number. Year-to-date is measured from each stock's first close of the current calendar year.</p>
     <div class="tbl-scroll"><table><thead><tr>
-      <th>Builder</th><th>Price</th><th>YTD</th><th>Trend</th><th>As of</th>
+      <th>Builder</th><th>Price</th><th>Today</th><th>YTD</th><th>Trend</th><th>As of</th>
     </tr></thead><tbody id="stockBody"></tbody></table></div>
   </details>
 
@@ -1259,7 +1263,7 @@ function renderStocks(){
   const host = document.getElementById('stockBody');
   const rows = (D.stocks || []).slice();
   if(!rows.length){
-    host.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--paper-dim);padding:24px">No price data returned on the last run.</td></tr>';
+    host.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--paper-dim);padding:24px">No price data returned on the last run.</td></tr>';
     return;
   }
   const names = ticker_name_map(D.brief && D.brief.metrics);
@@ -1268,11 +1272,18 @@ function renderStocks(){
     const tone = r.ytd_pct == null ? 'flat' : (r.ytd_pct >= 0 ? 'up' : 'down');
     const name = (REGIONS[r.ticker] && REGIONS[r.ticker].name) || names[r.ticker] || r.ticker;
     const ytd = r.ytd_pct == null ? '\u2014' : (r.ytd_pct >= 0 ? '+' : '') + r.ytd_pct.toFixed(1) + '%';
+    const day = r.day_pct == null ? '\u2014' : (r.day_pct >= 0 ? '+' : '') + r.day_pct.toFixed(1) + '%';
+    const dayTone = r.day_pct == null || r.day_pct === 0 ? 'flat' : (r.day_pct > 0 ? 'up' : 'down');
+    // A live quote shows its trade time when it is from today's session, its
+    // date otherwise; the nightly close shows its date.
+    const asOf = r.live_time && D.live && D.live.sessionIsToday && r.as_of === D.live.session
+      ? liveTime(r.live_time) : (r.as_of || '\u2014');
     return '<tr><td>' + esc(name) + ' <span class="tk">' + esc(r.ticker) + '</span></td>'
       + '<td class="num stock-price">$' + r.price.toFixed(2) + '</td>'
+      + '<td class="num stock-ytd ' + dayTone + '">' + day + '</td>'
       + '<td class="num stock-ytd ' + tone + '">' + ytd + '</td>'
       + '<td class="num">' + stockSpark(r.series, tone) + '</td>'
-      + '<td class="num">' + esc(r.as_of || '\u2014') + '</td></tr>';
+      + '<td class="num">' + esc(asOf) + '</td></tr>';
   }).join('');
 }
 
@@ -1430,6 +1441,13 @@ function renderSectionTimestamps(){
   const g = new Date(D.generated);
   const label = 'as of ' + g.toLocaleDateString(undefined, {month:'2-digit', day:'2-digit', year:'2-digit'});
   document.querySelectorAll('.book-asof').forEach(el => { el.textContent = label; });
+  // The written brief is the one section that does not change nightly, so it
+  // carries the date it was written instead of the run date.
+  const b = D.brief, ba = document.querySelector('#brief-section .book-asof');
+  if(ba && b && b.as_of){
+    const [y, m, d] = b.as_of.split('-').map(Number);
+    ba.textContent = 'written ' + new Date(y, m - 1, d).toLocaleDateString(undefined, {month:'2-digit', day:'2-digit', year:'2-digit'});
+  }
 }
 
 // Attaches the actual hover behavior to every chart wrapped by card() with a
@@ -1475,7 +1493,10 @@ function renderExecBlock(){
     + '<p class="exec-pitch">' + esc(pitch) + '</p>'
     + '<div class="exec-label">Executive summary</div>'
     + '<div class="exec-summary">' + paras.map(p => '<p>' + esc(p) + '</p>').join('') + '</div>'
-    + (g ? '<div class="exec-asof">Computed fresh from this run \u00b7 ' + g.toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'}) + '</div>' : '');
+    + (g ? '<div class="exec-asof">Computed fresh from the ' + g.toLocaleDateString(undefined,{month:'short',day:'numeric'})
+         + ' run at ' + g.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'})
+         + (D.live ? ' \u00b7 share prices ' + (D.live.open ? 'live as of ' + liveTime(D.live.time)
+             : D.live.sessionIsToday ? 'as of today\u2019s close' : 'as of the ' + liveLabel()) : '') + '</div>' : '');
 }
 
 function paras(a){
@@ -1515,8 +1536,19 @@ function renderBrief(){
       + '.</strong> The figures below predate those filings.</div>';
   }
 
+  const app = b.app || {}, nf = (app.next_filings || [])[0];
+  let when = '';
+  if(b.as_of){
+    const [y, m, d] = b.as_of.split('-').map(Number);
+    when = '<p class="brief-when">Written ' + new Date(y, m - 1, d).toLocaleDateString(undefined, {month:'long', day:'numeric', year:'numeric'})
+      + ' from ' + Object.keys(b.covered || {}).length + ' builders\u2019 latest quarterly filings.'
+      + (nf ? ' Next expected: ' + esc(nf.name) + ', ' + esc(nf.when) + '.' : '')
+      + ' The indicators and executive summary elsewhere on this board refresh with every nightly run.</p>';
+  }
+
   host.innerHTML = stale
     + '<div class="brief">'
+    + when
     + (b.headline ? '<p class="brief-lede">' + esc(b.headline) + '</p>' : '')
     + sec('National picture', 'national')
     + (table ? '<h3>By builder</h3>' + table : '')
@@ -1527,7 +1559,7 @@ function renderBrief(){
     + '<div class="brief-meta"><span>' + (b.source === 'auto' ? 'Read from filings automatically' : 'Read from filings by hand')
     + '</span><span>' + Object.keys(b.covered || {}).length + ' builders covered</span></div></div>';
 
-  document.getElementById('brief-asof').textContent = b.as_of ? 'narrative as of ' + b.as_of : '';
+  document.getElementById('brief-asof').textContent = 'rewritten after each filing';
 }
 
 function render(){
@@ -1624,12 +1656,7 @@ function render(){
   }
 
   const ok = Object.values(D.series).filter(s => s.obs.length).length;
-  const g = new Date(D.generated);
-  const next = (D.calendar || [])[0];
-  document.getElementById('meta').innerHTML =
-    'UPDATED ' + g.toLocaleDateString(undefined,{year:'numeric',month:'2-digit',day:'2-digit'}).replace(/\//g,'.')
-    + '<br>PREPARED FOR D. ALPERN'
-    + '<br>' + (next ? 'NEXT RELEASE <strong>' + next.days + 'D</strong>' : 'NO SCHEDULED RELEASE');
+  renderMeta();
   document.getElementById('summary').innerHTML =
     '<strong>' + ok + '</strong> of ' + Object.keys(D.series).length + ' series carrying data, '
     + '<strong>' + (D.builders || []).length + '</strong> builders tracked, '
@@ -1637,9 +1664,49 @@ function render(){
   wireChartTooltips();
 }
 
-fetch('data.json?t=' + Date.now())
-  .then(r => { if(!r.ok) throw new Error('data.json not found'); return r.json(); })
-  .then(j => { D = j; render(); })
+// Header block. The release countdown is worked out from today's date in the
+// browser, not read from the nightly run, so it stays right whenever the page
+// is opened.
+function renderMeta(){
+  const g = new Date(D.generated);
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const next = (D.calendar || []).map(c => {
+    const [y, m, d] = String(c.date || '').split('-').map(Number);
+    return {name: c.name, days: Math.round((new Date(y, m - 1, d) - today) / 864e5)};
+  }).filter(c => c.days >= 0).sort((a, b) => a.days - b.days)[0];
+  document.getElementById('meta').innerHTML =
+    'UPDATED ' + g.toLocaleDateString(undefined,{year:'numeric',month:'2-digit',day:'2-digit'}).replace(/\//g,'.')
+    + ' ' + g.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'}).toUpperCase()
+    + '<br>PREPARED FOR D. ALPERN'
+    + '<br>' + (next ? 'NEXT RELEASE <strong>' + (next.days ? next.days + 'D' : 'TODAY') + '</strong>' : 'NO SCHEDULED RELEASE')
+    + (D.live ? '<br>SHARE PRICES <strong>' + esc(liveLabel().toUpperCase()) + '</strong>' : '');
+}
+
+// Redraws only what live prices touch, so open sections and scroll position
+// are left alone.
+function renderLive(){
+  renderStocks();
+  renderExecBlock();
+  renderMeta();
+  const el = document.getElementById('stock-asof');
+  if(el && D.live) el.textContent = D.live.open ? 'live as of ' + liveTime(D.live.time)
+    : D.live.sessionIsToday ? 'as of today\u2019s close' : 'as of the ' + liveLabel();
+}
+
+let loadedAt = 0;
+function loadData(){
+  return fetch('data.json?t=' + Date.now())
+    .then(r => { if(!r.ok) throw new Error('data.json not found'); return r.json(); })
+    .then(j => { D = j; loadedAt = Date.now(); reapplyLiveQuotes(); render(); if(D.live) renderLive(); });
+}
+// A board left open in a tab picks up the next nightly run when it comes back
+// into view.
+document.addEventListener('visibilitychange', () => {
+  if(!document.hidden && D && Date.now() - loadedAt > 15 * 60 * 1000) loadData().catch(() => {});
+});
+
+loadData()
+  .then(() => startLiveQuotes(renderLive))
   .catch(() => {
     document.getElementById('meta').textContent = 'NO DATA YET';
     document.getElementById('summary').textContent = '';

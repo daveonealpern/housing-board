@@ -160,3 +160,30 @@ executive summary, so the two always match. The extra phone sections (land signa
 builders in the West, regulatory watch, cost notes, next filings) come from the `app`
 block in `brief.json`, which the automatic brief refresh maintains once
 `ANTHROPIC_API_KEY` is set.
+
+## Live share prices
+
+The nightly run stores each builder's closing price. To keep prices current
+while the board or the phone app is open, both pages ask a small Cloudflare
+Worker for quotes when they open and every minute during market hours. The
+Worker lives in the `worker/` folder of this repo and deploys itself from
+GitHub.
+
+One-time setup in the Cloudflare dashboard:
+
+1. Workers & Pages, then Create application, then Import a repository.
+2. Pick `daveonealpern/housing-board`.
+3. Project name `hsb-live` (it must match `name` in `worker/wrangler.toml`).
+4. Under advanced settings, set the root directory (path) to `worker`.
+5. Deploy. The Worker's address is `https://hsb-live.<your-subdomain>.workers.dev`.
+
+Then put that address plus `/quotes` into `LIVE_QUOTES_URL` at the bottom of
+`summary.js`. Until it is set, the pages show the nightly close exactly as
+before. If the Worker or Yahoo is down, they fall back to the nightly close.
+
+Optional: in the Worker's Settings, under Build, set build watch paths to
+`worker/*` so the nightly data commits do not trigger a redeploy.
+
+The Worker answers only for a fixed list of tickers and only sends CORS
+headers to `https://daveonealpern.github.io`. Add a ticker there when one is
+added to `BUILDERS` in `fetch.py`.

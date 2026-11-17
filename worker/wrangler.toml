@@ -1,0 +1,12 @@
+# Live share prices for the Housing Signal Board.
+#
+# Deployed by Cloudflare Workers Builds straight from this folder of the
+# housing-board repository (root directory: worker). The name below must match
+# the Worker name chosen in the Cloudflare dashboard, or the build fails.
+name = "hsb-live"
+main = "src/index.js"
+compatibility_date = "2026-10-01"
+workers_dev = true
+
+[observability]
+enabled = true
