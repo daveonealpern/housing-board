@@ -15,52 +15,49 @@ def text_of(url):
     raw = sec(url)
     raw = re.sub(r"(?is)<(script|style).*?</\1>", " ", raw)
     raw = re.sub(r"(?is)<ix:header>.*?</ix:header>", " ", raw)
-    raw = re.sub(r"(?i)</(p|div|tr|li|h\d)>", "\n", raw)
     t = html.unescape(re.sub(r"(?s)<[^>]+>", " ", raw))
-    t = re.sub(r"[ \t\xa0]+", " ", t)
-    return re.sub(r"\n\s*\n+", "\n", t)
-DOCS = {
- "DHI_REL": "https://www.sec.gov/Archives/edgar/data/882184/000088218426000119/a9302026exhibit991.htm",
- "PHM_REL": "https://www.sec.gov/Archives/edgar/data/822416/000082241626000041/ex991earningspr9302026.htm",
- "FOR_REL": "https://www.sec.gov/Archives/edgar/data/1406587/000162828026068139/a9302026exhibit991.htm",
- "FPH_REL": "https://www.sec.gov/Archives/edgar/data/1574197/000157419726000032/ex-991xfphx93026x8k.htm",
- "MRP_REL": "https://www.sec.gov/Archives/edgar/data/2017206/000119312526432747/ck0002017206-ex99_1.htm",
- "LGI_REL": "https://www.sec.gov/Archives/edgar/data/1580670/000158067026000085/a09302026ex991earningsrele.htm",
- "MHO_REL": "https://www.sec.gov/Archives/edgar/data/799292/000079929226000030/exhibit991earningspressrel.htm",
- "NVR_REL": "https://www.sec.gov/Archives/edgar/data/906163/000090616326000099/q32026ex991_earningsrelease.htm",
-}
-for k, u in DOCS.items():
-    try:
-        t = text_of(u)
-        print("\n@@@@@ %s %s chars %d" % (k, u, len(t)))
-        print(t[:30000])
-    except Exception as e:
-        print("@@@@@ %s FAIL %s" % (k, e))
-# Pulte 10-Q MD&A margin + vendor sentences
-t = re.sub(r"\s+", " ", text_of("https://www.sec.gov/Archives/edgar/data/822416/000082241626000043/phm-20260930.htm"))
-print("\n@@@@@ PHM_10Q selected")
-for s in re.split(r"(?<=[.;])\s+(?=[A-Z(•–])", t):
-    if re.search(r"gross margin|vendors|house cost|construction cost|land cost|lot cost|incentive|West|California|option agreements|lots (under|owned|controlled)|impairment", s, re.I) and len(s) < 900:
-        print("  -", s)
+    return re.sub(r"\s+", " ", t)
+t = text_of("https://www.sec.gov/Archives/edgar/data/882184/000088218426000157/dhi-20260930.htm")
+print("@@@@@ DHI 10-K len", len(t))
+KW = re.compile(r"(gross (profit )?margin|stick|square foot|incentive|construction cost|cost of (homes|sales)|land and lot cost|lot cost|cycle time|homes (closed|in inventory)|net sales orders|lots owned|controlled|West|Southwest|California|impairment|option charges|fiscal 2027|starts)", re.I)
+seen = set(); n = 0
+for s in re.split(r"(?<=[.;])\s+(?=[A-Z(•])", t):
+    if KW.search(s) and 40 < len(s) < 1200 and not re.search(r"could|may adversely|risk", s):
+        k = s[:90]
+        if k in seen: continue
+        seen.add(k); n += 1
+        if n > 400: break
+        if re.search(r"gross|stick|square|incentive|construction cost|lot cost|cycle|option charges|owned|controlled|Southwest|California|fiscal 2027", s, re.I):
+            print("  -", s[:1100])
+r = text_of("https://www.sec.gov/Archives/edgar/data/882184/000088218426000119/a9302026exhibit991.htm")
+i = r.find("LAND AND LOT POSITION")
+print("@@@@@ DHI LOT TABLE"); print(r[i:i+3500])
+i = r.find("HOMES CLOSED")
+print("@@@@@ DHI HOMES CLOSED"); print(r[i:i+1500])
 
-print("\n@@@@@ GOOGLE NEWS")
-def rss(q):
-    url = "https://news.google.com/rss/search?" + urllib.parse.urlencode({"q": q, "hl": "en-US", "gl": "US", "ceid": "US:en"})
-    root = ET.fromstring(get(url))
-    return [((i.findtext("pubDate") or "")[:16], (i.find("source").text if i.find("source") is not None else ""), (i.findtext("title") or "")) for i in root.iter("item")]
-QS = [
- '"Shea Homes" OR "Brookfield Residential" OR "Trumark Homes" OR "City Ventures" OR "New Home Company" when:60d',
- '"Tri Pointe" OR "Pardee Homes" OR "Taylor Morrison" OR "Landsea Homes" OR "Woodside Homes" when:60d',
- '"Warmington" OR "Lewis Group" OR "Olson Homes" OR "Melia Homes" OR "Williams Homes" OR "Rancho Mission Viejo" when:60d',
- '"land banking" OR "land banker" OR "lot banking" homebuilder when:60d',
- '"Millrose Properties" OR "Varde Partners" OR "Kennedy Lewis" OR "Essential Housing" OR "Forestar" when:60d',
-]
-for q in QS:
-    for attempt in range(3):
-        try:
-            items = rss(q); print("Q %s -> %d" % (q[:70], len(items)))
-            for it in items[:40]: print("    ", it[0], "|", it[1], "|", it[2][:160])
-            break
-        except Exception as e:
-            print("Q %s attempt %d FAIL %s" % (q[:60], attempt, e)); time.sleep(12)
-    time.sleep(4)
+print("\n@@@@@ YAHOO NEWS SEARCH")
+for q in ["Shea Homes", "Tri Pointe Homes", "Brookfield Residential", "Taylor Morrison", "land banking homebuilder", "Millrose Properties"]:
+    try:
+        j = json.loads(get("https://query1.finance.yahoo.com/v1/finance/search?" + urllib.parse.urlencode({"q": q, "quotesCount": 0, "newsCount": 10})))
+        news = j.get("news", [])
+        print("Q %s -> %d" % (q, len(news)))
+        for a in news[:10]:
+            print("    ", time.strftime("%Y-%m-%d", time.gmtime(a.get("providerPublishTime", 0))), "|", a.get("publisher"), "|", a.get("title", "")[:150])
+    except Exception as e:
+        print("Q %s FAIL %s" % (q, e))
+    time.sleep(1)
+print("\n@@@@@ BING SIMPLE")
+for q in ['"Shea Homes"', '"Tri Pointe Homes"', '"land banking" homebuilders']:
+    try:
+        root = ET.fromstring(get("https://www.bing.com/news/search?" + urllib.parse.urlencode({"q": q, "format": "rss"})))
+        items = [((i.findtext("pubDate") or "")[:16], (i.findtext("title") or "")[:150]) for i in root.iter("item")]
+        print("Q %s -> %d" % (q, len(items)))
+        for it in items[:10]: print("    ", it)
+    except Exception as e:
+        print("Q %s FAIL %s" % (q, e))
+print("\n@@@@@ GOOGLE ONE")
+try:
+    root = ET.fromstring(get("https://news.google.com/rss/search?" + urllib.parse.urlencode({"q": '"Tri Pointe" when:60d', "hl": "en-US", "gl": "US", "ceid": "US:en"})))
+    print("google ok", len(list(root.iter("item"))))
+except Exception as e:
+    print("google FAIL", e)
