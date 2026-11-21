@@ -699,25 +699,36 @@ def refresh_landbanks(brief, filings):
 # runners now and then, so each query retries, then falls back to Bing's news
 # RSS, and if both fail the previous run's items are kept. A feed is only
 # reported as an issue once it has been stale for more than three days.
-# Two searches for the private builders: the California-only names as they
-# are, and the national names only alongside a California place. Either way
-# an item is kept only if its title names one of the builders, which drops
-# the stray matches full-text search brings in.
-CA_ONLY_BUILDERS = ["Risewell Homes", "Trumark Homes", "City Ventures", "Olson Company", "Olson Homes",
+# Google News honours "when:" only on plain OR chains (no parentheses), so the
+# names go in small groups. Every item must name one of the builders in its
+# title. The national names (Shea, Tri Pointe and the rest also build outside
+# California) must also mention a California place or come from trade press,
+# and place-names that double as builders (Rancho Mission Viejo) need a
+# homebuilding word in the title. Checked against live Google results
+# 2026-11-20.
+CA_ONLY_BUILDERS = ["Risewell Homes", "Trumark Homes", "City Ventures", "Olson Homes",
                     "Rancho Mission Viejo", "Melia Homes", "SummerHill Homes", "Pardee Homes",
-                    "Brandywine Homes", "Warmington"]
-NATIONAL_PRIVATE = ["Shea Homes", "Tri Pointe", "Brookfield Residential", "Taylor Morrison",
-                    "Woodside Homes", "Richmond American"]
-CA_PLACES = ('(California OR "Orange County" OR "Los Angeles" OR "Inland Empire" OR "San Diego" '
-             'OR "Bay Area" OR Sacramento OR Ventura OR Irvine)')
-_or = lambda names: "(" + " OR ".join('"%s"' % n for n in names) + ")"
+                    "Brandywine Homes"]
+NATIONAL_PRIVATE = ["Shea Homes", "Tri Pointe", "Brookfield Residential",
+                    "Taylor Morrison", "Woodside Homes", "Richmond American"]
+CA_WORDS = re.compile(r"California|Calif\b|SoCal|Orange County|\bO\.?C\.?\b|Los Angeles|\bL\.?A\.?\b|Inland Empire|"
+                      r"Riverside|San Bernardino|San Diego|Bay Area|San Francisco|San Jose|Sacramento|Fresno|"
+                      r"Bakersfield|Ventura|Santa Clarita|Irvine|Simi|Oxnard|Thousand Oaks|Camarillo|Temecula|"
+                      r"Menifee|Chino|Ontario|Fontana|Palmdale|Lancaster|Roseville|Stockton|Livermore|"
+                      r"Orange County Register|Business Journal|Los Angeles Times|Press-Enterprise|Mercury News|"
+                      r"Chronicle|Sacramento Bee|Union-Tribune|Builder Magazine|HousingWire|Builder's Daily|"
+                      r"Bloomberg|Reuters|Wall Street Journal", re.I)
+NEED_CONTEXT = {"rancho mission viejo": re.compile(r"home|village|communit|sales|develop|builder|lots|acre", re.I)}
+NEWS_DROP = re.compile(r"Mill City Ventures|crypto|token|air quality|\bAQI\b|population", re.I)
+WIRE_SLUG = re.compile(r"^[A-Z0-9 -]{6,}$")    # bare AP wire slugs such as CA-CITY-VENTURES
+_or = lambda names: " OR ".join('"%s"' % n for n in names)
 NEWS_QUERIES = {
-    "ca_private": [_or(CA_ONLY_BUILDERS), _or(NATIONAL_PRIVATE) + " " + CA_PLACES],
-    "landbank":   ['("land banking" OR "land banker" OR "lot banking" OR "Millrose Properties" '
-                   'OR "Forestar" OR "Five Point Holdings" OR Hearthstone) '
-                   '(homebuilder OR homebuilders OR homesites OR lots)'],
+    "ca_private": [(_or(CA_ONLY_BUILDERS[:4]), "ca"), (_or(CA_ONLY_BUILDERS[4:]), "ca"),
+                   (_or(NATIONAL_PRIVATE[:3]), "national"), (_or(NATIONAL_PRIVATE[3:]), "national")],
+    "landbank":   [('"Millrose Properties" OR "Forestar Group" OR "Five Point Holdings"', None),
+                   ('"land banking" homebuilders', None),
+                   ('"land banker" OR "lot banking" OR "homesite option"', None)],
 }
-NEWS_MUST_NAME = {"ca_private": CA_ONLY_BUILDERS + NATIONAL_PRIVATE}
 NEWS_DAYS = 45
 COSTS_FEED = "https://eyeonhousing.org/feed/"   # NAHB's economics blog
 COST_WORDS = re.compile(r"material|lumber|tariff|construction cost|building cost|steel|labor|wage|worker|input|framing", re.I)
@@ -776,18 +787,29 @@ def _tidy(items, n=8):
 def pull_news(previous):
     prev = previous or {}
     out = {}
+    def keep(item, kind):
+        t = item["title"]
+        if NEWS_DROP.search(t) or WIRE_SLUG.match(t):
+            return False
+        if kind is None:
+            return True
+        names = CA_ONLY_BUILDERS if kind == "ca" else NATIONAL_PRIVATE
+        hit = next((n for n in names if n.lower() in t.lower()), None)
+        if not hit:
+            return False
+        ctx = NEED_CONTEXT.get(hit.lower())
+        if ctx and not ctx.search(t):
+            return False
+        return kind == "ca" or bool(CA_WORDS.search(t + " " + item.get("source", "")))
+
     def search(key, queries):
         items = []
-        for q in queries:
+        for q, kind in queries:
             try:
-                items += _news_search(q)
+                items += [i for i in _news_search(q) if keep(i, kind)]
             except Exception as e:
                 print("  %-10s query failed: %s" % (key, e))
             time.sleep(2)
-        must = NEWS_MUST_NAME.get(key)
-        if must:
-            rx = re.compile("|".join(re.escape(n) for n in must), re.I)
-            items = [i for i in items if rx.search(i["title"])]
         return items
     jobs = [(k, lambda k=k, q=q: search(k, q)) for k, q in NEWS_QUERIES.items()]
     jobs.append(("costs", lambda: [i for i in _rss_items(COSTS_FEED) if COST_WORDS.search(i["title"])]))
