@@ -236,7 +236,7 @@ function execSummary(sig){
 // D.stocks, including the executive summary's equity sentence, then reads the
 // live numbers. With LIVE_QUOTES_URL empty, or the Worker unreachable, the
 // pages show the nightly close exactly as before.
-const LIVE_QUOTES_URL = '';
+const LIVE_QUOTES_URL = 'https://hsb-live.plain-meadow-0e5d.workers.dev/quotes';
 
 const LIVE = {last: null, timer: null, fetchedAt: 0};
 

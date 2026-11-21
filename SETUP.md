@@ -177,7 +177,7 @@ One-time setup in the Cloudflare dashboard:
 4. Under advanced settings, set the root directory (path) to `worker`.
 5. Deploy. The Worker's address is `https://hsb-live.<your-subdomain>.workers.dev`.
 
-Then put that address plus `/quotes` into `LIVE_QUOTES_URL` at the bottom of
+Connected Nov. 20, 2026 at https://hsb-live.plain-meadow-0e5d.workers.dev. That address plus `/quotes` is `LIVE_QUOTES_URL` near the bottom of
 `summary.js`. Until it is set, the pages show the nightly close exactly as
 before. If the Worker or Yahoo is down, they fall back to the nightly close.
 
