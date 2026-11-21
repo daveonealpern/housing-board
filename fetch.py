@@ -699,19 +699,28 @@ def refresh_landbanks(brief, filings):
 # runners now and then, so each query retries, then falls back to Bing's news
 # RSS, and if both fail the previous run's items are kept. A feed is only
 # reported as an issue once it has been stale for more than three days.
+# Two searches for the private builders: the California-only names as they
+# are, and the national names only alongside a California place. Either way
+# an item is kept only if its title names one of the builders, which drops
+# the stray matches full-text search brings in.
+CA_ONLY_BUILDERS = ["Risewell Homes", "Trumark Homes", "City Ventures", "Olson Company", "Olson Homes",
+                    "Rancho Mission Viejo", "Melia Homes", "SummerHill Homes", "Pardee Homes",
+                    "Brandywine Homes", "Warmington"]
+NATIONAL_PRIVATE = ["Shea Homes", "Tri Pointe", "Brookfield Residential", "Taylor Morrison",
+                    "Woodside Homes", "Richmond American"]
+CA_PLACES = ('(California OR "Orange County" OR "Los Angeles" OR "Inland Empire" OR "San Diego" '
+             'OR "Bay Area" OR Sacramento OR Ventura OR Irvine)')
+_or = lambda names: "(" + " OR ".join('"%s"' % n for n in names) + ")"
 NEWS_QUERIES = {
-    "ca_private": '("Shea Homes" OR "Tri Pointe" OR "Risewell Homes" OR "Brookfield Residential" '
-                  'OR "Trumark Homes" OR "City Ventures" OR "Olson Company" OR "Rancho Mission Viejo" '
-                  'OR "Melia Homes" OR "Williams Homes" OR "Woodside Homes") '
-                  '(California OR "Orange County" OR "Los Angeles" OR "Inland Empire" OR "San Diego" '
-                  'OR "Bay Area" OR Sacramento OR Ventura)',
-    "landbank":   '("land banking" OR "land banker" OR "lot banking" OR "Millrose Properties" '
-                  'OR "Forestar" OR "Five Point Holdings" OR Hearthstone) '
-                  '(homebuilder OR homebuilders OR homesites OR lots)',
+    "ca_private": [_or(CA_ONLY_BUILDERS), _or(NATIONAL_PRIVATE) + " " + CA_PLACES],
+    "landbank":   ['("land banking" OR "land banker" OR "lot banking" OR "Millrose Properties" '
+                   'OR "Forestar" OR "Five Point Holdings" OR Hearthstone) '
+                   '(homebuilder OR homebuilders OR homesites OR lots)'],
 }
+NEWS_MUST_NAME = {"ca_private": CA_ONLY_BUILDERS + NATIONAL_PRIVATE}
 NEWS_DAYS = 45
 COSTS_FEED = "https://eyeonhousing.org/feed/"   # NAHB's economics blog
-COST_WORDS = re.compile(r"material|lumber|tariff|cost|price|steel|labor|wage|worker|input", re.I)
+COST_WORDS = re.compile(r"material|lumber|tariff|construction cost|building cost|steel|labor|wage|worker|input|framing", re.I)
 
 def _rss_items(url, headers=None):
     req = urllib.request.Request(url, headers=headers or YAHOO_HEADERS)
@@ -767,7 +776,20 @@ def _tidy(items, n=8):
 def pull_news(previous):
     prev = previous or {}
     out = {}
-    jobs = [(k, lambda q=q: _news_search(q)) for k, q in NEWS_QUERIES.items()]
+    def search(key, queries):
+        items = []
+        for q in queries:
+            try:
+                items += _news_search(q)
+            except Exception as e:
+                print("  %-10s query failed: %s" % (key, e))
+            time.sleep(2)
+        must = NEWS_MUST_NAME.get(key)
+        if must:
+            rx = re.compile("|".join(re.escape(n) for n in must), re.I)
+            items = [i for i in items if rx.search(i["title"])]
+        return items
+    jobs = [(k, lambda k=k, q=q: search(k, q)) for k, q in NEWS_QUERIES.items()]
     jobs.append(("costs", lambda: [i for i in _rss_items(COSTS_FEED) if COST_WORDS.search(i["title"])]))
     for key, job in jobs:
         try:
@@ -1347,7 +1369,7 @@ def pull_stock_prices(tickers=None, label="Stock price"):
 # a roll date; the producer price indexes in SERIES are the smoother monthly
 # read on the same materials.
 COMMODITIES = [
-    ("LBR=F", "Lumber",                  "$/1,000 bd ft", 1,
+    ("LBR=F", "Lumber",                  "$/1,000 bd ft", 2,
      "Framing lumber futures. The swing input in a wood-frame house."),
     ("HRC=F", "Hot-rolled steel",        "$/short ton",   0,
      "Midwest hot-rolled coil. Rebar, beams, connectors and appliances."),

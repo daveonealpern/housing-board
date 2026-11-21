@@ -306,6 +306,43 @@
     display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
   }
   .brief .tbl-scroll { margin: 4px 0 6px; }
+
+  /* commodities, construction costs, land bankers, private builders */
+  .sub-h { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+           color: var(--brass); font-weight: 500; margin: 6px 0 12px; }
+  .better { color: #63B08F; } .worse { color: #CF6E76; }
+  .ytd-svg { width: 100%; height: 72px; display: block; }
+  .fut-scale { display: flex; justify-content: space-between; gap: 8px; font-family: var(--font-mono);
+               font-size: 10.5px; color: var(--paper-dim); opacity: 0.85; }
+  .lead-p { font-size: 14.5px; line-height: 1.65; color: var(--paper-dim); margin: 0 0 18px; max-width: 900px; }
+  .mkt-strip { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); margin-bottom: 8px; }
+  .mkt { border: 1px solid var(--line); background: var(--panel); padding: 12px 14px; }
+  .mkt .v { font-family: var(--font-mono); font-size: 20px; font-weight: 500; color: #CF6E76; }
+  .mkt .k { font-size: 12.5px; font-weight: 600; margin: 2px 0 4px; }
+  .mkt p { font-size: 12px; color: var(--paper-dim); margin: 0; line-height: 1.45; }
+  .src-line { font-family: var(--font-mono); font-size: 11px; color: var(--paper-dim); margin: 6px 0 22px; }
+  .src-line a, .facts a { color: var(--brass); text-decoration: none; }
+  table.cost-tbl { min-width: 900px; table-layout: fixed; }
+  .cost-tbl th, .cost-tbl td { text-align: left; white-space: normal; }
+  .cost-tbl th:nth-child(1) { width: 13%; } .cost-tbl th:nth-child(2) { width: 30%; }
+  .cost-tbl th:nth-child(3) { width: 13%; } .cost-tbl th:nth-child(4) { width: 29%; } .cost-tbl th:nth-child(5) { width: 15%; }
+  .cost-tbl td { vertical-align: top; font-size: 13px; line-height: 1.5; }
+  .cost-tbl td.bname { font-weight: 600; white-space: nowrap; }
+  .cost-tbl td.bname span { display: block; font-weight: 400; font-family: var(--font-mono); font-size: 11px; color: var(--paper-dim); }
+  .facts { margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.55; color: var(--paper-dim); }
+  .facts li { margin-bottom: 4px; }
+  .lb-role { font-size: 12.5px; color: var(--paper-dim); line-height: 1.5; margin: 0; }
+  .plist { display: grid; gap: 0; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); border-top: 1px solid var(--line); }
+  .prow { padding: 12px 4px 12px 0; border-bottom: 1px solid var(--line); font-size: 13px; line-height: 1.5; color: var(--paper-dim); }
+  .prow b { color: var(--paper); font-weight: 600; display: block; margin-bottom: 2px; }
+  .prow a { color: var(--brass); text-decoration: none; font-family: var(--font-mono); font-size: 11px; }
+  .news-list { border-top: 1px solid var(--line); margin-top: 4px; }
+  .news-row { display: flex; justify-content: space-between; gap: 18px; padding: 10px 0; border-bottom: 1px solid var(--line);
+              text-decoration: none; align-items: baseline; }
+  .news-row:hover .news-t { color: var(--brass); }
+  .news-t { color: var(--paper); font-size: 13.5px; line-height: 1.45; }
+  .news-m { font-family: var(--font-mono); font-size: 11px; color: var(--paper-dim); white-space: nowrap; }
+  @media (max-width: 640px){ .news-row { flex-direction: column; gap: 3px; } .news-m { white-space: normal; } }
   .brief p.brief-when {
     font-family: var(--font-mono); font-size: 11px; line-height: 1.6; color: var(--brass);
     margin: 0 0 14px;
@@ -522,6 +559,16 @@
     <div class="bm-grid" id="bm-grid"></div>
   </details>
 
+  <details class="book-section" id="cost-section" open>
+    <summary><div class="book-heading">
+      <span class="book-num">Direct costs</span>
+      <h2>What builders pay to build</h2>
+      <span class="book-note">from filings and earnings calls</span>
+    <span class="book-asof" id="cost-asof"></span><span class="book-chevron">&#9656;</span></div></summary>
+    <p class="sec-note">Each builder's own statements on direct construction cost, cycle time and what moved gross margin, from its latest 10-Q or 10-K and earnings call. A row is rewritten automatically when that builder's next filing is read. The market figures are the national producer price read for the same month.</p>
+    <div id="cost-body"></div>
+  </details>
+
   <details class="book-section" open>
     <summary><div class="book-heading">
       <span class="book-num">Regional footprint</span>
@@ -561,6 +608,16 @@
     <div class="tbl-scroll"><table><thead><tr>
       <th>Builder</th><th>Price</th><th>Today</th><th>YTD</th><th>Trend</th><th>As of</th>
     </tr></thead><tbody id="stockBody"></tbody></table></div>
+  </details>
+
+  <details class="book-section" id="landbank-section" open>
+    <summary><div class="book-heading">
+      <span class="book-num">Land capital</span>
+      <h2>Land bankers and lot developers</h2>
+      <span class="book-note">who holds the land for the public builders</span>
+    <span class="book-asof" id="lb-asof"></span><span class="book-chevron">&#9656;</span></div></summary>
+    <p class="sec-note">Option and land-bank capital now sits behind most of the land the largest builders control. The three public names are priced like the builders above and their facts come from each one's latest filing; private land bankers have no price to track, so they are listed with their most recent move. The news feed refreshes nightly.</p>
+    <div id="lb-body"></div>
   </details>
 
   <details class="book-section" open>
@@ -619,7 +676,10 @@
       <span class="book-num">+1 to +2 mo</span>
       <h2>Commodity pricing</h2>
     <span class="book-asof" data-asof></span><span class="book-chevron">&#9656;</span></div></summary>
-    <p class="sec-note">The raw inputs behind the materials cost index above, broken out individually. Oil is only indirectly a construction cost, through fuel and asphalt; lumber, steel, and copper go directly into a home's frame, structure, and wiring. All four are set in global commodity markets and can move on news that has nothing to do with US housing.</p>
+    <p class="sec-note">The raw inputs behind a house. Futures prices first, year to date and refreshed during market hours while the page is open; the dashed line on each chart is the year's first close, and a front-month contract roll can show as a small step. Then the government's monthly producer price indexes for the same materials plus concrete, drywall and plastics, which move more smoothly and are what builders' purchasing contracts track. Rising lines are drawn red because they are cost pressure.</p>
+    <h3 class="sub-h">Futures, year to date</h3>
+    <div class="parcel-grid" id="g-futures"></div>
+    <h3 class="sub-h" style="margin-top:26px">Producer price indexes, monthly</h3>
     <p class="sec-summary" id="sum-commodity"></p>
     <div class="parcel-grid" id="g-commodity"></div>
   </details>
@@ -643,6 +703,15 @@
     <p class="sec-note">State-level series that move entitlement throughput before they move price, and that most people watching national housing data never look at.</p>
     <p class="sec-summary" id="sum-ca"></p>
     <div class="parcel-grid" id="g-ca"></div>
+  </details>
+
+  <details class="book-section" id="private-section" open>
+    <summary><div class="book-heading">
+      <span class="book-num">Private builders</span>
+      <h2>California's large private builders</h2>
+    <span class="book-asof" id="pv-asof"></span><span class="book-chevron">&#9656;</span></div></summary>
+    <p class="sec-note">The regional builders that file nothing with the SEC, plus the ones that stopped when a parent bought them. Who they are and what they last did, then a news feed refreshed nightly from business journals and trade press.</p>
+    <div id="pv-body"></div>
   </details>
 
   <details class="book-section" open>
@@ -1317,6 +1386,81 @@ function timeAgo(iso){
   return then.toLocaleDateString(undefined, {month:'short', day:'numeric'});
 }
 
+// ------------------------------------------------ commodities, costs, land, private builders
+const shortD = iso => { if(!iso) return ''; const [y, m, d] = iso.split('-').map(Number); return new Date(y, m - 1, d).toLocaleDateString(undefined, {month: 'short', day: 'numeric'}); };
+const writtenD = iso => { if(!iso) return ''; const [y, m, d] = iso.split('-').map(Number); return 'written ' + new Date(y, m - 1, d).toLocaleDateString(undefined, {month: '2-digit', day: '2-digit', year: '2-digit'}); };
+const pxWhen = r => r.live_time && D.live && D.live.sessionIsToday && r.as_of === D.live.session ? liveTime(r.live_time) : shortD(r.as_of);
+
+function renderFutures(){
+  const host = document.getElementById('g-futures');
+  const rows = D.commodities || [];
+  if(!rows.length){ host.innerHTML = '<div class="card"><span class="sd-none">No futures prices on the last run.</span></div>'; return; }
+  host.innerHTML = rows.map(r => {
+    const t = priceTone(r.ytd_pct, true), dt = priceTone(r.day_pct, true), rg = ytdRange(r);
+    return '<div class="card"><div class="card-top"><div><div class="card-name">' + esc(r.name) + '</div>'
+      + '<div class="card-src">' + esc(r.ticker) + ' \u00b7 ' + esc(r.unit || '') + '</div></div>'
+      + '<div class="card-val"><div class="v">' + fmtPx(r) + '</div><div class="d ' + t.tone + '">' + signedPct(r.ytd_pct) + ' YTD</div>'
+      + (r.day_pct != null ? '<div class="d ' + dt.tone + '">' + signedPct(r.day_pct) + ' today</div>' : '') + '</div></div>'
+      + ytdSvg(r.series, t.color)
+      + (rg ? '<div class="fut-scale"><span>' + esc(rg.startLabel) + ' ' + esc(rg.start) + '</span><span>low ' + esc(rg.lo) + ' \u00b7 high ' + esc(rg.hi) + '</span><span>' + esc(pxWhen(r)) + '</span></div>' : '')
+      + '<div class="card-read">' + esc(r.why || '') + '</div></div>';
+  }).join('');
+}
+
+function renderConstruction(){
+  const host = document.getElementById('cost-body'), c = (D.brief || {}).construction;
+  if(!c){ host.innerHTML = '<p class="sd-none">No construction cost read yet.</p>'; return; }
+  document.getElementById('cost-asof').textContent = writtenD(c.as_of);
+  const order = ['LEN','DHI','PHM','KBH','CCS','MTH','TOL','NVR','MHO','LGIH'];
+  const rows = (c.builders || []).slice().sort((a, b) => (order.indexOf(a.ticker) + 99) % 99 - (order.indexOf(b.ticker) + 99) % 99);
+  const mk = c.market_source || {};
+  const news = ((D.news || {}).costs || {}).items || [];
+  host.innerHTML = (c.summary ? '<p class="lead-p">' + esc(c.summary) + '</p>' : '')
+    + '<div class="tbl-scroll"><table class="cost-tbl"><thead><tr><th>Builder</th><th>Direct build cost</th><th>Cycle time</th><th>What moved margin</th><th>Gross margin</th></tr></thead><tbody>'
+    + rows.map(r => '<tr><td class="bname">' + esc(r.name) + '<span>' + esc(r.period || '') + '</span></td><td>' + esc(r.build_cost || '\u2014') + '</td><td>'
+        + esc(r.cycle_time || '\u2014') + '</td><td>' + esc(r.drivers || '\u2014') + '</td><td>' + esc(r.margin || '\u2014')
+        + (r.source ? '<div class="card-src" style="margin-top:6px">' + esc(r.source) + '</div>' : '') + '</td></tr>').join('')
+    + '</tbody></table></div>'
+    + ((c.market || []).length ? '<h3 class="sub-h" style="margin-top:26px">Input prices, national</h3><div class="mkt-strip">'
+        + c.market.map(m => '<div class="mkt"><div class="v">' + esc(m.value) + '</div><div class="k">' + esc(m.label) + '</div><p>' + esc(m.text) + '</p></div>').join('') + '</div>'
+        + (mk.name ? '<div class="src-line">' + (mk.url ? '<a href="' + esc(mk.url) + '" target="_blank" rel="noopener">' + esc(mk.name) + '</a>' : esc(mk.name)) + '</div>' : '') : '')
+    + (news.length ? '<h3 class="sub-h">Latest from NAHB on costs</h3><div class="news-list">' + newsRows(news, 6) + '</div>' : '');
+}
+
+function renderLandbanks(){
+  const host = document.getElementById('lb-body'), lb = (D.brief || {}).landbanks || {};
+  document.getElementById('lb-asof').textContent = writtenD(lb.as_of);
+  const px = {}; (D.landbanks || []).forEach(r => px[r.ticker] = r);
+  const fil = {}; (D.landbank_filings || []).forEach(f => fil[f.ticker] = f);
+  const news = ((D.news || {}).landbank || {}).items || [];
+  host.innerHTML = (lb.summary ? '<p class="lead-p">' + esc(lb.summary) + '</p>' : '')
+    + '<div class="parcel-grid">' + (lb.public || []).map(p => {
+        const r = px[p.ticker], t = r ? priceTone(r.ytd_pct, false) : null, f = fil[p.ticker];
+        return '<div class="card"><div class="card-top"><div><div class="card-name">' + esc(p.name) + '</div><div class="card-src">' + esc(p.ticker) + ' \u00b7 facts from ' + esc(p.period || '') + '</div></div>'
+          + (r ? '<div class="card-val"><div class="v">' + fmtPx(r) + '</div><div class="d ' + t.tone + '">' + signedPct(r.ytd_pct) + ' YTD</div>'
+               + (r.day_pct != null ? '<div class="d ' + priceTone(r.day_pct, false).tone + '">' + signedPct(r.day_pct) + ' today</div>' : '') + '</div>' : '') + '</div>'
+          + (r ? ytdSvg(r.series, t.color, 54) : '')
+          + '<p class="lb-role">' + esc(p.role || '') + '</p>'
+          + '<ul class="facts">' + (p.facts || []).map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>'
+          + '<div class="card-foot">' + ((f && f.url) || p.url ? '<a href="' + esc((f && f.url) || p.url) + '" target="_blank" rel="noopener">' + esc(f && f.form ? 'Latest ' + f.form + (f.filed ? ', filed ' + shortD(f.filed) : '') : 'Source filing') + ' \u2197</a>' : '') + '</div></div>';
+      }).join('') + '</div>'
+    + ((lb.private || []).length ? '<h3 class="sub-h" style="margin-top:26px">Private land bankers</h3><div class="plist">'
+        + lb.private.map(p => '<div class="prow"><b>' + esc(p.name) + '</b>' + esc(p.text) + (p.url ? ' <a href="' + esc(p.url) + '" target="_blank" rel="noopener">source \u2197</a>' : '') + '</div>').join('') + '</div>' : '')
+    + (lb.terms ? '<p class="src-line" style="margin-top:12px">' + esc(lb.terms) + '</p>' : '')
+    + (news.length ? '<h3 class="sub-h">Land banking news</h3><div class="news-list">' + newsRows(news, 8) + '</div>' : '');
+}
+
+function renderPrivate(){
+  const host = document.getElementById('pv-body'), pb = (D.brief || {}).private_builders || {};
+  document.getElementById('pv-asof').textContent = writtenD(pb.as_of);
+  const news = ((D.news || {}).ca_private || {}).items || [];
+  const src = pb.source || {};
+  host.innerHTML = (pb.summary ? '<p class="lead-p">' + esc(pb.summary) + '</p>' : '')
+    + '<div class="plist">' + (pb.list || []).map(p => '<div class="prow"><b>' + esc(p.name) + '</b>' + esc(p.text) + '</div>').join('') + '</div>'
+    + (src.name ? '<div class="src-line" style="margin-top:10px">Orange County sales figures: ' + (src.url ? '<a href="' + esc(src.url) + '" target="_blank" rel="noopener">' + esc(src.name) + '</a>' : esc(src.name)) + '</div>' : '')
+    + '<h3 class="sub-h">Latest news</h3>' + (news.length ? '<div class="news-list">' + newsRows(news, 10) + '</div>' : '<p class="sd-none">The news feed fills on the next nightly run.</p>');
+}
+
 function renderHeadlines(){
   const host = document.getElementById('headlines-grid');
   const items = D.headlines || [];
@@ -1440,7 +1584,9 @@ function renderSectionTimestamps(){
   if(!D.generated) return;
   const g = new Date(D.generated);
   const label = 'as of ' + g.toLocaleDateString(undefined, {month:'2-digit', day:'2-digit', year:'2-digit'});
-  document.querySelectorAll('.book-asof').forEach(el => { el.textContent = label; });
+  // Sections written from filings (cost, land bankers, private builders) set
+  // their own "written" date and are skipped here.
+  document.querySelectorAll('.book-asof:not(#cost-asof):not(#lb-asof):not(#pv-asof)').forEach(el => { el.textContent = label; });
   // The written brief is the one section that does not change nightly, so it
   // carries the date it was written instead of the run date.
   const b = D.brief, ba = document.querySelector('#brief-section .book-asof');
@@ -1603,6 +1749,10 @@ function render(){
 
   renderBrief();
   renderSourceFilings();
+  renderFutures();
+  renderConstruction();
+  renderLandbanks();
+  renderPrivate();
   renderBuilderMetrics();
   renderMapChips();
   renderMap();
@@ -1686,6 +1836,8 @@ function renderMeta(){
 // are left alone.
 function renderLive(){
   renderStocks();
+  renderFutures();
+  renderLandbanks();
   renderExecBlock();
   renderMeta();
   const el = document.getElementById('stock-asof');

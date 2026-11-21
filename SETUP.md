@@ -187,3 +187,21 @@ Optional: in the Worker's Settings, under Build, set build watch paths to
 The Worker answers only for a fixed list of tickers and only sends CORS
 headers to `https://daveonealpern.github.io`. Add a ticker there when one is
 added to `BUILDERS` in `fetch.py`.
+
+## Commodities, construction costs, land bankers, private builders
+
+- Commodity futures (lumber, hot-rolled steel, copper, aluminum, WTI crude,
+  diesel, natural gas) are pulled nightly from Yahoo with year-to-date
+  charts, and refresh live with the share prices once the Worker is
+  connected. Concrete, drywall and plastics producer price indexes come from
+  FRED alongside lumber, steel and copper.
+- Millrose (MRP), Forestar (FOR) and Five Point (FPH) are priced nightly and
+  their latest SEC filings are linked.
+- News for land banking and California private builders comes from Google
+  News search RSS (Bing as fallback), and cost posts from NAHB's Eye on
+  Housing feed. If a feed fails, the previous items stay up; it is reported
+  as an issue only after three days without a refresh.
+- The construction-cost table, the land-banker facts and the brief are read
+  from filings. With ANTHROPIC_API_KEY set, every new 10-Q or 10-K is read
+  and these update the next morning on their own. Without it, the board
+  shows a "brief is behind" notice until someone reads the filing by hand.

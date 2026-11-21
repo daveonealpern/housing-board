@@ -351,3 +351,57 @@ function startLiveQuotes(onUpdate){
 // After a page reloads data.json, the nightly close replaces the live prices;
 // this puts the most recent quotes back on top.
 function reapplyLiveQuotes(){ return LIVE.last ? applyLiveQuotes(LIVE.last) : false; }
+
+// ---------------------------------------------------------------------------
+// Shared pieces for the commodity, land banker and news panels on both pages.
+
+// Year-to-date line for a price row ({series: [{d, v}]}), as a scalable SVG.
+// The dashed line is the first close of the year, so the distance from it to
+// the end of the line is the year-to-date move.
+function ytdSvg(series, color, h){
+  if(!series || series.length < 2) return '';
+  const vals = series.map(p => p.v), mn = Math.min(...vals), mx = Math.max(...vals), sp = (mx - mn) || 1;
+  const W = 300, H = h || 72, pad = 4;
+  const x = i => (i / (vals.length - 1)) * W, y = v => pad + (H - 2 * pad) * (1 - (v - mn) / sp);
+  const d = vals.map((v, i) => (i ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(v).toFixed(1)).join(' ');
+  const b = y(vals[0]).toFixed(1);
+  return '<svg class="ytd-svg" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" aria-hidden="true">'
+    + '<path d="' + d + ' L' + W + ' ' + H + ' L0 ' + H + ' Z" fill="' + color + '" fill-opacity="0.08"/>'
+    + '<line x1="0" x2="' + W + '" y1="' + b + '" y2="' + b + '" stroke="#E8E2D9" stroke-opacity="0.4" stroke-dasharray="3 3" vector-effect="non-scaling-stroke"/>'
+    + '<path d="' + d + '" fill="none" stroke="' + color + '" stroke-width="1.6" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>'
+    + '</svg>';
+}
+
+const COST_UP = '#CF6E76', COST_DOWN = '#63B08F', COST_FLAT = '#E8E2D9';
+// For a cost input, a rising price is pressure on the builder; for an equity
+// it is the reverse. Returns the line colour and a tone word for text.
+function priceTone(pct, isCost){
+  if(pct == null || Math.abs(pct) < 0.5) return {color: COST_FLAT, tone: 'flat'};
+  const bad = isCost ? pct > 0 : pct < 0;
+  return {color: bad ? COST_UP : COST_DOWN, tone: bad ? 'worse' : 'better'};
+}
+
+function fmtPx(r, v){
+  const dp = r.decimals != null ? r.decimals : 2, n = v == null ? r.price : v;
+  return '$' + Number(n).toLocaleString('en-US', {minimumFractionDigits: dp, maximumFractionDigits: dp});
+}
+
+// "Jan 2 $533 · low $480 · high $640" pieces for under a YTD chart.
+function ytdRange(r){
+  const s = r.series || []; if(s.length < 2) return null;
+  const vals = s.map(p => p.v), [y, m, d] = s[0].d.split('-').map(Number);
+  return {start: fmtPx(r, vals[0]), startLabel: new Date(y, m - 1, d).toLocaleDateString('en-US', {month: 'short', day: 'numeric'}),
+          lo: fmtPx(r, Math.min(...vals)), hi: fmtPx(r, Math.max(...vals))};
+}
+
+const signedPct = v => v == null ? '—' : (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v).toFixed(1) + '%';
+
+// A dated list of news items ({title, link, source, published}).
+function newsRows(items, n){
+  return (items || []).slice(0, n || 8).map(it => {
+    let when = '';
+    if(it.published){ const [y, m, d] = it.published.split('-').map(Number); when = new Date(y, m - 1, d).toLocaleDateString('en-US', {month: 'short', day: 'numeric'}); }
+    return '<a class="news-row" href="' + esc(it.link) + '" target="_blank" rel="noopener"><span class="news-t">' + esc(it.title) + '</span>'
+      + '<span class="news-m">' + esc([it.source, when].filter(Boolean).join(' · ')) + '</span></a>';
+  }).join('');
+}

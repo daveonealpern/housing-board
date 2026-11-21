@@ -171,6 +171,32 @@
   .tabs-inner { max-width: 560px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .tabs a { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 48px; text-decoration: none; color: var(--dim); font-size: 11px; }
   .tabs a[aria-current="page"] { color: var(--gold-light); font-weight: 600; }
+  .fut { padding: 12px 0 10px; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 6px; }
+  .fut .t { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+  .fut .nm { font-size: 15px; font-weight: 600; }
+  .fut .un { font-size: 11px; color: var(--dim); }
+  .fut .pv { text-align: right; font-variant-numeric: tabular-nums; }
+  .fut .pv b { font-size: 16px; font-weight: 600; }
+  .fut .pv span { display: block; font-size: 12px; }
+  .ytd-svg { width: 100%; height: 50px; display: block; }
+  .fut-scale { display: flex; justify-content: space-between; gap: 6px; font-size: 11px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  .fut p { margin: 0; font-size: 12px; color: var(--dim); line-height: 1.45; }
+  .bc { padding: 12px 0; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 5px; }
+  .bc .t { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+  .bc .t b { font-size: 15px; } .bc .t span { font-size: 12px; color: var(--dim); white-space: nowrap; }
+  .bc p { margin: 0; font-size: 13px; line-height: 1.45; color: var(--stone); }
+  .bc .kv { font-size: 12px; color: var(--dim); }
+  .bc .kv b { color: var(--paper); font-weight: 600; }
+  .mk-v { font-size: 20px; font-weight: 600; color: var(--worse); font-variant-numeric: tabular-nums; }
+  .lb { display: flex; flex-direction: column; gap: 8px; }
+  .lb .t { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
+  .lb .t b { font-size: 15px; } .lb .t .tk { display: block; font-size: 11px; color: var(--dim); margin-top: 2px; }
+  .lb ul { margin: 0; padding-left: 17px; font-size: 13px; line-height: 1.45; color: var(--stone); }
+  .lb li { margin-bottom: 3px; }
+  .lb a { font-size: 12px; color: var(--gold-light); text-decoration: none; }
+  .news-row { display: flex; flex-direction: column; gap: 3px; padding: 11px 0; border-bottom: 1px solid var(--line); text-decoration: none; }
+  .news-t { color: var(--paper); font-size: 14px; line-height: 1.4; }
+  .news-m { font-size: 11px; color: var(--dim); }
   .loading { padding: 60px 20px; text-align: center; color: var(--dim); font-size: 14px; }
   .worse { color: var(--worse); } .better { color: var(--better); } .flat { color: var(--stone); } .mid { color: var(--gold-light); } .dim { color: var(--dim); }
 </style>
@@ -384,6 +410,26 @@ function renderBuilders(){
   if((app.signals || []).length){
     h += '<section class="sec"><h2>Land and balance sheet</h2>' + app.signals.map(s => '<div class="card signal"><b>' + esc(s.value) + '</b><span>' + esc(s.text) + '</span></div>').join('') + '</section>';
   }
+  const lb = b.landbanks;
+  if(lb && (lb.public || []).length){
+    const px = {}; (D.landbanks || []).forEach(r => px[r.ticker] = r);
+    const fil = {}; (D.landbank_filings || []).forEach(f => fil[f.ticker] = f);
+    h += '<section class="sec"><div class="sec-head"><h2>Land bankers</h2><span>Who holds the builders\u2019 land</span></div>'
+      + (lb.summary ? '<p class="body-note">' + esc(lb.summary) + '</p>' : '')
+      + lb.public.map(p => {
+          const r = px[p.ticker], t = r ? priceTone(r.ytd_pct, false) : null, f = fil[p.ticker], url = (f && f.url) || p.url;
+          return '<div class="card lb"><div class="t"><div><b>' + esc(p.name) + '</b><span class="tk">' + esc(p.ticker) + ' \u00b7 facts from ' + esc(p.period || '') + '</span></div>'
+            + (r ? '<div class="pv r"><b class="num">' + fmtPx(r) + '</b><div class="' + t.tone + '" style="font-size:12px">' + signedPct(r.ytd_pct) + ' YTD</div></div>' : '') + '</div>'
+            + (r ? ytdSvg(r.series, t.color, 40) : '')
+            + '<p class="note">' + esc(p.role || '') + '</p>'
+            + '<ul>' + (p.facts || []).slice(0, 4).map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>'
+            + (url ? '<a href="' + esc(url) + '" target="_blank" rel="noopener">' + esc(f && f.form ? 'Latest ' + f.form + ' on SEC.gov' : 'Source filing') + ' \u2197</a>' : '') + '</div>';
+        }).join('')
+      + ((lb.private || []).length ? '<div style="margin-top:2px">' + lb.private.map(p => '<div class="stack-row"><div class="t"><b>' + esc(p.name) + '</b>' + (p.url ? '<a href="' + esc(p.url) + '" target="_blank" rel="noopener" class="mid" style="font-size:12px;text-decoration:none">source \u2197</a>' : '') + '</div><p>' + esc(p.text) + '</p></div>').join('') + '</div>' : '')
+      + '</section>';
+    const ln = ((D.news || {}).landbank || {}).items || [];
+    if(ln.length) h += '<section class="sec" style="gap:0"><h2 style="margin-bottom:4px">Land banking news</h2>' + newsRows(ln, 6) + '</section>';
+  }
   if((app.next_filings || []).length){
     h += '<section class="sec" style="gap:4px"><h2 style="margin-bottom:6px">Next filings</h2>' + app.next_filings.map((f, i) => '<div class="list-row"><span>' + esc(f.name) + '</span><span class="' + (i === 0 ? 'mid' : 'dim') + '">' + esc(f.when) + '</span></div>').join('') + '</section>';
   }
@@ -452,6 +498,13 @@ function renderBuilder(tk){
   // Sentences about this builder first, then group comparisons that include it.
   const lead = t => names.some(n => t.startsWith(n)) ? 1 : 0;
   sents.sort((a, b) => lead(b) - lead(a));
+  const cr = (((b.construction || {}).builders) || []).find(r => r.ticker === tk);
+  if(cr){
+    h += '<section class="sec" style="gap:0"><div class="sec-head" style="margin-bottom:4px"><h2>Construction cost</h2><span>' + esc(cr.period || '') + '</span></div>'
+      + '<div class="bc"><p>' + esc(cr.build_cost || '') + '</p>' + (cr.drivers ? '<p class="dim" style="font-size:12.5px">' + esc(cr.drivers) + '</p>' : '')
+      + '<div class="kv">' + (cr.cycle_time ? 'Cycle <b>' + esc(cr.cycle_time) + '</b>' : '') + (cr.cycle_time && cr.margin ? ' \u00b7 ' : '') + (cr.margin ? 'Margin <b>' + esc(cr.margin) + '</b>' : '') + '</div>'
+      + (cr.source ? '<div class="kv">' + esc(cr.source) + '</div>' : '') + '</div></section>';
+  }
   if(sents.length){
     h += '<section class="sec"><h2>In the brief</h2>' + sents.slice(0, 8).map(t => '<blockquote>' + esc(t) + '</blockquote>').join('') + '</section>';
   }
@@ -495,6 +548,15 @@ function renderSoCal(){
     h += '<section class="sec" style="gap:4px"><div class="sec-head" style="margin-bottom:6px"><h2>Builders in the West</h2><span>Latest segment results</span></div>'
       + app.west.map(w => '<div class="stack-row"><div class="t"><b>' + esc(w.name) + '</b><span class="' + (w.tone === 'better' ? 'better' : w.tone === 'worse' ? 'worse' : 'flat') + '">' + esc(w.stat) + '</span></div><p>' + esc(w.text) + '</p></div>').join('') + '</section>';
   }
+  const pb = b.private_builders;
+  if(pb && (pb.list || []).length){
+    h += '<section class="sec" style="gap:4px"><div class="sec-head" style="margin-bottom:6px"><h2>Private builders</h2><span>California</span></div>'
+      + (pb.summary ? '<p class="body-note" style="margin-bottom:4px">' + esc(pb.summary) + '</p>' : '')
+      + pb.list.map(p => '<div class="stack-row"><div class="t"><b>' + esc(p.name) + '</b></div><p>' + esc(p.text) + '</p></div>').join('') + '</section>';
+    const pn = ((D.news || {}).ca_private || {}).items || [];
+    h += '<section class="sec" style="gap:0"><h2 style="margin-bottom:4px">Private builder news</h2>'
+      + (pn.length ? newsRows(pn, 8) : '<p class="note">The news feed fills on the next nightly run.</p>') + '</section>';
+  }
   h += '<section class="sec" style="gap:4px"><h2 style="margin-bottom:6px">California indicators</h2>' + ['CABPPRIV', 'LXXRSA', 'CASTHPI', 'CAUR'].map(seriesRow).join('') + '</section>';
   if((app.watch || []).length){
     h += '<section class="sec"><h2>Regulatory and market watch</h2>' + app.watch.map((w, i) => '<div class="card watch' + (i === 0 ? ' accent first' : '') + '"><span class="k">' + esc(w.label) + '</span><p>' + esc(w.text) + '</p></div>').join('') + '</section>';
@@ -506,7 +568,8 @@ function renderSoCal(){
 function renderCosts(){
   const app = (D.brief && D.brief.app) || {};
   const pctOf = id => { const s = D.series[id]; return s ? trend(s.obs).pct : null; };
-  const mats = [['WPUSI019011', 'Copper'], ['WPU101704', 'Structural steel'], ['WPUSI012011', 'All materials'], ['WPU081', 'Lumber']]
+  const mats = [['WPUSI019011', 'Copper'], ['WPU101704', 'Structural steel'], ['WPUSI012011', 'All materials'], ['WPU081', 'Lumber'],
+                ['WPU1333', 'Ready-mix concrete'], ['WPU137', 'Drywall (gypsum)'], ['WPU0721', 'Plastics']]
     .map(([id, label]) => ({id, label, p: pctOf(id)})).filter(x => x.p != null).sort((a, b) => b.p - a.p);
   let h = '<section class="sec" style="gap:6px"><p class="eyebrow">Materials, energy, labor</p><h1 class="title">Costs</h1></section>';
   const all = pctOf('WPUSI012011'), jobs = pctOf('JTS2300JOL');
@@ -516,6 +579,20 @@ function renderCosts(){
       + (leaders.length === 2 && leaders[0].p > all ? ', led by ' + leaders[0].label.toLowerCase() + ' and ' + leaders[1].label.toLowerCase() : '')
       + (jobs != null ? ', and construction job openings are ' + (jobs >= 0 ? 'up ' : 'down ') + Math.abs(jobs).toFixed(0) + '%' : '') + '.';
     h += '<section class="card accent sec" style="gap:8px"><p class="lede">' + esc(lede) + '</p>' + (app.cost_summary ? '<p class="body-note">' + esc(app.cost_summary) + '</p>' : '') + '</section>';
+  }
+  const fut = D.commodities || [];
+  if(fut.length){
+    h += '<section class="sec" style="gap:0"><div class="sec-head" style="margin-bottom:2px"><h2>Commodities</h2><span>Futures, year to date' + (D.live ? ' \u00b7 ' + esc(liveLabel()) : '') + '</span></div>'
+      + fut.map(r => {
+          const t = priceTone(r.ytd_pct, true), rg = ytdRange(r);
+          return '<div class="fut"><div class="t"><div><div class="nm">' + esc(r.name) + '</div><div class="un">' + esc(r.unit || '') + '</div></div>'
+            + '<div class="pv"><b>' + fmtPx(r) + '</b><span class="' + t.tone + '">' + signedPct(r.ytd_pct) + ' YTD</span>'
+            + (r.day_pct != null ? '<span class="' + priceTone(r.day_pct, true).tone + '">' + signedPct(r.day_pct) + ' today</span>' : '') + '</div></div>'
+            + ytdSvg(r.series, t.color, 50)
+            + (rg ? '<div class="fut-scale"><span>' + esc(rg.startLabel) + ' ' + esc(rg.start) + '</span><span>low ' + esc(rg.lo) + ' \u00b7 high ' + esc(rg.hi) + '</span></div>' : '')
+            + '<p>' + esc(r.why || '') + '</p></div>';
+        }).join('')
+      + '<p class="note" style="margin-top:8px">Dashed line is the first close of the year. Red means the input is costing more.</p></section>';
   }
   if(mats.length){
     const max = Math.max(50, ...mats.map(x => Math.abs(x.p)));
@@ -532,9 +609,24 @@ function renderCosts(){
       + (t.pct != null ? '<span class="s ' + tone + '">' + arrow(t.pct, 0) + ' vs last year</span>' : '') + '</div>';
   };
   h += '<section class="tiles">' + tile('DCOILWTICO', 'Crude oil, WTI', v => '$' + v.toFixed(2)) + tile('JTS2300JOL', 'Construction openings', compact, false, true) + tile('USCONS', 'Construction employment', compact, true) + '</section>';
-  if((app.cost_notes || []).length){
-    h += '<section class="sec" style="gap:4px"><h2 style="margin-bottom:6px">What the builders say</h2>' + app.cost_notes.map(n => '<div class="stack-row"><div class="t"><b>' + esc(n.who) + '</b></div><p>' + esc(n.text) + '</p></div>').join('') + '</section>';
+  const cons = (D.brief || {}).construction;
+  if(cons && (cons.builders || []).length){
+    const order = ['LEN','DHI','PHM','KBH','CCS','MTH','TOL','NVR','MHO','LGIH'];
+    const rows = cons.builders.slice().sort((a, b) => (order.indexOf(a.ticker) + 99) % 99 - (order.indexOf(b.ticker) + 99) % 99);
+    h += '<section class="sec" style="gap:0"><div class="sec-head" style="margin-bottom:6px"><h2>What builders pay to build</h2><span>' + (cons.as_of ? 'Written ' + esc(shortDate(cons.as_of)) : 'From filings') + '</span></div>'
+      + (cons.summary ? '<p class="body-note" style="margin-bottom:6px">' + esc(cons.summary) + '</p>' : '')
+      + rows.map(r => '<a class="bc" href="#b/' + esc(r.ticker) + '" style="text-decoration:none;color:inherit"><div class="t"><b>' + esc(SHORT[r.ticker] || r.name) + '</b><span>' + esc(r.period || '') + '</span></div>'
+          + '<p>' + esc(r.build_cost || '') + '</p>'
+          + '<div class="kv">' + (r.cycle_time ? 'Cycle <b>' + esc(r.cycle_time) + '</b>' : '') + (r.cycle_time && r.margin ? ' \u00b7 ' : '') + (r.margin ? 'Margin <b>' + esc(r.margin) + '</b>' : '') + '</div></a>').join('')
+      + '</section>';
+    if((cons.market || []).length){
+      const ms = cons.market_source || {};
+      h += '<section class="sec"><div class="sec-head"><h2>Input prices</h2><span>' + esc(ms.name ? ms.name.replace(/^NAHB analysis of BLS producer prices, /, 'BLS via NAHB \u00b7 ') : '') + '</span></div><div class="tiles">'
+        + cons.market.map(m => '<div class="tile"><span class="k">' + esc(m.label) + '</span><span class="mk-v">' + esc(m.value) + '</span><span class="s dim">' + esc(m.text) + '</span></div>').join('') + '</div></section>';
+    }
   }
+  const cn = ((D.news || {}).costs || {}).items || [];
+  if(cn.length) h += '<section class="sec" style="gap:0"><h2 style="margin-bottom:4px">From NAHB on costs</h2>' + newsRows(cn, 5) + '</section>';
   h += upcoming(COST_RELEASES, 4);
   return h;
 }
