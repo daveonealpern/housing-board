@@ -260,6 +260,9 @@ function applyLiveQuotes(live){
   const by = {};
   live.quotes.forEach(q => { if(q && q.symbol && typeof q.price === 'number' && q.time) by[q.symbol] = q; });
   let applied = 0, latest = 0, daySum = 0, dayN = 0, session = null;
+  // Land bankers and commodity futures ride the same overlay; only the
+  // builders feed the group's average move and the session clock.
+  [...(D.landbanks || []), ...(D.commodities || [])].forEach(r => overlayQuote(r, by[r.ticker]));
   D.stocks.forEach(r => {
     const q = by[r.ticker];
     if(!q) return;
@@ -290,6 +293,20 @@ function applyLiveQuotes(live){
     fetched: live.fetched || null,
   };
   return true;
+}
+
+// One non-builder row (land banker or commodity future): same arithmetic as
+// the builder rows, without touching the builder average or session clock.
+function overlayQuote(r, q){
+  if(!r || !q) return;
+  const day = nyDate(q.time), series = r.series || (r.series = []), last = series[series.length - 1];
+  if(last && day < last.d) return;
+  const dp = r.decimals != null ? Math.max(r.decimals, 2) : 2, v = +q.price.toFixed(dp);
+  if(last && last.d === day) last.v = v; else series.push({d: day, v});
+  r.price = q.price; r.as_of = day; r.live_time = q.time;
+  const base = series[0];
+  if(base && base.v && base.d.slice(0, 4) === day.slice(0, 4)) r.ytd_pct = round1((q.price - base.v) / base.v * 100);
+  r.day_pct = q.prevClose ? round1((q.price - q.prevClose) / q.prevClose * 100) : null;
 }
 
 // Short label for wherever prices are shown: "Live 10:47 AM", "Close 1:00 PM"

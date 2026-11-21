@@ -249,6 +249,22 @@ SERIES = [
      "wiring and plumbing pipe and fittings; a global industrial metal, so it moves with "
      "worldwide demand and mine supply more than with US housing activity specifically.",
      "producer price index copper and copper products"),
+    # Horton's 10-K names lumber, drywall and cement as the largest material
+    # components of a home, so the board carries concrete and gypsum beside
+    # lumber, plus plastics for pipe, siding and insulation board. IDs checked
+    # against FRED on 2026-11-19 (all report through October 2026).
+    ("WPU1333",      "Ready-mix concrete",             "commodity",   2, "index", "down",
+     "Producer price index for ready-mix concrete, the slab, footings and flatwork of a "
+     "house. Moves with cement, aggregate and diesel costs and rarely falls.",
+     "producer price index ready-mix concrete"),
+    ("WPU137",       "Gypsum products (drywall)",      "commodity",   2, "index", "down",
+     "Producer price index for gypsum products, mostly wallboard. A large-volume interior "
+     "material whose plants run on natural gas.",
+     "producer price index gypsum products"),
+    ("WPU0721",      "Plastic construction products",  "commodity",   2, "index", "down",
+     "Producer price index for plastic pipe, siding, flooring and foam board. Tracks resin "
+     "prices, which follow oil and natural gas.",
+     "producer price index plastic construction products"),
 ]
 
 # A concrete, illustrative scenario per series, shown on hover alongside the
@@ -365,6 +381,15 @@ EXAMPLES = {
     "WPU101704": "For example: a builder pricing out a large custom home with steel beam "
                  "supports gets a materials quote that is only valid for 30 days, because the "
                  "mill's own price can move meaningfully before the steel is even delivered.",
+    "WPU1333": "For example: a slab-on-grade tract home pours roughly 50 to 80 cubic yards "
+               "of concrete across foundation, driveway and walks, so a few dollars a yard "
+               "repeats across every lot in a phase.",
+    "WPU137": "For example: a 2,500 square foot house hangs on the order of 8,000 to 10,000 "
+              "square feet of drywall, and wallboard makers pass gas-price swings through "
+              "within a quarter or two.",
+    "WPU0721": "For example: PVC drain and supply pipe, vinyl siding and foam sheathing all "
+               "reprice with resin, so an oil or gas spike reaches the house through plastics "
+               "as well as fuel.",
     "WPUSI019011": "For example: a spike in global copper prices, driven by demand from data "
                    "centers or electric vehicles rather than anything happening in US housing, "
                    "still raises the cost of wiring a new home.",
@@ -574,6 +599,194 @@ def pull_builders():
         time.sleep(0.25)
     return rows
 
+def pull_filings(tickers):
+    """Latest 10-Q or 10-K for each ticker, with the same fields as builders."""
+    rows = []
+    try:
+        idx = get_json("https://www.sec.gov/files/company_tickers.json", headers={"User-Agent": SEC_UA})
+        lookup = {v["ticker"]: (str(v["cik_str"]).zfill(10), v["title"]) for v in idx.values()}
+    except Exception as e:
+        note("SEC ticker index failed: %s" % e)
+        return rows
+    for tk in tickers:
+        if tk not in lookup:
+            note("No SEC record for ticker %s" % tk); continue
+        cik, title = lookup[tk]
+        rec = {"ticker": tk, "name": title, "cik": cik}
+        try:
+            sub = get_json("https://data.sec.gov/submissions/CIK%s.json" % cik, headers=SEC_HEADERS)
+            rec["name"] = sub.get("name") or title
+            f = sub.get("filings", {}).get("recent", {})
+            for i, form in enumerate(f.get("form", [])):
+                if form in ("10-Q", "10-K"):
+                    acc = f["accessionNumber"][i].replace("-", "")
+                    rec.update({"form": form, "filed": f["filingDate"][i],
+                                "period": f.get("reportDate", [""] * (i + 1))[i],
+                                "url": "https://www.sec.gov/Archives/edgar/data/%s/%s/%s"
+                                       % (int(cik), acc, f["primaryDocument"][i])})
+                    break
+        except Exception as e:
+            note("SEC filings for %s failed: %s" % (tk, e))
+        rows.append(rec)
+        print("  %-6s %s %s" % (tk, rec.get("form", "-"), rec.get("filed", "")))
+        time.sleep(0.25)
+    return rows
+
+
+LANDBANK_PROMPT = """You are reading the latest quarterly or annual SEC filing of {name} ({ticker}),
+a land banker or lot developer that holds land for homebuilders. Extract only what the filing
+states. Never estimate. No em dashes.
+
+Return ONLY a JSON object, no prose and no code fence:
+{{
+  "period": "the period in words, e.g. 'Sep 2026 qtr' or 'FY ended Sep 2026'",
+  "facts": ["4 to 5 short sentences, each with one hard figure: homesites or lots held,
+             capital invested and yields or option fees, lots or land sold and to whom,
+             impairments or deposit write-offs, guidance. Anchor time to fixed periods."]
+}}
+
+FILING TEXT:
+{text}
+"""
+
+def filing_text(url, limit=180000):
+    req = urllib.request.Request(url, headers={"User-Agent": SEC_UA})
+    with urllib.request.urlopen(req, timeout=90) as r:
+        raw = r.read()
+    if raw[:2] == b"\x1f\x8b":
+        raw = gzip.decompress(raw)
+    return strip_html(raw.decode("utf-8", "ignore"))[:limit]
+
+
+def refresh_landbanks(brief, filings):
+    """With an API key, re-read any land banker whose filing is newer than the
+    facts on file and replace its facts. Without a key the facts simply keep
+    their period label; there is no warning, since the board still works."""
+    lb = brief.get("landbanks")
+    if not lb or not ANTHROPIC_KEY:
+        return brief
+    covered = lb.setdefault("covered", {})
+    changed = False
+    for f in filings:
+        if not f.get("url") or not f.get("period") or f["period"] <= covered.get(f["ticker"], ""):
+            continue
+        try:
+            got = parse_json_reply(anthropic(LANDBANK_PROMPT.format(
+                name=f["name"], ticker=f["ticker"], text=filing_text(f["url"])), 1500))
+        except Exception as e:
+            note("Could not read %s filing: %s" % (f["ticker"], e)); continue
+        if not got or not got.get("facts"):
+            continue
+        for row in lb.get("public", []):
+            if row.get("ticker") == f["ticker"]:
+                row.update({"period": got.get("period") or row.get("period"),
+                            "facts": got["facts"][:5], "url": f["url"]})
+        covered[f["ticker"]] = f["period"]
+        changed = True
+        print("    read %s" % f["ticker"])
+    if changed:
+        lb["as_of"] = TODAY.isoformat()
+        with open(BRIEF_PATH, "w") as fh:
+            json.dump(brief, fh, indent=2)
+    return brief
+
+
+# ---------------------------------------------------------------------------
+# News for the land banker, California private builder and cost panels
+# ---------------------------------------------------------------------------
+# Google News search RSS is the only free source that covers trade press,
+# business journals and local papers together. It rate-limits GitHub's
+# runners now and then, so each query retries, then falls back to Bing's news
+# RSS, and if both fail the previous run's items are kept. A feed is only
+# reported as an issue once it has been stale for more than three days.
+NEWS_QUERIES = {
+    "ca_private": '("Shea Homes" OR "Tri Pointe" OR "Risewell Homes" OR "Brookfield Residential" '
+                  'OR "Trumark Homes" OR "City Ventures" OR "Olson Company" OR "Rancho Mission Viejo" '
+                  'OR "Melia Homes" OR "Williams Homes" OR "Woodside Homes") '
+                  '(California OR "Orange County" OR "Los Angeles" OR "Inland Empire" OR "San Diego" '
+                  'OR "Bay Area" OR Sacramento OR Ventura)',
+    "landbank":   '("land banking" OR "land banker" OR "lot banking" OR "Millrose Properties" '
+                  'OR "Forestar" OR "Five Point Holdings" OR Hearthstone) '
+                  '(homebuilder OR homebuilders OR homesites OR lots)',
+}
+NEWS_DAYS = 45
+COSTS_FEED = "https://eyeonhousing.org/feed/"   # NAHB's economics blog
+COST_WORDS = re.compile(r"material|lumber|tariff|cost|price|steel|labor|wage|worker|input", re.I)
+
+def _rss_items(url, headers=None):
+    req = urllib.request.Request(url, headers=headers or YAHOO_HEADERS)
+    with urllib.request.urlopen(req, timeout=30) as r:
+        root = ET.fromstring(r.read())
+    out = []
+    for it in root.iter("item"):
+        title = (it.findtext("title") or "").strip()
+        link = (it.findtext("link") or "").strip()
+        src_el = it.find("source")
+        source = (src_el.text or "").strip() if src_el is not None and src_el.text else ""
+        if "bing.com/news/apiclick" in link:      # unwrap Bing's click-tracking redirect
+            link = urllib.parse.parse_qs(urllib.parse.urlparse(link).query).get("url", [link])[0]
+        if source and title.endswith(" - " + source):
+            title = title[: -len(" - " + source)]
+        pub = None
+        raw = (it.findtext("pubDate") or "").strip()
+        for fmt in ("%a, %d %b %Y %H:%M:%S %Z", "%a, %d %b %Y %H:%M:%S %z"):
+            try:
+                pub = datetime.datetime.strptime(raw, fmt).replace(tzinfo=None); break
+            except ValueError:
+                continue
+        if title and link:
+            out.append({"title": title, "link": link, "source": source,
+                        "published": pub.date().isoformat() if pub else None})
+    return out
+
+def _news_search(q):
+    gurl = "https://news.google.com/rss/search?" + urllib.parse.urlencode(
+        {"q": q + " when:%dd" % NEWS_DAYS, "hl": "en-US", "gl": "US", "ceid": "US:en"})
+    for wait in (0, 6, 15):
+        time.sleep(wait)
+        try:
+            return _rss_items(gurl)
+        except urllib.error.HTTPError as e:
+            if e.code != 429:
+                break
+        except Exception:
+            break
+    burl = "https://www.bing.com/news/search?" + urllib.parse.urlencode({"q": q, "format": "rss"})
+    return _rss_items(burl)
+
+def _tidy(items, n=8):
+    cutoff = (TODAY - datetime.timedelta(days=NEWS_DAYS + 15)).isoformat()
+    seen, out = set(), []
+    for it in sorted(items, key=lambda x: x.get("published") or "", reverse=True):
+        key = re.sub(r"[^a-z0-9]", "", it["title"].lower())[:60]
+        if key in seen or (it.get("published") and it["published"] < cutoff):
+            continue
+        seen.add(key); out.append(it)
+    return out[:n]
+
+def pull_news(previous):
+    prev = previous or {}
+    out = {}
+    jobs = [(k, lambda q=q: _news_search(q)) for k, q in NEWS_QUERIES.items()]
+    jobs.append(("costs", lambda: [i for i in _rss_items(COSTS_FEED) if COST_WORDS.search(i["title"])]))
+    for key, job in jobs:
+        try:
+            items = _tidy(job())
+            if not items:
+                raise ValueError("no items")
+            out[key] = {"items": items, "fetched": TODAY.isoformat()}
+            print("  %-10s %d items" % (key, len(items)))
+        except Exception as e:
+            old = prev.get(key) or {}
+            out[key] = old
+            age = (TODAY - datetime.date.fromisoformat(old["fetched"])).days if old.get("fetched") else 99
+            print("  %-10s failed (%s); keeping items from %s" % (key, e, old.get("fetched")))
+            if age > 3:
+                note("News feed '%s' has not refreshed for %d days: %s" % (key, age, e))
+        time.sleep(2)
+    return out
+
+
 # ---------------------------------------------------------------------------
 # Polymarket
 # ---------------------------------------------------------------------------
@@ -683,6 +896,12 @@ given, leave the unit field null.
   "incentives": "incentive load as stated, or null",
   "backlog": "backlog units and value, or null",
   "california": "any statement specific to California or a California region. null if none.",
+  "build_cost": "what the filing says about direct, house or stick-and-brick construction costs,
+                 with any figure (per square foot, per home, or the change versus the prior year
+                 or quarter), in one sentence. null if the filing is silent.",
+  "cycle_time": "construction cycle or build time as stated, e.g. '116 days, from 126'. null if none.",
+  "cost_drivers": "one sentence on what the filing says moved gross margin (lot costs,
+                   incentives, direct costs, tariffs, labor). null if none.",
   "notes": "at most two sentences on land strategy or outlook, in the filing's own terms"
 }}
 
@@ -714,6 +933,9 @@ Return ONLY a JSON object, no prose and no code fence:
   "socal": ["2 to 4 paragraphs, or one paragraph saying the filings are silent on it"],
   "ventura": ["carry forward or refine the prior section"],
   "takeaway": ["2 to 3 short paragraphs of implications for a land seller"],
+  "construction_summary": "2 to 4 sentences on what the builders say about their direct construction
+                           costs, cycle times and cost drivers, using the build_cost, cycle_time and
+                           cost_drivers fields. Name builders and figures.",
   "app": {{
     "signals": [{{"value": "a short figure such as 8,777 or $24.8M", "text": "under 15 words on what it is"}}],
     "west": [{{"name": "Builder · segment", "stat": "one short figure", "tone": "better, worse or flat", "text": "under 20 words"}}],
@@ -828,6 +1050,29 @@ def refresh_brief(builders):
             h.append({"quarter": e["quarter"], **{k: e.get(k) for k in NUMFIELDS}})
             h.sort(key=lambda x: x["quarter"])
             history[e["ticker"]] = h[-8:]
+
+    # The construction-cost table: one row per builder, replaced whenever that
+    # builder's new filing says something about costs, otherwise left as is.
+    cons = brief.setdefault("construction", {"builders": []})
+    rows_c = {r.get("ticker"): r for r in cons.get("builders", [])}
+    for e in extracts:
+        if not any(e.get(k) for k in ("build_cost", "cycle_time", "cost_drivers")):
+            continue
+        r = rows_c.get(e["ticker"]) or {"ticker": e["ticker"], "name": e["name"]}
+        try:
+            per = datetime.date.fromisoformat(e["quarter"]).strftime("%b %Y") + " qtr"
+        except Exception:
+            per = e["quarter"]
+        r.update({"period": per, "source": "Filing for period ending %s" % e["quarter"]})
+        if e.get("build_cost"):   r["build_cost"] = e["build_cost"]
+        if e.get("cycle_time"):   r["cycle_time"] = e["cycle_time"]
+        if e.get("cost_drivers"): r["drivers"] = e["cost_drivers"]
+        if e.get("margin"):       r["margin"] = e["margin"]
+        rows_c[e["ticker"]] = r
+    cons["builders"] = list(rows_c.values())
+    if new.get("construction_summary"):
+        cons["summary"] = new["construction_summary"]
+    cons["as_of"] = TODAY.isoformat()
 
     brief.update({
         "metric_history": history,
@@ -1051,40 +1296,94 @@ def pull_resale_data():
                       "median sale price is unadjusted at every level"}
 
 
-def pull_stock_prices():
+def yahoo_ytd(tk, digits=2):
+    """Year-to-date daily closes for one Yahoo symbol, in the shape the board
+    uses for every price row: price, ytd_pct (from the first close of the
+    year), as_of, series [{d, v}]. Raises on any failure so the caller can
+    word its own error."""
+    j = get_json("https://query1.finance.yahoo.com/v8/finance/chart/%s?range=ytd&interval=1d"
+                 % urllib.parse.quote(tk), headers=YAHOO_HEADERS)
+    res = (j.get("chart") or {}).get("result") or []
+    if not res:
+        raise ValueError("no price data returned")
+    res = res[0]
+    ts = res.get("timestamp") or []
+    closes = ((res.get("indicators") or {}).get("quote") or [{}])[0].get("close") or []
+    pairs = [(t, c) for t, c in zip(ts, closes) if c is not None]
+    if not pairs:
+        raise ValueError("price series came back empty")
+    series = [{"d": datetime.datetime.utcfromtimestamp(t).date().isoformat(), "v": round(c, digits)}
+              for t, c in pairs]
+    meta = res.get("meta") or {}
+    first, last = series[0]["v"], series[-1]["v"]
+    return {
+        "ticker": tk,
+        "price": meta.get("regularMarketPrice", last),
+        "ytd_pct": round((last - first) / first * 100, 1) if first else None,
+        "as_of": series[-1]["d"],
+        "series": series,
+        "currency": meta.get("currency", "USD"),
+        "name": meta.get("shortName") or meta.get("longName"),
+    }
+
+
+def pull_stock_prices(tickers=None, label="Stock price"):
     out = []
-    for tk in BUILDERS:
+    for tk in (tickers or BUILDERS):
         try:
-            j = get_json("https://query1.finance.yahoo.com/v8/finance/chart/%s"
-                         "?range=ytd&interval=1d" % tk, headers=YAHOO_HEADERS)
-            res = (j.get("chart") or {}).get("result") or []
-            if not res:
-                note("No price data returned for %s" % tk); continue
-            res = res[0]
-            ts = res.get("timestamp") or []
-            closes = ((res.get("indicators") or {}).get("quote") or [{}])[0].get("close") or []
-            pairs = [(t, c) for t, c in zip(ts, closes) if c is not None]
-            if not pairs:
-                note("Price series for %s came back empty" % tk); continue
-            series = [{"d": datetime.datetime.utcfromtimestamp(t).date().isoformat(), "v": round(c, 2)}
-                      for t, c in pairs]
-            meta = res.get("meta") or {}
-            first, last = series[0]["v"], series[-1]["v"]
-            ytd_pct = round((last - first) / first * 100, 1) if first else None
-            out.append({
-                "ticker": tk,
-                "price": meta.get("regularMarketPrice", last),
-                "ytd_pct": ytd_pct,
-                "as_of": series[-1]["d"],
-                "series": series,
-                "currency": meta.get("currency", "USD"),
-            })
-            print("  %-6s $%.2f  YTD %s%%" % (tk, meta.get("regularMarketPrice", last),
-                  ytd_pct if ytd_pct is not None else "?"))
+            row = yahoo_ytd(tk)
+            out.append(row)
+            print("  %-6s $%.2f  YTD %s%%" % (tk, row["price"],
+                  row["ytd_pct"] if row["ytd_pct"] is not None else "?"))
         except Exception as e:
-            note("Stock price for %s failed: %s" % (tk, e))
+            note("%s for %s failed: %s" % (label, tk, e))
         time.sleep(0.4)
     return out
+
+
+# Construction commodities, as front-month futures from the same Yahoo chart
+# endpoint. Symbols and units checked against live responses on 2026-11-19.
+# Front-month contracts roll, so a year-to-date line can show a small step at
+# a roll date; the producer price indexes in SERIES are the smoother monthly
+# read on the same materials.
+COMMODITIES = [
+    ("LBR=F", "Lumber",                  "$/1,000 bd ft", 1,
+     "Framing lumber futures. The swing input in a wood-frame house."),
+    ("HRC=F", "Hot-rolled steel",        "$/short ton",   0,
+     "Midwest hot-rolled coil. Rebar, beams, connectors and appliances."),
+    ("HG=F",  "Copper",                  "$/lb",          3,
+     "Wiring, plumbing and HVAC line sets."),
+    ("ALI=F", "Aluminum",                "$/metric ton",  0,
+     "Windows, sliding doors, siding and ductwork."),
+    ("CL=F",  "Crude oil, WTI",          "$/barrel",      2,
+     "Feeds asphalt paving and roofing, plastics and freight."),
+    ("HO=F",  "Diesel (NY Harbor ULSD)", "$/gallon",      3,
+     "Fuel for grading equipment, concrete trucks and deliveries."),
+    ("NG=F",  "Natural gas",             "$/MMBtu",       3,
+     "Energy for drywall, brick, glass and insulation plants."),
+]
+
+def pull_commodities():
+    out = []
+    for tk, name, unit, dp, why in COMMODITIES:
+        try:
+            row = yahoo_ytd(tk, digits=max(dp, 2))
+            row.update({"name": name, "unit": unit, "decimals": dp, "why": why})
+            out.append(row)
+            print("  %-6s %s  YTD %s%%" % (tk, row["price"], row["ytd_pct"]))
+        except Exception as e:
+            note("Commodity price for %s (%s) failed: %s" % (name, tk, e))
+        time.sleep(0.4)
+    return out
+
+
+# Public land bankers and lot developers that hold land for the public
+# builders. Millrose is the homesite option REIT spun out of Lennar, Forestar
+# is D.R. Horton's majority-owned lot developer, and Five Point sells land at
+# Great Park, Valencia and Candlestick and owns the Hearthstone land-banking
+# platform. Private land bankers have no price to track; they appear in the
+# brief and in the news feed below.
+LANDBANK_TICKERS = ["MRP", "FOR", "FPH"]
 
 
 # ---------------------------------------------------------------------------
@@ -1168,6 +1467,16 @@ def main():
     brief = refresh_resale_paragraph(brief, resale)
     print("Headlines...");       headlines = pull_headlines()
     print("Stock prices...");    stocks   = pull_stock_prices()
+    print("Commodities...");     commodities = pull_commodities()
+    print("Land bankers...");    landbanks = pull_stock_prices(LANDBANK_TICKERS, "Land banker price")
+    lb_filings = pull_filings(LANDBANK_TICKERS)
+    brief = refresh_landbanks(brief, lb_filings)
+    try:
+        with open(OUT_PATH) as fh:
+            previous_news = json.load(fh).get("news")
+    except Exception:
+        previous_news = None
+    print("News...");            news = pull_news(previous_news)
 
     payload = {
         "generated": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
@@ -1177,6 +1486,10 @@ def main():
         "builders": builders,
         "brief": brief,
         "stocks": stocks,
+        "commodities": commodities,
+        "landbanks": landbanks,
+        "landbank_filings": lb_filings,
+        "news": news,
         "resale": resale,
         "headlines": headlines,
         "markets": markets,

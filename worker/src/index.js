@@ -14,8 +14,11 @@
 //
 // The symbol list is fixed on purpose: the Worker takes no symbols from the
 // caller, so it cannot be used as a general-purpose proxy. Add a ticker here
-// when one is added to BUILDERS in fetch.py.
-const SYMBOLS = ['DHI', 'LEN', 'PHM', 'KBH', 'TOL', 'NVR', 'MTH', 'CCS', 'MHO', 'LGIH'];
+// when one is added to BUILDERS, LANDBANK_TICKERS or COMMODITIES in fetch.py.
+const BUILDERS = ['DHI', 'LEN', 'PHM', 'KBH', 'TOL', 'NVR', 'MTH', 'CCS', 'MHO', 'LGIH'];
+const LANDBANKS = ['MRP', 'FOR', 'FPH'];
+const COMMODITIES = ['LBR=F', 'HRC=F', 'HG=F', 'ALI=F', 'CL=F', 'HO=F', 'NG=F'];
+const SYMBOLS = [...BUILDERS, ...LANDBANKS, ...COMMODITIES];
 
 const ALLOWED_ORIGINS = ['https://daveonealpern.github.io'];
 
@@ -128,7 +131,7 @@ async function quote(symbol) {
 // right now, read from Yahoo's own trading-period data so holidays and early
 // closes are handled without a calendar here.
 function marketState(quotes) {
-  const q = quotes.find(x => x.regular && x.regular.start && x.regular.end);
+  const q = quotes.find(x => BUILDERS.includes(x.symbol) && x.regular && x.regular.start && x.regular.end);
   if (!q) return { open: false, start: null, end: null };
   const now = Math.floor(Date.now() / 1000);
   return { open: now >= q.regular.start && now < q.regular.end, start: q.regular.start, end: q.regular.end };

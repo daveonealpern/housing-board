@@ -1,8 +1,8 @@
 {
-  "as_of": "2026-11-12",
+  "as_of": "2026-11-20",
   "source": "manual",
   "covered": {
-    "DHI": "2026-06-30",
+    "DHI": "2026-09-30",
     "LEN": "2026-08-31",
     "PHM": "2026-09-30",
     "KBH": "2026-08-31",
@@ -13,22 +13,25 @@
     "LGIH": "2026-09-30",
     "MHO": "2026-09-30"
   },
-  "headline": "Eight third-quarter filings show weaker demand and rising cancellations, and impairments have reached California product.",
+  "headline": "All nine builders reporting the summer quarter describe weaker demand. Horton's cancellation rate reached 23%, and impairments have reached California product.",
   "national": [
-    "Eight builders have now filed for the third quarter: Lennar and KB Home for quarters ended August 31, and PulteGroup, M/I Homes, Meritage, Century Communities, NVR and LGI Homes for September 30. All eight describe it as weaker than the quarter before. Every one but LGI delivered fewer homes than a year earlier (Lennar down 3%, Pulte down 9%, KB down 19%, M/I down 2%, Meritage down 14%, Century down 2%, NVR down 7%); LGI's closings rose 12% only because wholesale sales to rental operators climbed to 215 homes, 18% of the total. Net orders fell everywhere they are reported (Lennar down 9%, Pulte down 6%, KB down 12%, M/I down 2%, Meritage down 15%, Century down 4%, NVR down 7%), and LGI's are down 30% for the year to date. Margins are still compressed year over year: Lennar 15.8% against 17.5%, Pulte 24.8% against 26.2%, KB 16.5% against 18.2%, M/I homebuilding 18.4% against 21.5%, Meritage 17.4% against 19.1%, Century 15.0% against 17.9%, NVR 18.3% against 21.1%, LGI 20.2% against 21.5%. Lennar and KB did improve on their second quarters.",
+    "Nine builders have now reported the summer quarter: Lennar and KB Home for quarters ended August 31, and D.R. Horton, PulteGroup, M/I Homes, Meritage, Century Communities, NVR and LGI Homes for September 30. All nine describe it as weaker than the quarter before. Every one but LGI delivered fewer homes than a year earlier (Horton down 2%, Lennar down 3%, Pulte down 9%, KB down 19%, M/I down 2%, Meritage down 14%, Century down 2%, NVR down 7%); LGI's closings rose 12% only because wholesale sales to rental operators climbed to 215 homes, 18% of the total. Net orders fell everywhere they are reported (Horton down 7%, Lennar down 9%, Pulte down 6%, KB down 12%, M/I down 2%, Meritage down 15%, Century down 4%, NVR down 7%), and LGI's are down 30% for the year to date. Margins are still compressed year over year: Horton's home sales margin was 20.2% for fiscal 2026 against 21.5% and about 19.5% in the September quarter, Lennar 15.8% against 17.5%, Pulte 24.8% against 26.2%, KB 16.5% against 18.2%, M/I homebuilding 18.4% against 21.5%, Meritage 17.4% against 19.1%, Century 15.0% against 17.9%, NVR 18.3% against 21.1%, LGI 20.2% against 21.5%. Lennar and KB did improve on their second quarters.",
     "Rates are the stated cause. Lennar puts the 30-year mortgage at about 7% and the 10-year Treasury near 5%, up from 6.4% to 6.5% earlier in the year, and ties the move to energy-driven inflation from tension with Iran. M/I says mortgage rates topped 7% by quarter end, and Pulte says they rose sharply, most of all in September. Resale competition is building at the same time. KB says resale inventory is at its highest level in a decade with prices trending down in several of its markets, and Lennar reports rising resales in Texas and Florida. Meritage says buyers worried about the market and their own finances are in less of a hurry to commit, and Century reports that adjustable-rate loans were nearly 35% of its mortgage originations, up from under 5% in early 2025. Buyers are stretching for the payment.",
-    "Cancellations are where the third quarter breaks from the second. In the middle of the group, Pulte held at 16%, Lennar rose to 15% from 14%, KB to 18% from 17%, Meritage to 13% from 11%, and M/I sat at 12.3% against 12.2%; Century does not disclose a rate. The entry-level end has now passed Horton's June-quarter 20%. NVR's rate rose to 21.0% from 19.4%, and LGI's reached 48.9% for the first nine months against 28.1% a year earlier, which LGI attributes to more buyers being unable to secure or keep mortgage financing. Its backlog fell 48% to 685 homes. Toll's 2.6% from the July quarter is still the other end of the gradient.",
-    "Incentives are now pulling in two directions. Lennar's fell again, to 12.0% of revenue from 14.3% a year earlier and 12.9% in its prior quarter, although its West segment went the other way. M/I's incentives and closing costs rose to $73.2 million from $53.5 million, with mortgage rate buydowns up $23.2 million, Pulte expects its incentives to stay elevated, Meritage expects to need higher incentive use, and Century's average delivered price fell 10% on incentives alone. Nobody is building into it. Pulte's unsold homes in production fell to 6,627 from 7,369 and its completed specs to 1,696 from 2,027. KB delivered 74% built-to-order and posted its first year-over-year backlog increase in four years. Lennar guides fourth-quarter orders of 19,500 to 20,500 against deliveries of 22,000 to 23,000, converting inventory to cash."
+    "Cancellations are where the third quarter breaks from the second. In the middle of the group, Pulte held at 16%, Lennar rose to 15% from 14%, KB to 18% from 17%, Meritage to 13% from 11%, and M/I sat at 12.3% against 12.2%; Century does not disclose a rate. Horton's rose to 23% in its September quarter from 20% a year earlier, and 19% for the fiscal year against 18%. NVR's rate rose to 21.0% from 19.4%, and LGI's reached 48.9% for the first nine months against 28.1% a year earlier, which LGI attributes to more buyers being unable to secure or keep mortgage financing. Its backlog fell 48% to 685 homes. Toll's 2.6% from the July quarter is still the other end of the gradient.",
+    "Incentives are now pulling in two directions. Lennar's fell again, to 12.0% of revenue from 14.3% a year earlier and 12.9% in its prior quarter, although its West segment went the other way. M/I's incentives and closing costs rose to $73.2 million from $53.5 million, with mortgage rate buydowns up $23.2 million, Pulte expects its incentives to stay elevated, Meritage expects to need higher incentive use, and Century's average delivered price fell 10% on incentives alone. Nobody is building into it. Pulte's unsold homes in production fell to 6,627 from 7,369 and its completed specs to 1,696 from 2,027. KB delivered 74% built-to-order and posted its first year-over-year backlog increase in four years. Lennar guides fourth-quarter orders of 19,500 to 20,500 against deliveries of 22,000 to 23,000, converting inventory to cash. Horton ended September with 17,700 unsold homes, 8,800 of them finished, expects incentives to stay elevated through fiscal 2027, and guides 79,000 to 84,000 closings for that year against 84,202 in fiscal 2026."
   ],
   "metrics": [
     {
       "ticker": "DHI",
       "name": "D.R. Horton",
-      "quarter": "Jun 2026",
-      "deliveries": "23,983 (+4%)",
-      "orders": "23,084 (flat)",
-      "margin": "20.7%",
-      "cancels": "20%"
+      "quarter": "Sep 2026",
+      "deliveries": "22,915 (-2%)",
+      "orders": "18,619 (-7%)",
+      "margin": "19.5% (20.2% FY)",
+      "cancels": "23%",
+      "lots_owned": "130,500",
+      "lots_optioned": "440,100",
+      "incentives": "elevated through FY2027"
     },
     {
       "ticker": "LEN",
@@ -147,11 +150,13 @@
   "land": [
     "The new development in the third-quarter filings is builders using the option to exit. KB abandoned 8,777 previously controlled lots in its first nine months; its lots owned or controlled fell 5% to 61,581 since November, and the share held under option fell to 40% from 43%. Pulte says it has walked away from a number of land option agreements and is re-underwriting options before buying more land. Its controlled lots fell to 224,275 from 234,632 at year end, with 55% optioned against 57%, and its third-quarter land-related charges rose to $37.5 million from $27.6 million. Meritage has not finished evaluating, or committed to, 18,025 of the 36,644 lots it holds under purchase and option contracts, and it recovered deposits in the September quarter on deals it had already terminated. NVR, which buys finished lots rather than land, controls about 176,000 lots under purchase agreements backed by about $1.03 billion of deposits, and it wrote off $24.8 million of those deposits in the quarter against $18.9 million a year earlier.",
     "Lennar stays at the land-light extreme: 11,808 homesites owned against 476,153 controlled, 98% of the total, and the total is down from more than 511,000 a year ago. About 86% of its third-quarter deliveries came through land banking. The cost of that model is now visible. Lennar says land cost per home has risen, partly through option maintenance fees on extended deal durations, and expects that to weigh on margin while it works through positions underwritten under earlier market conditions. M/I controls about 48,900 lots, roughly five years of supply and 3% fewer than a year ago, with 25,509 of them under option at an aggregate $1.74 billion. Century moved the other way on mix: of 60,969 lots, 54.9% are owned against 57.1% at year end, with controlled lots up 5.3%. LGI is the opposite model and the most exposed: it owns 50,270 of its 58,400 lots, while its backlog has halved.",
+    "Horton is shifting the same way. Its owned lots fell to 130,500 from 147,000 while optioned lots held at 440,100, so 77% of its 570,600 lots are now under purchase contracts against 75% a year earlier. Those contracts carry a remaining purchase price of $28.7 billion on $2.6 billion of deposits. 68% of fiscal 2026 closings were on lots developed by Forestar or third parties, up from 65%. Forestar itself is shrinking its book: 84,400 lots owned or controlled against 99,800, 13,545 lots sold in fiscal 2026, down 5%, and guidance of 12,000 to 13,000 lots for fiscal 2027.",
     "They are still buying selectively. KB put $722.3 million into land in the quarter, up 40% from a year earlier, and ended with 277 communities, up 5%. Meritage bought about 6,500 lots for $410.9 million and spent $601.4 million on development in nine months, ending with 348 communities against 334. Century bought HistoryMaker Homes in Dallas on October 7 for about $160.2 million, adding 29 communities, and ended the quarter at 343 against 321. Pulte's average community count rose 7%, and M/I expects to finish the year about 5% higher. Toll held 75,500 lots with 58% under option at the end of its July quarter.",
-    "The land pricing note has turned more cautious. Pulte's second-quarter 10-Q said land inflation was easing. Its third-quarter 10-Q says instead that it continues to face pressure in the cost of land acquisition and development, and KB, M/I, Lennar and Meritage all name higher land or lot costs as a margin drag; Meritage says land costs remain elevated after years of high acquisition and development costs. NVR goes further and says it expects more margin pressure from higher land prices. None of the eight filings reports falling land prices."
+    "The land pricing note has turned more cautious. Pulte's second-quarter 10-Q said land inflation was easing. Its third-quarter 10-Q says instead that it continues to face pressure in the cost of land acquisition and development, and KB, M/I, Lennar and Meritage all name higher land or lot costs as a margin drag; Meritage says land costs remain elevated after years of high acquisition and development costs. NVR goes further and says it expects more margin pressure from higher land prices. None of the nine filings reports falling land prices."
   ],
   "socal": [
     "The third-quarter filings do speak to California, through each builder's western segment, and the read splits by builder.",
+    "Horton's Southwest region, which includes California, Arizona, Nevada, New Mexico and Hawaii, lost the most ground on buyer commitment. Its fiscal 2026 cancellation rate rose to 19% from 15%, the largest increase of Horton's six regions, and closings fell 5% to 9,013, which Horton attributes particularly to Las Vegas and Southern California. Orders slipped 2% to 9,096 at an average $482,400, backlog rose 8% to 1,118 homes, and pre-tax margin held at 11.0% against 11.3%. The region controls 48,500 lots, 17,300 of them owned.",
     "Lennar's West segment, which includes California, is its weakest. Gross margin was 12.1% against 16.3% a year earlier, the lowest of its four segments, and the filing cites lower average prices in California among other states from base price cuts and more incentives. West deliveries fell 8% to 4,529 and orders 9% to 4,319. It is also the one Lennar segment where incentives rose, to 10.9% of revenue from 10.5%.",
     "Pulte's West segment, which also includes California, had closings down 18%, orders down 15% and a 21% cancellation rate, the highest of its six segments, and pre-tax income fell 57%. Average price rose 2% only because of closing mix in its California markets. West is where Pulte owns most of its land: 25,681 lots owned against 12,447 optioned, the reverse of its company-wide split.",
     "KB's West Coast segment (California, Idaho and Washington) is the exception. Net orders rose 8% to 937, backlog value rose 22% to $1.02 billion, average community count rose 25% to 111, and the cancellation rate improved to 16% from 18%. Prices are giving: average selling price fell 6% to $641,800 and segment gross margin slipped to 16.7%. KB carries 20,471 West Coast lots at $3.21 billion, its largest land position by value. M/I and NVR have no California operations. LGI's West segment, which includes California, closed 239 homes against 203 at about $454,000 each, but the filing gives no West orders figure.",
@@ -166,9 +171,9 @@
     "The two items that belong on the radar are regulatory, not corporate. The 2025 California Building Standards Code and local County amendments took effect for all applications submitted on or after January 1, 2026, and AB 1308 now requires the County to inspect completed residential work of one to ten units within ten business days, with a miss treated as a Housing Accountability Act violation. That second one is real leverage on close-out timing."
   ],
   "takeaway": [
-    "Eight third-quarter filings, all pointing weaker, strengthen the case against entitling entry-level detached product for a near-term sale. Finished lots in attainable price ranges are still the gap, but builders will now pay for them only on option terms they can walk away from.",
+    "Nine summer-quarter filings, all pointing weaker, strengthen the case against entitling entry-level detached product for a near-term sale. Finished lots in attainable price ranges are still the gap, but builders will now pay for them only on option terms they can walk away from.",
     "Expect re-trades and walk-aways on options underwritten in 2024 and 2025. KB's 8,777 abandoned lots and Pulte's walk-aways are the evidence, and Lennar's rising option fees show the land bankers are pricing the extensions. For a land seller, deposit and extension terms now matter as much as headline price.",
-    "In California, KB's West Coast segment is the one builder book adding communities and orders, while Century's $19.1 million impairment is the first write-down in this group aimed at California and Washington product. Watch whether others follow in fourth-quarter filings. Buyer financing is the new stress point: NVR's 21% and LGI's 49% cancellation rates now exceed Horton's June-quarter 20%, so anyone holding a PSA with an entry-level builder should expect slower takedowns. Horton's 10-K for the fiscal year ended September 30, due in late November, is the next read."
+    "In California, KB's West Coast segment is the one builder book adding communities and orders, while Century's $19.1 million impairment is the first write-down in this group aimed at California and Washington product. Watch whether others follow in fourth-quarter filings. Horton names Southern California as a drag on its Southwest closings, where cancellations rose to 19% from 15%. Buyer financing is the new stress point: Horton's 23%, NVR's 21% and LGI's 49% cancellation rates mean anyone holding a PSA with an entry-level builder should expect slower takedowns. Toll's annual report for the year ended October 31, due in December, is the next read."
   ],
   "metric_history": {
     "DHI": [
@@ -180,6 +185,15 @@
         "orders_yoy_pct": 0.0,
         "margin_pct": 20.7,
         "cancel_rate_pct": 20.0
+      },
+      {
+        "quarter": "2026-09-30",
+        "deliveries_units": 22915,
+        "deliveries_yoy_pct": -1.9,
+        "orders_units": 18619,
+        "orders_yoy_pct": -7.0,
+        "margin_pct": 19.5,
+        "cancel_rate_pct": 23.0
       }
     ],
     "LEN": [
@@ -312,12 +326,12 @@
   "app": {
     "signals": [
       {
-        "value": "8,777",
-        "text": "optioned lots KB Home walked away from in the first nine months of fiscal 2026"
+        "value": "23%",
+        "text": "Horton cancellation rate in its September quarter, up from 20%"
       },
       {
-        "value": "$24.8M",
-        "text": "of lot deposits NVR wrote off in Q3, up from $18.9M"
+        "value": "8,777",
+        "text": "optioned lots KB Home walked away from in the first nine months of fiscal 2026"
       },
       {
         "value": "$19.1M",
@@ -329,6 +343,12 @@
       }
     ],
     "west": [
+      {
+        "name": "D.R. Horton \u00b7 Southwest",
+        "stat": "19% cancels",
+        "tone": "worse",
+        "text": "Up from 15%; closings down 5%, led by Las Vegas and Southern California."
+      },
       {
         "name": "KB Home \u00b7 West Coast",
         "stat": "Orders up 8%",
@@ -376,8 +396,8 @@
         "text": "The 2025 California Building Standards Code and County amendments apply to applications submitted on or after January 1, 2026."
       },
       {
-        "label": "Counterparty",
-        "text": "Tri Pointe is now a private subsidiary of Sumitomo Forestry. Its Southern California segment no longer reports quarterly."
+        "label": "Counterparties",
+        "text": "Tri Pointe is now a private subsidiary of Sumitomo Forestry and no longer reports its Southern California segment. Dream Finders closed on Beazer Oct. 20, 2026."
       }
     ],
     "cost_notes": [
@@ -386,21 +406,17 @@
         "text": "Build cost near $80 a square foot, down 6%; cycle time a record 116 days. Labor is tighter where immigration enforcement is active."
       },
       {
-        "who": "Meritage and Century",
-        "text": "Direct construction cost savings from national vendor volume; cycle times of about three to four months."
+        "who": "Century, KB, Meritage",
+        "text": "Direct costs still falling: Century down 2% from the June quarter. KB says costs turned up late in its August quarter on tariffs and fuel."
       },
       {
-        "who": "NVR, Pulte, M/I, KB",
-        "text": "Higher lot and land costs are the main margin drag. NVR expects more pressure from land prices."
+        "who": "Horton, NVR, Pulte, M/I",
+        "text": "Lot costs and incentives are the main margin drag. Horton's average cost per home closed rose while its price fell 2%."
       }
     ],
-    "cost_summary": "Builders are absorbing material costs through scale for now. Land and lot costs, not sticks and bricks, are what they name as the margin drag.",
-    "macro_note": "Every builder that filed for the third quarter names rates as the reason demand weakened.",
+    "cost_summary": "Builders still report falling direct costs, but input prices are up about 10% from a year earlier and reach reported costs only as new starts close.",
+    "macro_note": "Every builder that filed for the summer quarter ties weaker demand to mortgage rates near 7% and more resale competition.",
     "next_filings": [
-      {
-        "name": "D.R. Horton annual report",
-        "when": "November"
-      },
       {
         "name": "Toll Brothers annual report",
         "when": "December"
@@ -408,7 +424,270 @@
       {
         "name": "Lennar and KB Home annual reports",
         "when": "January"
+      },
+      {
+        "name": "D.R. Horton first quarter",
+        "when": "late January"
       }
     ]
+  },
+  "construction": {
+    "as_of": "2026-11-20",
+    "summary": "Builders' own direct costs are still falling while input prices rise. Lennar's build cost is about $80 a square foot, down 6% from a year earlier, and Century, KB and Meritage report lower direct costs. Over the same period residential construction inputs rose 10.4%, and KB says its costs turned up late in the August quarter on tariffs and fuel. Homes close three to four months after they start, and Pulte notes the lag between cost changes and reported results, so the input increases have not yet reached builder margins.",
+    "market": [
+      {
+        "label": "Residential construction inputs",
+        "value": "+10.4%",
+        "text": "Year over year in October 2026; up 0.3% from September."
+      },
+      {
+        "label": "Building materials, ex energy",
+        "value": "+5.8%",
+        "text": "Year over year; up 0.5% from September."
+      },
+      {
+        "label": "Trade services",
+        "value": "+13.2%",
+        "text": "Year over year. Transportation and warehousing services up 24.6%."
+      },
+      {
+        "label": "Diesel",
+        "value": "+115%",
+        "text": "Year over year, though down nearly 5% from September."
+      },
+      {
+        "label": "Softwood plywood",
+        "value": "+24.5%",
+        "text": "Year over year. Particleboard and fiberboard up 13.9%."
+      }
+    ],
+    "market_source": {
+      "name": "NAHB analysis of BLS producer prices, October 2026",
+      "url": "https://www.nahb.org/blog/2026/11/building-materials-up-in-october"
+    },
+    "builders": [
+      {
+        "ticker": "LEN",
+        "name": "Lennar",
+        "period": "Aug 2026 qtr",
+        "build_cost": "About $80 per sq ft, down 6% from a year earlier, down 1% from the May quarter, and 14% below its late-2023 baseline.",
+        "cycle_time": "116 days, from 126 a year earlier",
+        "drivers": "Lower revenue per sq ft and higher land costs, partly offset by lower construction costs. Land cost per homesite up about 6%. About 20% of divisions report tighter labor from immigration enforcement and data center construction.",
+        "margin": "15.8%; guides 15.5% to 16% for the November quarter",
+        "source": "10-Q and Sept. 2026 call"
+      },
+      {
+        "ticker": "DHI",
+        "name": "D.R. Horton",
+        "period": "Sep 2026 qtr",
+        "build_cost": "Not quantified. Margin fell because the average cost of homes closed rose while the average price fell 2%.",
+        "cycle_time": "Normalized, per the 10-K",
+        "drivers": "Higher incentives, including rate buydowns, expected to stay elevated through fiscal 2027. Names lumber, drywall and cement as its largest material costs and tariffs on steel, aluminum and lumber as a cost risk.",
+        "margin": "About 19.5% in the quarter; 20.2% for fiscal 2026 against 21.5%",
+        "source": "FY2026 10-K and Oct. 29 release"
+      },
+      {
+        "ticker": "PHM",
+        "name": "PulteGroup",
+        "period": "Sep 2026 qtr",
+        "build_cost": "Not quantified. Notes a lag between cost changes and when they reach results.",
+        "cycle_time": "Improved, per the 10-Q",
+        "drivers": "Incentives at 10.4% of closings, about 70 bps of land impairments, and continued pressure on land acquisition and development costs.",
+        "margin": "24.8%; guides 24.0% to 24.5% for the December quarter",
+        "source": "10-Q and Oct. 22 call"
+      },
+      {
+        "ticker": "KBH",
+        "name": "KB Home",
+        "period": "Aug 2026 qtr",
+        "build_cost": "Direct costs on homes started in the quarter were below both the prior quarter and the prior year, but rose late in the quarter on tariffs, fuel and inflation.",
+        "cycle_time": "99 days built-to-order, 19% faster than a year earlier; targeting 90",
+        "drivers": "Lower construction costs offset pricing pressure and higher land costs. Names tariffs and U.S.-Canada countervailing duties on steel, lumber, drywall and concrete.",
+        "margin": "16.5%; guides 16.0% to 16.6% for the November quarter, ex charges",
+        "source": "10-Q and Sept. 22 call"
+      },
+      {
+        "ticker": "CCS",
+        "name": "Century",
+        "period": "Sep 2026 qtr",
+        "build_cost": "Direct construction costs on homes delivered down 2% from the June quarter; finished lot costs down 3%.",
+        "cycle_time": "118 days",
+        "drivers": "Lower direct costs lifted margin despite more incentives, about 13% of revenue and guided 2 to 2.5 points higher in the December quarter. Names late-2025 tariffs on cabinets, lumber and wood products and higher fuel and freight costs.",
+        "margin": "19.3% adjusted",
+        "source": "10-Q and Oct. 2026 call"
+      },
+      {
+        "ticker": "MTH",
+        "name": "Meritage",
+        "period": "Sep 2026 qtr",
+        "build_cost": "Savings in direct costs, not quantified.",
+        "cycle_time": "Under 110 days, against a normal 120",
+        "drivers": "Higher incentives and lot costs and lost leverage. Land development costs incurred from 2022 to 2025 weigh on margin through at least 2027.",
+        "margin": "17.4% (17.9% adjusted); no December-quarter guidance",
+        "source": "10-Q and Oct. 2026 call"
+      },
+      {
+        "ticker": "TOL",
+        "name": "Toll Brothers",
+        "period": "Jul 2026 qtr",
+        "build_cost": "Not quantified.",
+        "cycle_time": "Faster, per the 10-Q",
+        "drivers": "Fewer homes in backlog and fewer spec deliveries.",
+        "margin": "25.6% adjusted against 27.5%; guided 26.0% for the October quarter",
+        "source": "10-Q and Aug. 18 release"
+      },
+      {
+        "ticker": "NVR",
+        "name": "NVR",
+        "period": "Sep 2026 qtr",
+        "build_cost": "Margin hit by higher lot and certain construction costs. Lumber is the material swing it calls out.",
+        "cycle_time": null,
+        "drivers": "Higher lot costs, pricing pressure and $24.8M of lot deposit impairments.",
+        "margin": "18.3% against 21.1%",
+        "source": "10-Q and Oct. 22 release"
+      },
+      {
+        "ticker": "MHO",
+        "name": "M/I Homes",
+        "period": "Sep 2026 qtr",
+        "build_cost": "Not quantified.",
+        "cycle_time": null,
+        "drivers": "Mortgage rate buydowns up $23.2M and lot costs up $6.0M from a year earlier.",
+        "margin": "18.4% homebuilding against 21.5%",
+        "source": "10-Q"
+      },
+      {
+        "ticker": "LGIH",
+        "name": "LGI Homes",
+        "period": "Sep 2026 qtr",
+        "build_cost": "Average cost per home rose on higher house costs, lot costs, capitalized interest and overhead.",
+        "cycle_time": null,
+        "drivers": "Higher house and lot costs; cancellations at 48.9% for nine months.",
+        "margin": "20.2% (23.7% adjusted) against 21.5%",
+        "source": "10-Q"
+      }
+    ]
+  },
+  "landbanks": {
+    "as_of": "2026-11-20",
+    "summary": "Option and land-bank structures now hold most of the land behind the largest public builders. Lennar controls 98% of its homesites off its balance sheet and took about 86% of its August-quarter deliveries through land banks. Horton holds 77% of its lots under purchase contracts and took 68% of fiscal 2026 closings on lots developed by Forestar or third parties. The capital is pricing up: Millrose earns 10.8% on new money to other builders against 8.5% on Lennar, and builders are walking away from options rather than paying extensions.",
+    "public": [
+      {
+        "ticker": "MRP",
+        "name": "Millrose Properties",
+        "role": "Homesite option REIT spun out of Lennar in 2025, now funding other builders.",
+        "period": "Sep 2026 qtr",
+        "facts": [
+          "156,729 homesites across 834 communities in 30 states.",
+          "Lennar options of $6.3B; Lennar invested capital about $5.9B at an 8.5% yield.",
+          "Other builders: $714M funded in the quarter at 10.8%, bringing that book to $3.8B.",
+          "About 42% of assets now sit outside Lennar, pro forma for $1.1B of support to Dream Finders' Beazer acquisition, which closed Oct. 20, 2026.",
+          "Portfolio yield 9.3%. AFFO $0.80 a share, guided to $0.82 to $0.84 for the December quarter."
+        ],
+        "url": "https://www.sec.gov/Archives/edgar/data/2017206/000119312526432747/ck0002017206-ex99_1.htm"
+      },
+      {
+        "ticker": "FOR",
+        "name": "Forestar Group",
+        "role": "Lot developer about 62% owned by D.R. Horton, selling finished lots to Horton and other builders.",
+        "period": "FY ended Sep 2026",
+        "facts": [
+          "13,545 lots sold in fiscal 2026, down 5%, on $1.6B of revenue.",
+          "84,400 lots owned or controlled, down from 99,800; 21,500 under contract to sell, about $2.2B of revenue.",
+          "1,916 lots sold to builders other than Horton, down from 2,489.",
+          "Fiscal 2027 guidance: 12,000 to 13,000 lots and $1.4B to $1.5B of revenue.",
+          "$7.6M of impairments and $11.3M of deposit write-offs in fiscal 2026, against none and $7.2M."
+        ],
+        "url": "https://www.sec.gov/Archives/edgar/data/1406587/000162828026068139/a9302026exhibit991.htm"
+      },
+      {
+        "ticker": "FPH",
+        "name": "Five Point Holdings",
+        "role": "California master-plan developer selling land to builders at Great Park (Irvine), Valencia and Candlestick. Its Hearthstone unit manages land-banking funds.",
+        "period": "Sep 2026 qtr",
+        "facts": [
+          "Builders sold 54 homes at Great Park and 92 at Valencia in the quarter.",
+          "Hearthstone manages land-banking funds with about $3.4B of assets.",
+          "Great Park development agreement renewed through Dec. 2028; Homestead South entitlements approved at Valencia.",
+          "Revenue $14.6M, net loss $4.4M, liquidity $576.2M."
+        ],
+        "url": "https://www.sec.gov/Archives/edgar/data/1574197/000157419726000032/ex-991xfphx93026x8k.htm"
+      }
+    ],
+    "private": [
+      {
+        "name": "Domain Real Estate Partners",
+        "text": "Backed by PGIM, Prudential's asset manager; about $4B of land-bank projects financed as of May 2026.",
+        "url": "https://news.bgov.com/mergers-and-acquisitions/pgim-backs-4-billion-of-us-land-bank-deals-in-asset-based-push"
+      },
+      {
+        "name": "Strata Land Partners",
+        "text": "Launched Nov. 2, 2026 by former Landsea president Michael Forsum, backed by Wafra and Hunt Companies. About 1,300 lots at launch, aimed at private builders.",
+        "url": "https://www.housingwire.com/articles/strata-land-partners-launch/"
+      },
+      {
+        "name": "Hearthstone",
+        "text": "Land-banking fund manager now inside Five Point, with about $3.4B of assets.",
+        "url": null
+      },
+      {
+        "name": "Walton Global",
+        "text": "Launched the American Builder Growth and Income Fund in Feb. 2026.",
+        "url": null
+      },
+      {
+        "name": "Guggenheim Investments",
+        "text": "Added a land-banking finance platform in May 2026.",
+        "url": null
+      }
+    ],
+    "terms": "Third-party land-bank deals typically price in the low teens with deposits near 15%; deposits much above 20% risk forcing the builder to consolidate the land (SLC Advisors, June 2025).",
+    "covered": {
+      "MRP": "2026-09-30",
+      "FOR": "2026-09-30",
+      "FPH": "2026-09-30"
+    }
+  },
+  "private_builders": {
+    "as_of": "2026-11-20",
+    "summary": "Orange County's 14 largest builders sold 1,785 homes in 2025, down 16% and about half the 2021 to 2023 pace. Two of the biggest regional names changed hands: Sumitomo Forestry closed on Tri Pointe in May 2026, and The New Home Co., now Risewell Homes, absorbed Landsea.",
+    "list": [
+      {
+        "name": "Tri Pointe Homes",
+        "text": "Owned by Sumitomo Forestry since May 14, 2026 ($47 a share, about $4.5B). Keeps its brand and Irvine office; no longer reports quarterly."
+      },
+      {
+        "name": "Risewell Homes",
+        "text": "Formerly The New Home Co., which acquired Landsea Homes. 118 Orange County sales in 2025, up 73%."
+      },
+      {
+        "name": "Shea Homes",
+        "text": "Bought a 15-acre Yorba Linda site for $31.2M in Sept. 2026."
+      },
+      {
+        "name": "The Olson Co.",
+        "text": "Seal Beach attached-home builder; 166 Orange County sales in 2025, third in the county."
+      },
+      {
+        "name": "Trumark Homes",
+        "text": "82 Orange County sales in 2025, flat on 2024."
+      },
+      {
+        "name": "Brookfield Residential",
+        "text": "Orange County sales fell to 27 in 2025 from 137."
+      },
+      {
+        "name": "City Ventures",
+        "text": "3 Orange County sales in 2025 against 23; holds 539 lots in the county."
+      },
+      {
+        "name": "Rancho Mission Viejo",
+        "text": "Land developer; opened sales on 232 homes in the final phase of Rienda in Sept. 2026."
+      }
+    ],
+    "source": {
+      "name": "Orange County Business Journal, 2025 homebuilder list",
+      "url": "https://www.ocbj.com/oc-homepage/orange-county-homebuilders-report-16-drop-in-sales/"
+    }
   }
 }
