@@ -706,25 +706,32 @@ def refresh_landbanks(brief, filings):
 # and place-names that double as builders (Rancho Mission Viejo) need a
 # homebuilding word in the title. Checked against live Google results
 # 2026-11-20.
-CA_ONLY_BUILDERS = ["Risewell Homes", "Trumark Homes", "City Ventures", "Olson Homes",
+CA_ONLY_BUILDERS = ["Trumark Homes", "City Ventures", "Olson Homes",
                     "Rancho Mission Viejo", "Melia Homes", "SummerHill Homes", "Pardee Homes",
                     "Brandywine Homes"]
-NATIONAL_PRIVATE = ["Shea Homes", "Tri Pointe", "Brookfield Residential",
+NATIONAL_PRIVATE = ["Shea Homes", "Tri Pointe", "Brookfield Residential", "Risewell Homes",
                     "Taylor Morrison", "Woodside Homes", "Richmond American"]
 CA_WORDS = re.compile(r"California|Calif\b|SoCal|Orange County|\bO\.?C\.?\b|Los Angeles|\bL\.?A\.?\b|Inland Empire|"
                       r"Riverside|San Bernardino|San Diego|Bay Area|San Francisco|San Jose|Sacramento|Fresno|"
                       r"Bakersfield|Ventura|Santa Clarita|Irvine|Simi|Oxnard|Thousand Oaks|Camarillo|Temecula|"
                       r"Menifee|Chino|Ontario|Fontana|Palmdale|Lancaster|Roseville|Stockton|Livermore|"
-                      r"Orange County Register|Business Journal|Los Angeles Times|Press-Enterprise|Mercury News|"
+                      r"Orange County Register|Orange County Business Journal|San Diego Business Journal|"
+                      r"Los Angeles Business Journal|Sacramento Business Journal|San Francisco Business Times|"
+                      r"Silicon Valley Business Journal|Los Angeles Times|Press-Enterprise|Mercury News|"
                       r"Chronicle|Sacramento Bee|Union-Tribune|Builder Magazine|HousingWire|Builder's Daily|"
                       r"Bloomberg|Reuters|Wall Street Journal", re.I)
 NEED_CONTEXT = {"rancho mission viejo": re.compile(r"home|village|communit|sales|develop|builder|lots|acre", re.I)}
-NEWS_DROP = re.compile(r"Mill City Ventures|crypto|token|air quality|\bAQI\b|population", re.I)
+NEWS_DROP = re.compile(r"Mill City Ventures|crypto|token|air quality|\bAQI\b|population|"
+                       r"stock forecast|stock analysis|price target", re.I)
+# Securities law firms put out a dozen near-identical "shareholder alert"
+# releases for each class action. One is news; the rest bury everything else.
+LAW_FIRM_ALERT = re.compile(r"\balerts?\b|shareholder|class action|lead plaintiff|securities (fraud|litigation)|"
+                            r"\bLLP\b|\bP\.C\.|law firm|investors (who|with) losses", re.I)
 WIRE_SLUG = re.compile(r"^[A-Z0-9 -]{6,}$")    # bare AP wire slugs such as CA-CITY-VENTURES
 _or = lambda names: " OR ".join('"%s"' % n for n in names)
 NEWS_QUERIES = {
     "ca_private": [(_or(CA_ONLY_BUILDERS[:4]), "ca"), (_or(CA_ONLY_BUILDERS[4:]), "ca"),
-                   (_or(NATIONAL_PRIVATE[:3]), "national"), (_or(NATIONAL_PRIVATE[3:]), "national")],
+                   (_or(NATIONAL_PRIVATE[:4]), "national"), (_or(NATIONAL_PRIVATE[4:]), "national")],
     "landbank":   [('"Millrose Properties" OR "Forestar Group" OR "Five Point Holdings"', None),
                    ('"land banking" homebuilders', None),
                    ('"land banker" OR "lot banking" OR "homesite option"', None)],
@@ -776,11 +783,15 @@ def _news_search(q):
 
 def _tidy(items, n=8):
     cutoff = (TODAY - datetime.timedelta(days=NEWS_DAYS + 15)).isoformat()
-    seen, out = set(), []
+    seen, out, alert = set(), [], False
     for it in sorted(items, key=lambda x: x.get("published") or "", reverse=True):
         key = re.sub(r"[^a-z0-9]", "", it["title"].lower())[:60]
         if key in seen or (it.get("published") and it["published"] < cutoff):
             continue
+        if LAW_FIRM_ALERT.search(it["title"]):
+            if alert:
+                continue
+            alert = True
         seen.add(key); out.append(it)
     return out[:n]
 
@@ -897,6 +908,42 @@ def anthropic(prompt, max_tokens=4000):
     with urllib.request.urlopen(req, timeout=180) as r:
         out = json.loads(r.read().decode("utf-8"))
     return "".join(b.get("text", "") for b in out.get("content", []) if b.get("type") == "text")
+
+
+def check_anthropic_key():
+    """Confirms the API key and model work, so a bad key shows up the night it
+    is saved rather than the morning a filing lands and cannot be read. The
+    model list costs nothing; a manual run also sends a one-token message,
+    which is what catches an account with no credits."""
+    if not ANTHROPIC_KEY:
+        print("  ANTHROPIC_API_KEY not set; new filings will wait for a manual read")
+        return
+    hdr = {"x-api-key": ANTHROPIC_KEY, "anthropic-version": "2023-06-01"}
+    try:
+        j = get_json("https://api.anthropic.com/v1/models?limit=100", headers=hdr, tries=2)
+        ids = [m.get("id") for m in j.get("data", [])]
+        if ANTHROPIC_MODEL not in ids:
+            note("Anthropic model %s is not available to this API key. Available: %s. Set the "
+                 "ANTHROPIC_MODEL secret to one of these." % (ANTHROPIC_MODEL, ", ".join(ids[:8])))
+            return
+        print("  API key accepted; model %s available" % ANTHROPIC_MODEL)
+    except urllib.error.HTTPError as e:
+        note("ANTHROPIC_API_KEY was rejected (HTTP %s). Create a new key in the Claude Console "
+             "and replace the GitHub secret." % e.code)
+        return
+    except Exception as e:
+        print("  could not reach the Anthropic API to check the key: %s" % e)
+        return
+    if os.environ.get("GITHUB_EVENT_NAME") == "workflow_dispatch":
+        try:
+            anthropic("Reply with the word OK.", max_tokens=5)
+            print("  test message succeeded; the account has credits")
+        except urllib.error.HTTPError as e:
+            detail = e.read().decode("utf-8", "ignore")[:200]
+            note("The Anthropic API key works but a test message failed (HTTP %s): %s. "
+                 "Check the Console for credits or a linked plan." % (e.code, detail))
+        except Exception as e:
+            print("  test message failed: %s" % e)
 
 
 def parse_json_reply(txt):
@@ -1504,6 +1551,7 @@ def main():
     print("FRED series...");     series, releases = pull_fred()
     add_spread(series)
     print("Release calendar..."); calendar = pull_release_calendar(releases)
+    print("Anthropic API...");    check_anthropic_key()
     print("SEC EDGAR...");        builders = pull_builders()
     print("Polymarket...");       markets  = pull_markets()
     print("Builder brief...");   brief    = refresh_brief(builders)
