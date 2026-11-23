@@ -968,10 +968,17 @@ def strip_html(raw):
     return blanks.sub("\n\n", t).strip()
 
 
-def anthropic(prompt, max_tokens=4000, timeout=180):
+# The model reasons before it answers, and that reasoning is billed as output
+# and counts against max_tokens. On Nov 23 it used 11,000 to 15,000 tokens of
+# reasoning for a 3,600-token answer, so every call gets this much room on top
+# of the answer length it asks for. Only tokens actually used are billed; the
+# limit itself costs nothing.
+REASONING_ROOM = 16000
+
+def anthropic(prompt, max_tokens=4000, timeout=600, room=REASONING_ROOM):
     body = json.dumps({
         "model": ANTHROPIC_MODEL,
-        "max_tokens": max_tokens,
+        "max_tokens": max_tokens + room,
         "messages": [{"role": "user", "content": prompt}],
     }).encode()
     req = urllib.request.Request(
@@ -1014,7 +1021,7 @@ def check_anthropic_key():
         return
     if os.environ.get("GITHUB_EVENT_NAME") == "workflow_dispatch":
         try:
-            anthropic("Reply with the word OK.", max_tokens=5)
+            anthropic("Reply with the word OK.", max_tokens=5, timeout=120, room=0)
             print("  test message succeeded; the account has credits")
         except urllib.error.HTTPError as e:
             detail = e.read().decode("utf-8", "ignore")[:200]
@@ -1988,10 +1995,7 @@ def refresh_narrative(state, series, stocks, commodities, landbanks, builders, l
                                      claims=ledger, history=history, snapshot="\n".join(snap), evidence=evidence or "(none)")
     reply = ""
     try:
-        # The model reasons before it writes, and that reasoning counts
-        # against max_tokens (11k of 12k on the first try), so the limit is
-        # set well above the length of the answer itself.
-        reply = anthropic(prompt, 28000, timeout=720)
+        reply = anthropic(prompt, 12000, timeout=720)
         print("  model reply: %s, %d chars" % (LAST_REPLY_META, len(reply)))
         out = parse_json_reply(reply)
         if not isinstance(out, dict):
