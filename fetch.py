@@ -544,6 +544,33 @@ YAHOO_HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
 # into a peer group built for comparing builder-to-builder metrics would
 # make every comparison on this board less meaningful, not more complete.
 
+EIGHTK_ITEMS = {"1.01": "material agreement", "1.02": "agreement terminated", "2.01": "acquisition or sale",
+                "2.02": "results of operations", "2.03": "new debt", "2.05": "restructuring costs",
+                "2.06": "impairment", "3.02": "unregistered share sale", "5.02": "officer or director change",
+                "5.03": "bylaw change", "5.07": "shareholder vote", "7.01": "Reg FD disclosure",
+                "8.01": "other events"}
+
+def recent_8ks(cik, f, days=21):
+    """8-Ks filed in the last few weeks from a submissions 'recent' block: the
+    official channel for earnings dates, guidance, deals and executive moves,
+    usually the same day a press release goes out."""
+    out = []
+    cutoff = (TODAY - datetime.timedelta(days=days)).isoformat()
+    for i, form in enumerate(f.get("form", [])):
+        if form not in ("8-K", "8-K/A"):
+            continue
+        filed = f["filingDate"][i]
+        if filed < cutoff:
+            break                      # the recent block is newest first
+        items = [x.strip() for x in (f.get("items", [""] * (i + 1))[i] or "").split(",") if x.strip()]
+        acc = f["accessionNumber"][i]
+        out.append({"form": form, "filed": filed, "acc": acc,
+                    "items": [x for x in items if x != "9.01"],
+                    "item_names": [EIGHTK_ITEMS.get(x, x) for x in items if x != "9.01"],
+                    "url": "https://www.sec.gov/Archives/edgar/data/%s/%s/%s"
+                           % (int(cik), acc.replace("-", ""), f["primaryDocument"][i])})
+    return out[:6]
+
 def pull_builders():
     rows = []
     try:
@@ -569,6 +596,7 @@ def pull_builders():
             if ent:
                 rec["name"] = ent
             f = sub.get("filings", {}).get("recent", {})
+            rec["recent_8k"] = recent_8ks(cik, f)
             for i, form in enumerate(f.get("form", [])):
                 if form in ("10-Q", "10-K"):
                     acc = f["accessionNumber"][i].replace("-", "")
@@ -617,6 +645,7 @@ def pull_filings(tickers):
             sub = get_json("https://data.sec.gov/submissions/CIK%s.json" % cik, headers=SEC_HEADERS)
             rec["name"] = sub.get("name") or title
             f = sub.get("filings", {}).get("recent", {})
+            rec["recent_8k"] = recent_8ks(cik, f)
             for i, form in enumerate(f.get("form", [])):
                 if form in ("10-Q", "10-K"):
                     acc = f["accessionNumber"][i].replace("-", "")
@@ -736,6 +765,34 @@ NEWS_QUERIES = {
                    ('"land banking" homebuilders', None),
                    ('"land banker" OR "lot banking" OR "homesite option"', None)],
 }
+# Daily feeds for the narrative: the public builders by name, then California
+# and Ventura County housing. Short windows, since these feed a daily read.
+PUBLIC_ALIASES = {"DHI": ["D.R. Horton", "DR Horton", "Horton"], "LEN": ["Lennar"],
+                  "PHM": ["PulteGroup", "Pulte"], "TOL": ["Toll Brothers"], "KBH": ["KB Home"],
+                  "MTH": ["Meritage"], "CCS": ["Century Communities"], "MHO": ["M/I Homes"],
+                  "LGIH": ["LGI Homes"], "NVR": ["NVR", "Ryan Homes"]}
+# Stock-move, ratings and fund-holdings items (mostly auto-generated) carry no
+# information the board's own price data lacks.
+BUILDER_SPAM = re.compile(r"shares (sold|bought|acquired|purchased)|\bstake\b|position in|holdings in|"
+                          r"price target|rating|upgrade|downgrade|short interest|options|stock forecast|"
+                          r"stock analysis|dividend|\bETF\b|(stock|shares) (rises?|falls?|jumps?|drops?|gains?|"
+                          r"dips?|slides?|climbs?|soars?|sinks?|tumbles?)|trading (up|down)|is it time to|"
+                          r"should you buy|valuation|undervalued|overvalued", re.I)
+HOUSING_WORDS = re.compile(r"\bhomes?\b|housing|builder|develop|construction|permit|apartment|\bland\b|"
+                           r"\brent|mortgage|real estate|subdivision|\bunits\b|zoning|RHNA|\bADU|escrow|"
+                           r"home sales|home prices|wildfire rebuild|annexation|specific plan|general plan", re.I)
+NEWS_QUERIES.update({
+    "builders": [('"D.R. Horton" OR "Lennar" OR "PulteGroup" OR "Toll Brothers"', "public"),
+                 ('"KB Home" OR "Meritage Homes" OR "Century Communities"', "public"),
+                 ('"M/I Homes" OR "LGI Homes" OR "Ryan Homes" OR "NVR Inc"', "public")],
+    "west":     [('"Southern California" housing', "housing"),
+                 ('California homebuilders', "housing"),
+                 ('"Inland Empire" housing', "housing")],
+    "ventura":  [('"Ventura County" housing', "housing"),
+                 ('"Ventura County" homes', "housing"),
+                 ('"Simi Valley" OR "Thousand Oaks" OR "Camarillo" OR "Oxnard" OR "Moorpark"', "housing")],
+})
+NEWS_WINDOW = {"builders": (10, 15), "west": (10, 10), "ventura": (14, 10)}   # days, items kept
 NEWS_DAYS = 45
 COSTS_FEED = "https://eyeonhousing.org/feed/"   # NAHB's economics blog
 COST_WORDS = re.compile(r"material|lumber|tariff|construction cost|building cost|steel|labor|wage|worker|input|framing", re.I)
@@ -766,9 +823,9 @@ def _rss_items(url, headers=None):
                         "published": pub.date().isoformat() if pub else None})
     return out
 
-def _news_search(q):
+def _news_search(q, days=None):
     gurl = "https://news.google.com/rss/search?" + urllib.parse.urlencode(
-        {"q": q + " when:%dd" % NEWS_DAYS, "hl": "en-US", "gl": "US", "ceid": "US:en"})
+        {"q": q + " when:%dd" % (days or NEWS_DAYS), "hl": "en-US", "gl": "US", "ceid": "US:en"})
     for wait in (0, 6, 15):
         time.sleep(wait)
         try:
@@ -781,8 +838,8 @@ def _news_search(q):
     burl = "https://www.bing.com/news/search?" + urllib.parse.urlencode({"q": q, "format": "rss"})
     return _rss_items(burl)
 
-def _tidy(items, n=8):
-    cutoff = (TODAY - datetime.timedelta(days=NEWS_DAYS + 15)).isoformat()
+def _tidy(items, n=8, days=None):
+    cutoff = (TODAY - datetime.timedelta(days=(days or NEWS_DAYS) + (15 if not days else 2))).isoformat()
     seen, out, alert = set(), [], False
     for it in sorted(items, key=lambda x: x.get("published") or "", reverse=True):
         key = re.sub(r"[^a-z0-9]", "", it["title"].lower())[:60]
@@ -804,6 +861,17 @@ def pull_news(previous):
             return False
         if kind is None:
             return True
+        if kind == "public":
+            if BUILDER_SPAM.search(t):
+                return False
+            tks = [tk for tk, al in PUBLIC_ALIASES.items()
+                   if any(re.search(r"\b%s\b" % re.escape(a), t) for a in al)]
+            if not tks:
+                return False
+            item["tickers"] = tks
+            return True
+        if kind == "housing":
+            return bool(HOUSING_WORDS.search(t))
         names = CA_ONLY_BUILDERS if kind == "ca" else NATIONAL_PRIVATE
         hit = next((n for n in names if n.lower() in t.lower()), None)
         if not hit:
@@ -817,7 +885,10 @@ def pull_news(previous):
         items = []
         for q, kind in queries:
             try:
-                items += [i for i in _news_search(q) if keep(i, kind)]
+                got = _news_search(q, NEWS_WINDOW.get(key, (None,))[0])
+                kept = [i for i in got if keep(i, kind)]
+                print("  %-10s %-60.60s %2d found, %2d kept" % (key, q, len(got), len(kept)))
+                items += kept
             except Exception as e:
                 print("  %-10s query failed: %s" % (key, e))
             time.sleep(2)
@@ -826,7 +897,8 @@ def pull_news(previous):
     jobs.append(("costs", lambda: [i for i in _rss_items(COSTS_FEED) if COST_WORDS.search(i["title"])]))
     for key, job in jobs:
         try:
-            items = _tidy(job())
+            days, n = NEWS_WINDOW.get(key, (None, 8))
+            items = _tidy(job(), n, days)
             if not items:
                 raise ValueError("no items")
             out[key] = {"items": items, "fetched": TODAY.isoformat()}
@@ -895,7 +967,7 @@ def strip_html(raw):
     return blanks.sub("\n\n", t).strip()
 
 
-def anthropic(prompt, max_tokens=4000):
+def anthropic(prompt, max_tokens=4000, timeout=180):
     body = json.dumps({
         "model": ANTHROPIC_MODEL,
         "max_tokens": max_tokens,
@@ -905,7 +977,7 @@ def anthropic(prompt, max_tokens=4000):
         "https://api.anthropic.com/v1/messages", data=body, method="POST",
         headers={"x-api-key": ANTHROPIC_KEY, "anthropic-version": "2023-06-01",
                  "content-type": "application/json"})
-    with urllib.request.urlopen(req, timeout=180) as r:
+    with urllib.request.urlopen(req, timeout=timeout) as r:
         out = json.loads(r.read().decode("utf-8"))
     return "".join(b.get("text", "") for b in out.get("content", []) if b.get("type") == "text")
 
@@ -1542,6 +1614,471 @@ def refresh_resale_paragraph(brief, resale):
     return brief
 
 
+# ---------------------------------------------------------------------------
+# Builder posts on X (optional)
+# ---------------------------------------------------------------------------
+# Read only when an X_BEARER_TOKEN secret exists (X API, pay per use). Each
+# candidate handle is accepted only if the account's own website link or bio
+# names the builder's domain, so a look-alike or squatted handle is never
+# read. Resolved account ids are kept in narrative.json so the lookup runs
+# once a month, and each timeline is read from the last post already seen,
+# so only new posts are billed.
+X_BEARER = os.environ.get("X_BEARER_TOKEN", "").strip()
+X_CANDIDATES = {
+    "DHI":  (["DRHorton"], "drhorton.com"),
+    "LEN":  (["Lennar"], "lennar.com"),
+    "PHM":  (["PulteHomes", "PulteGroup"], "pulte"),
+    "TOL":  (["TollBrothers"], "tollbrothers.com"),
+    "KBH":  (["KBHome"], "kbhome.com"),
+    "MTH":  (["MeritageHomes"], "meritagehomes.com"),
+    "CCS":  (["CenturyCommunit"], "centurycommunities.com"),
+    "MHO":  (["MIHomes"], "mihomes.com"),
+    "LGIH": (["LGIHomes"], "lgihomes.com"),
+    "NVR":  (["RyanHomes"], "ryanhomes.com"),
+}
+
+def _x_get(path, **params):
+    url = "https://api.x.com/2/" + path + ("?" + urllib.parse.urlencode(params) if params else "")
+    req = urllib.request.Request(url, headers={"Authorization": "Bearer " + X_BEARER,
+                                               "User-Agent": "housing-signal-board"})
+    with urllib.request.urlopen(req, timeout=30) as r:
+        return json.loads(r.read().decode("utf-8"))
+
+def pull_x_posts(state, previous):
+    old = (previous or {}).get("items", [])
+    if not X_BEARER:
+        return previous or {}
+    accts = state.setdefault("x_accounts", {})
+    try:
+        stale = (TODAY - datetime.date.fromisoformat(state.get("x_resolved", "2000-01-01"))).days > 30
+        if not accts or stale:
+            names = [n for c, _ in X_CANDIDATES.values() for n in c]
+            j = _x_get("users/by", usernames=",".join(names),
+                       **{"user.fields": "url,entities,description,verified,name"})
+            found = {u["username"].lower(): u for u in j.get("data", [])}
+            accts.clear()
+            for tk, (cands, domain) in X_CANDIDATES.items():
+                for c in cands:
+                    u = found.get(c.lower())
+                    if not u:
+                        continue
+                    urls = " ".join(x.get("expanded_url", "") for x in
+                                    ((u.get("entities") or {}).get("url") or {}).get("urls", []))
+                    if domain in (urls + " " + (u.get("description") or "")).lower():
+                        accts[tk] = {"id": u["id"], "username": u["username"], "name": u.get("name")}
+                        break
+                print("  X %-5s %s" % (tk, accts.get(tk, {}).get("username", "no verified account")))
+            state["x_resolved"] = TODAY.isoformat()
+    except urllib.error.HTTPError as e:
+        note("X API account lookup failed (HTTP %s). Check the X_BEARER_TOKEN secret and X API credits." % e.code)
+        return previous or {}
+    except Exception as e:
+        print("  X lookup failed: %s" % e)
+        return previous or {}
+    since = state.setdefault("x_since", {})
+    new = []
+    for tk, a in accts.items():
+        params = {"max_results": 5, "exclude": "retweets,replies", "tweet.fields": "created_at"}
+        if since.get(tk):
+            params["since_id"] = since[tk]
+        try:
+            j = _x_get("users/%s/tweets" % a["id"], **params)
+        except urllib.error.HTTPError as e:
+            print("  X %s timeline failed: HTTP %s" % (tk, e.code))
+            if e.code in (401, 402, 403):
+                note("X API refused timeline reads (HTTP %s). Check the token and X API credits." % e.code)
+                break
+            continue
+        except Exception as e:
+            print("  X %s timeline failed: %s" % (tk, e)); continue
+        for t in j.get("data", []):
+            new.append({"ticker": tk, "handle": a["username"], "text": t.get("text", ""),
+                        "published": (t.get("created_at") or "")[:10], "id": t["id"],
+                        "link": "https://x.com/%s/status/%s" % (a["username"], t["id"])})
+        newest = (j.get("meta") or {}).get("newest_id")
+        if newest:
+            since[tk] = newest
+        time.sleep(1)
+    items = sorted(new + [o for o in old if o.get("id") not in {n["id"] for n in new}],
+                   key=lambda x: x.get("published", ""), reverse=True)[:30]
+    print("  X posts: %d new, %d kept" % (len(new), len(items)))
+    return {"items": items, "fetched": TODAY.isoformat()}
+
+
+# ---------------------------------------------------------------------------
+# The daily narrative
+# ---------------------------------------------------------------------------
+# One running account of the market in three sections (national, California
+# and the West, Ventura County), rewritten each morning from whatever is new
+# since the last edition: data releases, price moves, filings, 8-Ks, news and
+# builder posts. Continuity is the point, so narrative.json keeps
+#   - the current text, with [n] markers pointing at a source registry,
+#   - a ledger of claims: each forecast or assumption the narrative has made,
+#     with the date it was made and whether later evidence confirmed or
+#     contradicted it,
+#   - revisions: where new evidence went against an earlier claim, what was
+#     said, what changed and why, which the pages show,
+#   - a short history of editions, and the evidence already considered, so
+#     nothing is reported as new twice.
+# On a day with nothing material the text stays as it is. If the API call
+# fails, the last edition stays up and the failure is reported after two
+# misses in a row.
+NARRATIVE_PATH = os.environ.get("NARRATIVE_PATH", "narrative.json")
+SECTION_NAMES = {"national": "National: macro, rates and the public builders",
+                 "west": "California and the West",
+                 "ventura": "Ventura County"}
+KEY_SERIES = ["MORTGAGE30US", "DGS10", "SPREAD", "HOUST1F", "PERMIT1", "HSN1F", "MSACSR", "EXHOSLUSM495S",
+              "CSUSHPINSA", "CABPPRIV", "LXXRSA", "CAUR", "WPUSI012011", "WPU081", "UNRATE", "CPIAUCSL"]
+
+def load_narrative():
+    try:
+        with open(NARRATIVE_PATH) as fh:
+            return json.load(fh)
+    except Exception:
+        return {}
+
+def _fmt_val(v, units):
+    u = (units or "").lower()
+    if "percent" in u or u in ("%", "pct"):
+        return "%.2f%%" % v
+    if abs(v) >= 1000:
+        return "{:,.0f}".format(v)
+    return "%.2f" % v if abs(v) < 100 else "%.1f" % v
+
+def _yoy(obs):
+    if len(obs) < 2:
+        return None
+    last = obs[-1]
+    target = (datetime.date.fromisoformat(last["d"]) - datetime.timedelta(days=365)).isoformat()
+    prior = [o for o in obs if o["d"] <= target]
+    if not prior or not prior[-1]["v"]:
+        return None
+    return round((last["v"] - prior[-1]["v"]) / abs(prior[-1]["v"]) * 100, 1)
+
+def eightk_text(url, limit=2500):
+    """The press release behind an 8-K when it has one (exhibit 99), else the
+    8-K's own item text."""
+    try:
+        base = url.rsplit("/", 1)[0]
+        idx = get_json(base + "/index.json", headers=SEC_HEADERS)
+        docs = [x["name"] for x in idx.get("directory", {}).get("item", [])]
+        ex = next((d for d in docs if re.search(r"ex-?99", d, re.I) and d.lower().endswith((".htm", ".html"))), None)
+        text = filing_text(base + "/" + ex if ex else url, limit=60000)
+        if not ex:
+            m = re.search(r"Item\s+\d\.\d\d", text)
+            text = text[m.start():] if m else text
+        return re.sub(r"\s+", " ", text)[:limit]
+    except Exception as e:
+        return "(text unavailable: %s)" % e
+
+def build_evidence(state, series, stocks, commodities, landbanks, builders, lb_filings, news, headlines, brief):
+    """New items since the last edition, each with a stable source id."""
+    seen = set(state.get("seen", []))
+    marks = state.get("marks", {})
+    nid = state.get("next_id", 1)
+    ev, new_seen = [], []
+
+    def add(kind, title, detail="", url="", source="", date=None, key=None):
+        nonlocal nid
+        key = key or url or (kind + ":" + title)
+        if key in seen or key in new_seen:
+            return
+        ev.append({"id": nid, "kind": kind, "title": title, "detail": detail, "url": url,
+                   "source": source, "date": date or TODAY.isoformat()})
+        new_seen.append(key)
+        nid += 1
+
+    # data releases newer than the last edition saw
+    first_run = not marks
+    for sid, sr in series.items():
+        obs = sr.get("obs") or []
+        if not obs:
+            continue
+        last = obs[-1]
+        if not first_run and last["d"] > marks.get(sid, ""):
+            prev = obs[-2] if len(obs) > 1 else None
+            y = _yoy(obs)
+            add("data", "%s: %s for %s" % (sr.get("name", sid), _fmt_val(last["v"], sr.get("units")), last["d"]),
+                "previous %s (%s)%s. Units: %s. %s" % (
+                    _fmt_val(prev["v"], sr.get("units")) if prev else "n/a", prev["d"] if prev else "",
+                    "; %+.1f%% year over year" % y if y is not None else "", sr.get("units", ""),
+                    sr.get("read", "")),
+                "https://fred.stlouisfed.org/series/%s" % sid, "FRED", last["d"], key="data:%s:%s" % (sid, last["d"]))
+        marks[sid] = last["d"]
+
+    # price moves since the last edition, as one item per group
+    px = state.get("px", {})
+    def moves(rows, label, cost=False):
+        parts = []
+        for r in rows:
+            p0 = px.get(r["ticker"])
+            chg = "" if not p0 else ", %+.1f%% since the last edition" % ((r["price"] - p0) / p0 * 100)
+            parts.append("%s %s (%+.1f%% YTD%s)" % (r.get("name") or r["ticker"], r["price"], r.get("ytd_pct") or 0, chg))
+            px[r["ticker"]] = r["price"]
+        if parts:
+            when = max((r.get("as_of") or "") for r in rows)
+            add("market", label + " closes through " + when, "; ".join(parts), "", "Yahoo Finance", when,
+                key="market:%s:%s" % (label, when))
+    moves(stocks, "Public builder share prices")
+    moves(landbanks, "Land banker share prices")
+    moves(commodities, "Construction commodity futures", cost=True)
+
+    # new 10-Qs and 10-Ks, and a rewritten filing brief
+    for b in builders + lb_filings:
+        if b.get("filed") and b.get("url"):
+            add("filing", "%s filed its %s for the period ended %s" % (b.get("name", b["ticker"]), b.get("form"), b.get("period")),
+                "", b["url"], "SEC EDGAR", b["filed"], key="filing:" + b["url"]) if not first_run else new_seen.append("filing:" + b["url"])
+    if brief.get("as_of") and brief["as_of"] != state.get("brief_as_of"):
+        add("brief", "Filing brief rewritten %s: %s" % (brief["as_of"], brief.get("headline", "")),
+            " ".join((brief.get("takeaway") or [])[:3])[:1500], "", "Builder brief on this board", brief["as_of"],
+            key="brief:" + brief["as_of"])
+
+    # 8-Ks, with the press release text
+    n8 = 0
+    for b in builders + lb_filings:
+        for k in b.get("recent_8k", []):
+            key = "8k:" + k["acc"]
+            if key in seen or n8 >= 12:
+                continue
+            if not k["items"] or k["items"] == ["5.07"]:
+                new_seen.append(key); continue
+            add("8-K", "%s 8-K (%s)" % (b.get("name", b["ticker"]), ", ".join(k["item_names"]) or "exhibits"),
+                eightk_text(k["url"]), k["url"], "SEC EDGAR", k["filed"], key=key)
+            n8 += 1
+            time.sleep(0.2)
+
+    # news, headlines and builder posts
+    labels = {"builders": "public builder news", "west": "California housing news", "ventura": "Ventura County news",
+              "ca_private": "California private builder news", "landbank": "land banking news", "costs": "NAHB cost news",
+              "x_posts": "builder post on X"}
+    for key, label in labels.items():
+        for it in ((news.get(key) or {}).get("items") or [])[:12]:
+            text = it.get("text") if key == "x_posts" else it.get("title")
+            add("x" if key == "x_posts" else "news", text[:280], label + (" (%s)" % ", ".join(it["tickers"]) if it.get("tickers") else ""),
+                it.get("link", ""), it.get("handle") and "@" + it["handle"] or it.get("source", ""), it.get("published"))
+    for h in (headlines or [])[:6]:
+        add("news", h.get("title", ""), (h.get("description") or "")[:300], h.get("link", ""), "HousingWire",
+            (h.get("published") or "")[:10])
+
+    state["marks"], state["px"], state["next_id"] = marks, px, nid
+    return ev, new_seen
+
+NARRATIVE_PROMPT = """You keep a running market narrative for Colton Lee Communities, a Southern California
+land developer that entitles and sells residential land to public and private homebuilders, based in
+Ventura County. Readers are developers who need to know what the public builders, the macro economy,
+construction costs and the California and Ventura County markets are doing. Today is {today}.
+
+The narrative has three sections:
+  national: macro, rates, credit and the public builders (orders, margins, incentives, land behaviour)
+  west: California and the West, including California private builders and land bankers
+  ventura: Ventura County and its cities
+
+Below are the PREVIOUS EDITION (dated {prev_date}), the CLAIMS LEDGER (statements, forecasts and
+assumptions earlier editions made, with the date each was made), RECENT HISTORY of editions, a DATA
+SNAPSHOT for context, and NEW EVIDENCE since the previous edition, each item with a numeric id.
+
+Your job:
+1. Decide what in the new evidence is material to a land developer. Routine items, marketing posts and
+   stock chatter are not. Builder news, 8-Ks, guidance, land deals, data releases that move the picture,
+   cost changes and California or Ventura County housing news are.
+2. Update the narrative so it reads as one continuous, chronological account. Keep sentences from the
+   previous edition word for word where nothing changed, with their [n] markers. Revise only what the
+   new evidence changes, and add new developments with their dates (write "Nov 20", never "yesterday",
+   "this week" or "recently").
+3. Never contradict an earlier statement silently. When new evidence goes against a claim in the ledger,
+   say so in the narrative itself, naming the date of the earlier statement, what the evidence now shows
+   and why the picture changed, and add it to "revisions". When evidence supports a claim, you may
+   mark it confirmed.
+4. Every number must come from the evidence, the data snapshot or the previous edition. Cite new
+   evidence with its id in square brackets, e.g. [214]. Markers already in the previous edition point at
+   earlier sources; keep them on sentences you keep. Do not invent sources.
+5. Name the public builders and what they said or did whenever builder news, 8-Ks or posts are present.
+6. Plain English, short sentences, no em dashes, no hedging boilerplate. national 2 to 4 paragraphs,
+   west 2 to 3, ventura 1 to 3, each under 120 words. The headline is one sentence under 30 words.
+7. If nothing in the new evidence is material, return exactly {{"unchanged": true}}.
+
+Return ONLY a JSON object, no prose and no code fence:
+{{
+  "unchanged": false,
+  "headline": "one sentence",
+  "sections": {{"national": ["paragraph", ...], "west": [...], "ventura": [...]}},
+  "changes": [{{"text": "one sentence on what is new since {prev_date}", "refs": [ids]}}],
+  "revisions": [{{"claim_id": "c3", "earlier": "what was said and when", "now": "what the evidence shows",
+                  "why": "why it differs", "refs": [ids]}}],
+  "claims": [{{"id": "c3 for an existing claim, or new", "section": "national|west|ventura",
+               "text": "the statement or assumption", "status": "open|confirmed|contradicted|retired",
+               "note": "short reason when the status changed"}}]
+}}
+"claims" is the full updated ledger: every existing claim with its status, plus a "new" entry for each
+new forecast or assumption this edition makes. Keep at most 25 open claims; retire stale ones.
+
+PREVIOUS EDITION ({prev_date}):
+{prev}
+
+CLAIMS LEDGER:
+{claims}
+
+RECENT HISTORY:
+{history}
+
+DATA SNAPSHOT:
+{snapshot}
+
+NEW EVIDENCE:
+{evidence}
+"""
+
+def _dash_free(t):
+    return re.sub(r"\s*—\s*", ", ", t or "").replace("–", "-")
+
+def refresh_narrative(state, series, stocks, commodities, landbanks, builders, lb_filings, news, headlines, brief):
+    prev_date = state.get("as_of")
+    ev, new_seen = build_evidence(state, series, stocks, commodities, landbanks, builders, lb_filings,
+                                  news, headlines, brief)
+    state["checked"] = TODAY.isoformat()
+    print("  %d new evidence items since %s" % (len(ev), prev_date or "the start"))
+
+    def remember():
+        state["seen"] = (state.get("seen", []) + new_seen)[-1500:]
+        state["brief_as_of"] = brief.get("as_of")
+
+    if not ANTHROPIC_KEY:
+        remember()
+        return state
+    if not ev and state.get("sections"):
+        remember()
+        return state
+
+    if state.get("sections"):
+        prev = "\n\n".join("[%s]\n%s" % (k, "\n\n".join(state["sections"].get(k, []))) for k in SECTION_NAMES)
+        prev = "HEADLINE: %s\n\n%s" % (state.get("headline", ""), prev)
+    else:      # first edition: start from the filing brief
+        prev_date = brief.get("as_of") or TODAY.isoformat()
+        prev = ("This is the first edition. Start from this filing-based brief written %s.\n\n"
+                "HEADLINE: %s\n\n[national]\n%s\n\n[west]\n%s\n\n[ventura]\n%s\n\n[takeaways]\n%s"
+                % (prev_date, brief.get("headline", ""), "\n\n".join(brief.get("national", [])),
+                   "\n\n".join(brief.get("socal", [])), "\n\n".join(brief.get("ventura", [])),
+                   "\n\n".join(brief.get("takeaway", []))))
+    claims = state.get("claims", [])
+    ledger = "\n".join("%s [%s, %s, made %s] %s" % (c["id"], c["section"], c["status"], c["made"], c["text"])
+                       for c in claims if c["status"] == "open" or c.get("updated", "") >= (TODAY - datetime.timedelta(days=14)).isoformat()) or "(none yet)"
+    history = "\n".join("%s: %s | %s" % (h["date"], h["headline"], " ".join(h.get("changes", [])[:4]))
+                        for h in state.get("history", [])[-7:]) or "(none yet)"
+    snap = []
+    for sid in KEY_SERIES:
+        sr = series.get(sid) or {}
+        if sr.get("obs"):
+            y = _yoy(sr["obs"])
+            snap.append("%s: %s (%s)%s" % (sr.get("name", sid), _fmt_val(sr["obs"][-1]["v"], sr.get("units")),
+                                            sr["obs"][-1]["d"], ", %+.1f%% YoY" % y if y is not None else ""))
+    if stocks:
+        snap.append("Public builders average YTD: %+.1f%%" % (sum(r.get("ytd_pct") or 0 for r in stocks) / len(stocks)))
+    evidence = "\n".join("[%d] %s | %s | %s | %s%s" % (e["id"], e["date"], e["kind"], e["source"], e["title"],
+                                                      ("\n     " + e["detail"]) if e["detail"] else "") for e in ev)
+    prompt = NARRATIVE_PROMPT.format(today=TODAY.strftime("%B %d, %Y"), prev_date=prev_date, prev=prev,
+                                     claims=ledger, history=history, snapshot="\n".join(snap), evidence=evidence or "(none)")
+    try:
+        out = parse_json_reply(anthropic(prompt, 8000, timeout=360))
+        if not isinstance(out, dict):
+            raise ValueError("reply was not a JSON object")
+    except Exception as e:
+        state["fail_count"] = state.get("fail_count", 0) + 1
+        print("  narrative update failed: %s" % e)
+        if state["fail_count"] >= 2:
+            note("The daily narrative could not be updated for %d runs: %s" % (state["fail_count"], e))
+        return state
+    state["fail_count"] = 0
+    remember()
+    if out.get("unchanged") and state.get("sections"):
+        print("  nothing material; narrative unchanged")
+        return state
+
+    # registry of sources the text may cite: earlier ones plus today's evidence
+    reg = {int(k): v for k, v in (state.get("sources") or {}).items()}
+    for e in ev:
+        reg[e["id"]] = {"title": e["title"][:200], "url": e["url"], "source": e["source"], "date": e["date"], "kind": e["kind"]}
+    valid = set(reg)
+    def clean(t):
+        t = _dash_free(str(t))
+        t = re.sub(r"\[(\d+)\]", lambda m: m.group(0) if int(m.group(1)) in valid else "", t)
+        return re.sub(r"\s+([.,;:])", r"\1", re.sub(r"[ \t]{2,}", " ", t)).strip()
+    secs = {}
+    for k in SECTION_NAMES:
+        paras = [clean(p) for p in (out.get("sections") or {}).get(k, []) if isinstance(p, str) and p.strip()]
+        secs[k] = paras[:5] or state.get("sections", {}).get(k, [])
+    if not any(secs.values()):
+        note("The daily narrative reply had no usable text; kept the previous edition.")
+        return state
+    refs = lambda r: [int(x) for x in (r or []) if str(x).isdigit() and int(x) in valid]
+    changes = [{"text": clean(c.get("text", "")), "refs": refs(c.get("refs"))} for c in out.get("changes", []) if c.get("text")][:8]
+    revisions = [{"claim_id": r.get("claim_id"), "earlier": clean(r.get("earlier", "")), "now": clean(r.get("now", "")),
+                  "why": clean(r.get("why", "")), "refs": refs(r.get("refs"))} for r in out.get("revisions", []) if r.get("now")][:6]
+
+    # claims ledger: keep made dates, stamp status changes, number new claims
+    old = {c["id"]: c for c in claims}
+    nxt = max([int(c["id"][1:]) for c in claims if c["id"][1:].isdigit()] + [0]) + 1
+    ledger_out = []
+    for c in out.get("claims", []):
+        if not c.get("text"):
+            continue
+        status = c.get("status") if c.get("status") in ("open", "confirmed", "contradicted", "retired") else "open"
+        cid = c.get("id") if c.get("id") in old else None
+        if cid:
+            o = old[cid]
+            ledger_out.append({**o, "text": clean(c["text"]) or o["text"], "status": status,
+                               "updated": TODAY.isoformat() if status != o["status"] else o.get("updated", o["made"]),
+                               "note": clean(c.get("note", "")) or o.get("note", "")})
+        else:
+            ledger_out.append({"id": "c%d" % nxt, "section": c.get("section") if c.get("section") in SECTION_NAMES else "national",
+                               "text": clean(c["text"]), "status": status, "made": TODAY.isoformat(),
+                               "updated": TODAY.isoformat(), "note": clean(c.get("note", ""))})
+            nxt += 1
+    kept_ids = {c["id"] for c in ledger_out}
+    ledger_out += [c for c in claims if c["id"] not in kept_ids and c["status"] != "open"][-40:]
+    for r in revisions:
+        o = next((c for c in ledger_out if c["id"] == r.get("claim_id")), None)
+        if o and o["status"] == "open":
+            o.update({"status": "contradicted", "updated": TODAY.isoformat()})
+
+    # keep only sources still cited
+    cited = set()
+    for t in [p for v in secs.values() for p in v] + [c["text"] for c in changes]:
+        cited |= {int(x) for x in re.findall(r"\[(\d+)\]", t)}
+    for c in changes + revisions:
+        cited |= set(c["refs"])
+    history = (state.get("history") or [])
+    if state.get("sections"):
+        history = history + [{"date": state.get("as_of"), "headline": state.get("headline", ""),
+                              "changes": [c["text"] for c in state.get("changes", [])],
+                              "revisions": [r["now"] for r in state.get("revisions", [])]}]
+    state.update({
+        "since": state.get("as_of") or prev_date,
+        "as_of": TODAY.isoformat(),
+        "headline": clean(out.get("headline", "")) or state.get("headline", ""),
+        "sections": secs, "changes": changes, "revisions": revisions,
+        "claims": ledger_out, "history": history[-30:],
+        "sources": {str(i): reg[i] for i in sorted(cited) if i in reg},
+        "evidence_count": len(ev),
+    })
+    print("  narrative rewritten: %d changes, %d revisions, %d open claims"
+          % (len(changes), len(revisions), sum(1 for c in ledger_out if c["status"] == "open")))
+    return state
+
+def save_narrative(state):
+    with open(NARRATIVE_PATH, "w") as fh:
+        json.dump(state, fh, indent=2)
+
+def narrative_for_page(state):
+    """What the pages need, without the bookkeeping."""
+    if not state.get("sections"):
+        return None
+    return {k: state.get(k) for k in ("as_of", "since", "checked", "headline", "sections", "changes",
+                                      "revisions", "sources", "evidence_count")} | {
+        "history": (state.get("history") or [])[-14:],
+        "claims": [c for c in state.get("claims", []) if c["status"] == "open"
+                   or c.get("updated", "") >= (TODAY - datetime.timedelta(days=21)).isoformat()]}
+
+
 def main():
     if not FRED_KEY:
         print("FRED_API_KEY is not set. Add it under Settings > Secrets and variables > Actions.",
@@ -1569,6 +2106,12 @@ def main():
     except Exception:
         previous_news = None
     print("News...");            news = pull_news(previous_news)
+    narrative = load_narrative()
+    print("X posts...");         news["x_posts"] = pull_x_posts(narrative, (previous_news or {}).get("x_posts"))
+    print("Narrative...")
+    narrative = refresh_narrative(narrative, series, stocks, commodities, landbanks, builders, lb_filings,
+                                  news, headlines, brief)
+    save_narrative(narrative)
 
     payload = {
         "generated": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
@@ -1582,6 +2125,7 @@ def main():
         "landbanks": landbanks,
         "landbank_filings": lb_filings,
         "news": news,
+        "narrative": narrative_for_page(narrative),
         "resale": resale,
         "headlines": headlines,
         "markets": markets,

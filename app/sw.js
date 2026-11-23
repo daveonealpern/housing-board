@@ -6,7 +6,7 @@
 // fonts): served from the cache straight away and refreshed in the background,
 // so the app opens instantly and picks up a new version on the next launch.
 // Bump VERSION when the list of app files changes.
-const VERSION = 'hsb-app-v4';
+const VERSION = 'hsb-app-v5';
 const SHELL = [
   './',
   './index.html',

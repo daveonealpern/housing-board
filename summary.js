@@ -405,3 +405,54 @@ function newsRows(items, n){
       + '<span class="news-m">' + esc([it.source, when].filter(Boolean).join(' · ')) + '</span></a>';
   }).join('');
 }
+
+// ---------------------------------------------------------------------------
+// The daily narrative (D.narrative), written each morning by fetch.py from the
+// previous edition plus whatever is new. [n] markers in its text point at
+// D.narrative.sources; both pages turn them into small source links.
+const NARR_SECTIONS = [['national', 'National', 'Macro, rates and the public builders'],
+                       ['west', 'California and the West', 'Builders, private builders, land'],
+                       ['ventura', 'Ventura County', 'Local market and cities']];
+
+function narrHtml(t){
+  const src = (D.narrative || {}).sources || {};
+  return esc(t || '').replace(/\[(\d+)\]/g, (m, n) => {
+    const s = src[n];
+    if(!s) return '';
+    const title = esc([s.source, s.date, s.title].filter(Boolean).join(' · '));
+    return s.url ? '<sup class="cite"><a href="' + esc(s.url) + '" target="_blank" rel="noopener" title="' + title + '">' + n + '</a></sup>'
+                 : '<sup class="cite" title="' + title + '">' + n + '</sup>';
+  });
+}
+const narrRefs = refs => (refs || []).map(n => narrHtml('[' + n + ']')).join('');
+const narrDate = iso => { if(!iso) return ''; const [y, m, d] = iso.split('-').map(Number); return new Date(y, m - 1, d).toLocaleDateString('en-US', {month: 'short', day: 'numeric'}); };
+
+// "Since Nov 20" bullets and any revisions to earlier calls.
+function narrChangesHtml(N){
+  const ch = (N.changes || []).map(c => '<li>' + narrHtml(c.text) + narrRefs(c.refs) + '</li>').join('');
+  const rv = (N.revisions || []).map(r => '<div class="rev"><div class="rev-k">Revised call</div>'
+      + '<p><b>Earlier:</b> ' + narrHtml(r.earlier) + '</p><p><b>Now:</b> ' + narrHtml(r.now) + narrRefs(r.refs) + '</p>'
+      + (r.why ? '<p><b>Why it changed:</b> ' + narrHtml(r.why) + '</p>' : '') + '</div>').join('');
+  return (ch ? '<div class="narr-since"><div class="narr-k">Since ' + esc(narrDate(N.since)) + '</div><ul>' + ch + '</ul></div>' : '') + rv;
+}
+
+// One line on when the narrative was written and checked.
+function narrStamp(N){
+  let t = 'Written ' + narrDate(N.as_of) + ' from ' + (N.evidence_count || 0) + ' new item' + (N.evidence_count === 1 ? '' : 's') + ' since ' + narrDate(N.since);
+  if(N.checked && N.checked > N.as_of) t += '; checked ' + narrDate(N.checked) + ', nothing material since';
+  return t + '.';
+}
+
+function narrSourcesHtml(N){
+  const src = N.sources || {};
+  return Object.keys(src).sort((a, b) => a - b).map(n => {
+    const s = src[n];
+    return '<li><span class="cite-n">' + n + '</span> ' + (s.url ? '<a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.title) + '</a>' : esc(s.title))
+      + ' <span class="dim">' + esc([s.source, narrDate(s.date)].filter(Boolean).join(' · ')) + '</span></li>';
+  }).join('');
+}
+
+function narrHistoryHtml(N){
+  return (N.history || []).slice().reverse().map(h => '<li><b>' + esc(narrDate(h.date)) + '</b> ' + esc(h.headline)
+    + ((h.revisions || []).length ? ' <span class="dim">Revised: ' + esc(h.revisions.join(' ')) + '</span>' : '') + '</li>').join('');
+}

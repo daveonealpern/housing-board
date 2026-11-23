@@ -205,3 +205,30 @@ added to `BUILDERS` in `fetch.py`.
   from filings. With ANTHROPIC_API_KEY set, every new 10-Q or 10-K is read
   and these update the next morning on their own. Without it, the board
   shows a "brief is behind" notice until someone reads the filing by hand.
+
+## Daily narrative
+
+Each run rewrites the executive summary (national, California and the West,
+Ventura County) from what is new since the last edition: data releases,
+price moves, 10-Qs and 10-Ks, 8-Ks with their press releases, public and
+private builder news, California and Ventura County housing news, NAHB cost
+posts and, if switched on, builder posts on X. `narrative.json` holds the
+running state:
+
+- the current text, with [n] markers pointing at its sources;
+- a claims ledger: every forecast or assumption the narrative has made, with
+  the date and whether later evidence confirmed or contradicted it;
+- revisions, shown on the pages, wherever new evidence went against an
+  earlier claim, saying what was said, what changed and why;
+- recent editions and the evidence already considered.
+
+On a day with nothing material the text stays as it is. If the API call
+fails, the last edition stays up; two misses in a row show as an issue.
+Needs ANTHROPIC_API_KEY. One API call a day.
+
+### Builder posts on X (optional)
+
+Add an `X_BEARER_TOKEN` secret (X Developer Console, pay-per-use credits)
+and the run reads new posts from the official builder accounts listed in
+`X_CANDIDATES` in fetch.py. A handle is used only if the account's own
+website link or bio names the builder's domain.
