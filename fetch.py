@@ -979,7 +979,12 @@ def anthropic(prompt, max_tokens=4000, timeout=180):
                  "content-type": "application/json"})
     with urllib.request.urlopen(req, timeout=timeout) as r:
         out = json.loads(r.read().decode("utf-8"))
+    global LAST_REPLY_META
+    LAST_REPLY_META = {"stop_reason": out.get("stop_reason"), "usage": out.get("usage"),
+                       "blocks": [b.get("type") for b in out.get("content", [])]}
     return "".join(b.get("text", "") for b in out.get("content", []) if b.get("type") == "text")
+
+LAST_REPLY_META = {}
 
 
 def check_anthropic_key():
@@ -1977,13 +1982,19 @@ def refresh_narrative(state, series, stocks, commodities, landbanks, builders, l
                                                       ("\n     " + e["detail"]) if e["detail"] else "") for e in ev)
     prompt = NARRATIVE_PROMPT.format(today=TODAY.strftime("%B %d, %Y"), prev_date=prev_date, prev=prev,
                                      claims=ledger, history=history, snapshot="\n".join(snap), evidence=evidence or "(none)")
+    reply = ""
     try:
-        out = parse_json_reply(anthropic(prompt, 8000, timeout=360))
+        reply = anthropic(prompt, 12000, timeout=420)
+        print("  model reply: %s, %d chars" % (LAST_REPLY_META, len(reply)))
+        out = parse_json_reply(reply)
         if not isinstance(out, dict):
             raise ValueError("reply was not a JSON object")
     except Exception as e:
         state["fail_count"] = state.get("fail_count", 0) + 1
         print("  narrative update failed: %s" % e)
+        if reply:
+            print("  reply began: %r" % reply[:600])
+            print("  reply ended: %r" % reply[-300:])
         if state["fail_count"] >= 2:
             note("The daily narrative could not be updated for %d runs: %s" % (state["fail_count"], e))
         return state
