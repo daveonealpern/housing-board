@@ -894,7 +894,8 @@ def pull_news(previous):
             time.sleep(2)
         return items
     jobs = [(k, lambda k=k, q=q: search(k, q)) for k, q in NEWS_QUERIES.items()]
-    jobs.append(("costs", lambda: [i for i in _rss_items(COSTS_FEED) if COST_WORDS.search(i["title"])]))
+    jobs.append(("costs", lambda: [dict(i, source=i.get("source") or "NAHB Eye on Housing")
+                                   for i in _rss_items(COSTS_FEED) if COST_WORDS.search(i["title"])]))
     for key, job in jobs:
         try:
             days, n = NEWS_WINDOW.get(key, (None, 8))
