@@ -1,1 +1,426 @@
-{}
+{
+  "checked": "2026-11-23",
+  "fail_count": 0,
+  "seen": [
+    "market:Public builder share prices:2026-11-23",
+    "market:Land banker share prices:2026-11-23",
+    "market:Construction commodity futures:2026-11-23",
+    "filing:https://www.sec.gov/Archives/edgar/data/882184/000088218426000157/dhi-20260930.htm",
+    "filing:https://www.sec.gov/Archives/edgar/data/920760/000162828026064557/len-20260831.htm",
+    "filing:https://www.sec.gov/Archives/edgar/data/822416/000082241626000043/phm-20260930.htm",
+    "filing:https://www.sec.gov/Archives/edgar/data/906163/000090616326000104/nvr-20260930.htm",
+    "filing:https://www.sec.gov/Archives/edgar/data/794170/000079417026000102/tol-20260731.htm",
+    "filing:https://www.sec.gov/Archives/edgar/data/795266/000079526626000071/kbh-20260831.htm",
+    "filing:https://www.sec.gov/Archives/edgar/data/833079/000083307926000135/mth-20260930.htm",
+    "filing:https://www.sec.gov/Archives/edgar/data/1576940/000157694026000071/ccs-20260930x10q.htm",
+    "filing:https://www.sec.gov/Archives/edgar/data/1580670/000158067026000088/lgih-20260930.htm",
+    "filing:https://www.sec.gov/Archives/edgar/data/799292/000079929226000033/mho-20260930.htm",
+    "filing:https://www.sec.gov/Archives/edgar/data/2017206/000119312526447297/ck0002017206-20260930.htm",
+    "filing:https://www.sec.gov/Archives/edgar/data/1406587/000162828026074699/for-20260930.htm",
+    "filing:https://www.sec.gov/Archives/edgar/data/1574197/000157419726000035/fph-20260930.htm",
+    "brief:2026-11-20",
+    "8k:0000795266-26-000080",
+    "8k:0000833079-26-000141",
+    "8k:0001140361-26-042623",
+    "8k:0001580670-26-000085",
+    "https://news.google.com/rss/articles/CBMiogJBVV95cUxNUl9reExpRHhyczlMTWtnRXNkdnY2ckRFZU1QUW9RalVQWkRvQzU5elJXbDRYRTlpb0RMLUdoRG5vTGZqREs0ZWFEckdmdENjN3RmUTJjaEpjSUZ2dk83MnhVRzY4dVM1WE5QQVhzTFhNWngyLWxuMUc3NFVULXV6Ukk4TXpRZFd5SE1KMEVRcEZpa1IwUEJkcGFoaEFyZ0tPc3FNTGswUHNZcEJTbVlwWmQxekJ3ZkZodC1Sc25YR2NnRDdjd2dLeHJxY3VjUWpsSmRaQ0FqUEVCN0tXVFhKUGdmSUZhVXBrTngxNUNWaU9RMlladjhWRXAzN3daZDAxR2JJaWtBaGNzRER5Y2hEUUxHNHZPU1pkSXY5YjdYNFk5QQ?oc=5",
+    "https://news.google.com/rss/articles/CBMiUEFVX3lxTE5OVmJFdkJlcUdldDRVRXJzNl9UYk90b2tEZTY1a0Y3SDJ4Z2ZRbkt4SUF0VjB1eU5Fa1ZTaEJmSXhBS0xtT3BlUWV4aXpzNFJL?oc=5",
+    "https://news.google.com/rss/articles/CBMiZEFVX3lxTFB2YUZmNG1aS2J6a0w4b2tsZjV5NUdtVkN4VHF1Q2dKTmtVb3VYM1g4MjdKSVpIZWpzWXVySlJyZElBdzRINThfUGpXbkNaMEt1Z2d4Z3dJcXp1UWFvR05uRTJJek8?oc=5",
+    "https://news.google.com/rss/articles/CBMitwFBVV95cUxNVG1ZeUJGcWhXSWdpR25wMEtIR25kVFBBYXBDM2RHODh3WGhaS2RtcGg4NHk4RjI5Skp6cTlpdWo2bDFGODVTMmg4N0JHVERKNE45QXh1dTFGTVZyLUR6VFE3a3NuWHJVQUtGWWM4Y2xtMWN4YzY0Rnh6UU1tRGFlb2s3MUtsd0NkR2VWY3BEekxJZjNYVFVUOTh5T2JhS1k3S29XVjY2bDd6V1ZXV2F5Vmo2dC1BSU0?oc=5",
+    "https://news.google.com/rss/articles/CBMiU0FVX3lxTFBsZ1NWTXBKOTV1TkpXOFYzeHJGNV9kMFUzUFBUOV9JQlYzMGxqQmFZd0k5WGFucVRHZUxXZUJFckNTMEdnU2t3V2RTdHMxM1BfLS1n?oc=5",
+    "https://news.google.com/rss/articles/CBMihAJBVV95cUxPYUtrVFNTTkJUdzFoY3kwc3FTX28zQjY1NXVEeF9FUC14U21ScmYyQnc5RUdxS2pKejJDdkRWXzBzQkc3TDJ0Z2N1cy1ZWTNHRTlVakhUS0c1RnNId2I3SkF5aUxkX19QSHNOTlU1RDF6VF9xcDc5RG1xbWhLbi1MeFNsS2RtWWY0OEhRQi1Td0c5bWRhclVtaEtCeEtRS1RzWDlmUlhEV0kwcEl4ZTN4R24zMXgzWG1lSFltLTJ1Z29MZ05DVFpuRG5uc2JtZEw0U2M3M2FoZVVTSnZtR201R1hqV0F4bTFfOXFJZEVOTHh2eFBtR2RVLTRDVFo4VTNaSmJmdg?oc=5",
+    "https://news.google.com/rss/articles/CBMinwFBVV95cUxQSFBHd0N6dU05SXcyWHZYMlNIZXg3bWVGcG1wOUd5VXZMRHp2SWlWT3BKQWUxMmphVTFPY1RoRGZmR21KZHV6TEVFVE1vbEVSUGpuZ0VSRlNyYVhKWWVYbERmTFZkdVhuVzkyVkUtNFp1T0Rtd0lhSFl5dUVmdDA0R2JMVFAzWnhUcVlxQmpaUGdtaE1pVHR1SkgtdnMyUUk?oc=5",
+    "https://news.google.com/rss/articles/CBMiUEFVX3lxTE5MOEZISG5GdkRDZkIyRjNaWVdXNVdzTlVUN3AzV01aazRxRndyY013QkUtLVg0V09kVTNSa2t2bmhvaTdialA0UUJ0Y3E1dlhi?oc=5",
+    "https://news.google.com/rss/articles/CBMiYEFVX3lxTE51ZGM0dXl0UXF2MjczeWZ2ZFNxbFZaUEVXYkN2VnMyN3hROW93WTlCYlVmczdvbElKeFdOWHdiaW9COU1weENuWmNLa0ltQ3VISUpGOHBYMzZsdktfTl94cg?oc=5",
+    "https://news.google.com/rss/articles/CBMipgFBVV95cUxOZkF0eng1eDZSUlFBLVQ5WWZLZlFQWVpRV3hDSDBJUk5MRk95d0N5RldrRmdvQmx2T2c3MjBqYlBfd1F6Y0JLUU5Za3VwY1BHWXQ4V2tKZGhjWGdLVHFnLVVfMEhCSjJDd1pjZG12S0VVT2syckxlNm5WaS1mZ0p3cXZKdzA5eGdCMGVCUy1vT0lPbXJpRHJBei1YSHZUcUVpdlJCQUx3?oc=5",
+    "https://news.google.com/rss/articles/CBMikgFBVV95cUxPeFZUTnJScVhfbnZfdkZXZXRaaWZRcE5KTXBRbHpmb1V0Q1VnblRBTnB4dW5zZ0xEQlNkUjFlRzRaRmVfRU0xZ09tdWl4cnA2WWFycVN1Ul9zNG9aMmd2cUxLelMySEdlVFhXSk1sb1Jtc3Z0TVBBVDlUYXdRQ2thTmZSdm1Wd2lIZEkwOHpJcE94QQ?oc=5",
+    "https://news.google.com/rss/articles/CBMiUEFVX3lxTE5OU1JQcjRsZ0xTN3RyeTdRWnFVSnhkNWFnVkFINjZFaGNhVzdWYllzQnZxQ01EOHNlSzZ3ck5LOG5VOTZ2eEJMV2EtYldOX2lQ?oc=5",
+    "https://news.google.com/rss/articles/CBMiggFBVV95cUxPbnFsaHh1UU5VUmpkMVV2UXQwTnBpLThhQ1B6Z2NGTE4zMzdTaUhfWUZzWHBiQndkWHJlX0I5ZVJ5c3lub2lVSjVhU0l5MzVOQ2s0V0pBS3NadXFrQUk1SmI3bWdvTS02ZUtDcjVkWlJXTGpWY1lfQzZwS2llUnF0RFZR?oc=5",
+    "https://news.google.com/rss/articles/CBMinAFBVV95cUxPZE9wU0U1dzkxdWxweGN3cC0xeW1kQURlaGpMR3N4NVY0LU5CY0dPNDRFWEtQQ2kxeS1WVEtZR0l1RGR5UnY2ZG9zWURESWFhVFNzOEx2RGRRQTdqWENFTlE0VzVRdFdQRl96MHNVbzg0aEZpbG0wVldLWXZ6aVhlV0g0RVNNUzBWQndGUFU5RmFsYjA4OGh2SUswRUM?oc=5",
+    "https://news.google.com/rss/articles/CBMi0wFBVV95cUxNb0lEVVpqWVdreDZGd3dBQ0VQZEVnb2NXdzh5LWdPdExGSTlKM0d3Zk1VU2lQOVhiWk5CYlJaV2c2M0RDX0xXT1Vha2syenBxV2tfRXhLdkdKbnNCVTlsUnFYdXV5a3dVb1FUMUt5emdtZzBfZHo4QlhTVV81TkRySWc2TE11c1BvcWkydEgwX2ZLNF9rR3AzeEhCY3YwdndOUzBEMHJ4Vk82R1FiNVJPaXVoNlRlVXlIa1A0aE00OEZNZnBxTWtFendMYXkxNU00QlNj?oc=5",
+    "https://news.google.com/rss/articles/CBMiigFBVV95cUxQQ3RlOTZxNEZzY0tFb29SMjExQUdIU2JOamRwcWFCTnIzNVh1RGM4UFJ1ZHIzYVZZVzJWM21PX3gydjZ3Zk9kY1RpTWR4bHdibTdKUGpMZ3pnVjFrSE0xejhOUzhUTnUxZElOMVNUQk1SUXhTQ3gyWkVsT3hNdFhJNGhrRmZla1VDZUE?oc=5",
+    "https://news.google.com/rss/articles/CBMihAFBVV95cUxOZE04TmhVNWx4c2JieUF0cXM2UmhGcVk5dTFIUGlEZndRTmpUTFZ0NTk3dzZFQy1ISjRueVBPWkV3LThYTHRLb0I4V0FxOFlId1JLd3R0Nnc3NXdESl9FYUZPejZCdExRSHd1NVg1c2Q0UTlpc2t2RnBaLUN1b3JhTlhTWUg?oc=5",
+    "https://news.google.com/rss/articles/CBMiekFVX3lxTE5yOWFMZzNEV3RRSDA4SmdoWDFRU2ltTVBwM1pveFp6Z0t5M0tnUlhGTWc2QktpSHIzaFA2ZnRMeF80X00xOGpGUTBQU0stWkRFby1XcHdycWpyRzZLbzBRaUtTV1hVQjhSQ1F2cUtneWdyWk4xYlU1NkRn?oc=5",
+    "https://news.google.com/rss/articles/CBMiwAFBVV95cUxNczRqLXl6dkVfbW5VWW0zVU5MaXBNNlVhRTBWZk5OSkNEWjZGV3dXTnFvWnpwcExXZS1TV1RNb3g5R3lOTjBlWWZrWmNsUV9WVkNLU1g2eWJjY0cwRE9qTnJGSTBzR3ltWnBISThKLWFOQUpLbDFqQTNFenRFN2FZY0VfUGFyXzAxTWM1Q3lPUGoyZTdISkUtYmRkOU4tWS1BSlRNNlU4dUNfYnhRdmI4Q2JDTnpXQnlYQUFHT3FTWGE?oc=5",
+    "https://news.google.com/rss/articles/CBMirgFBVV95cUxPcU55MkJOYXNOY05yV1pyb0Jncmd5Tmp6U3BGQ1c5MjVTWjRfeGRFSDlDSUY3WkJYT1VqUG05cUl3em8xVmFEWWQxS1dQNk5FZzVraEVlODczVGRCRGVnbHFKS3FCWWhHVGhTeGFBWFRfQ0VrNGlrUmF1SFlWenFiT09zTlZTM2pKLXRNeVJNVEVpSE44R09aczFWQkpUYnl6eXpLWnBJREwzYWxJMHfSAbMBQVVfeXFMTjhJRGloS2xsWjZrUkczb1lhM2wzTjY3Q1o0cVZTdGhlYkk1bjVmQV9XTklZdXVkWW1Eb0lnbldLWnhEeHA1bTRNSktNR1JMek55V2ZQQUd1UXVZMTN0c0MybGNFTjVoWjJwYXBsakNDaUo4SU94a0c0dVBSa01pckdsdVRsVkotVkVOZXJNTk9jWEw2bzdWZE15ZHhrME1jYUhsV0ZJN211MDFNcW1OTVA4OGs?oc=5",
+    "https://news.google.com/rss/articles/CBMie0FVX3lxTE1VVnQxWUhmazZQRjF3TTBsM2dlRmFsc29kc0lSS3BvcWNhYkpROVdyUWdRenlLOWl1YWVtNXAzUjM2UWgwZzZmXy15ekVCNnVrdi1PYk56ek5VUzRDWGx2blNuLVlJOWZiRFV4TDVhbVlvOVNfOW9CaG1CWQ?oc=5",
+    "https://news.google.com/rss/articles/CBMiigFBVV95cUxNTnU4NU1xUEoweHZadTk1ckMzUzctS2MwM3lJRjQ2Z2xvYjVtQVBRQlUwQ1RfMzRVRzA2VWdIaXlqN0cxUXVkVE1qdzF1WXkxV3AtQ1BjUHNkbk1vdEhJWm9qWkpJRUg0MUJpR1J3ZkFlRG9VNWtmMkVWY3Q5SjNrc0xhdGVRclEzYmc?oc=5",
+    "https://news.google.com/rss/articles/CBMipgFBVV95cUxPa25oUlhjVkp5cWYwdmJTaU5naEJaWTdwdEJzM21vSWNjZEtNcndrdVNqeXVxbkdMMUZyYXhYbW52TWQzMkxLc2xIVm9ZSFJyOFV5cTJFMVQ4OExsM2VTMlJtT0hCNmZDV3k1OVVxVVBnNUhoQTQwb29ZRXhxY29pTmVYMmpyWDRfZDFQUGZyLXZSTU01b0Z1WktoSklQcy14bWxxN1pn?oc=5",
+    "https://news.google.com/rss/articles/CBMiqwFBVV95cUxQNnE3a1N4ejBEaHRRMGlqNUk1a1F6NHBfbGFRMjc1Q2tfSDFOSHh2SC1TVDNWWjA2dnZyanJhLUtqa0pLNEtfa1N5cjd5dXduSTZRb1JWN1pJTnllYWl0YzVSQldIYTZYcmlXYjktdE5yWTF2dGd5WjQ1S3FRak5GXzB1MXBrMnV6MTJrb2U0VUduY3I5V0JOMDdIMjZReFlkTDFJdl9ILUY1dkE?oc=5",
+    "https://news.google.com/rss/articles/CBMirwFBVV95cUxNLUJWa01lb3c5cUZic1VmQ21OTXNDMUZPWUNTSnduNW9lNmt2RWM2dkZVS2V5UDljQ3lKSHpmTUhIQzFuOS1CN3NUNWZvUEpoVzNkMkRYMmJWWGdsYmJNeG5ianMxQ0NUWUxEd2pKVXBTaER6RVdDaUp3RGI5ZE0tdHJmQTJ0SFcxdUZRdko2ZXFhRVFZdEJEemRMUzZ3TGJMMjVVRHR1VHFzMzlPU0U4?oc=5",
+    "https://news.google.com/rss/articles/CBMif0FVX3lxTE9VenRHSUNVdm4zdTJVOGFBZ0RLNFA5MVRtVG0wUWd6RjFQaGxpZHJlV2h6NGllNi1CNkpqTzF0OG5raFBnYklDOHNGUndPaVJjN3FFRlZ1cUVBeG5kS1E4ZEhCc3RvOHVlMENCVmpPNzNEVm14bExnTlNsVDEtWW8?oc=5",
+    "https://news.google.com/rss/articles/CBMilwFBVV95cUxNRi16R0NoY2o5R0NvSEVFSFVmMk5fbU9vdHE4cllnSHFMLThGd3JRMnVuTjZ0YlVEa3pQN1BpSnhGLTVjMEd3V1hWY25QV1NiRENmQkRNc1M0MGxBbHJNZzhIc0J5MDF4ejRIeW9xeUlza0t3cjVmUXNkMU1FTG4wMkRsNFpmMC1LMjhGSDhTZC1MNm1DbEdB?oc=5",
+    "https://news.google.com/rss/articles/CBMitgFBVV95cUxPeXRCYWIzN2xpS3BvTHJaQ2dBNXNWNjFzYi10WEdqQ0F3QjN3RjFReHRkckZXN2twd1hZVHRpU3dkb2pLZlI3b21EY1oxdG1LUVpSQklPd2c4dlNTVFpqNlJKRFJFODliNXVvdGl0QkxqTVY2V0xIc0ZOQTkwRURpOEswckZzanBCUTdJa0xFOGFwcjdzaUJtSDh0eFk2Wi1hR2FJMXA1N3BaNGhhQnRWYVl6Mmxsdw?oc=5",
+    "https://news.google.com/rss/articles/CBMiqgFBVV95cUxQQkdaVnplckxyNkFBVWtYSnpmazNWakluNlE1V25icDNqclY4QW9fTWVpWF9QY0lxZ1E3cTZDX0NBSkw3Umh1dHJKX1hQbEE3RVUwMVdEcDZWTXlPSGQ2Q2V1Q29Ic0h1NG1yRkIwTVB5TEdWUHhsb3AzWmljdG43aEg1SG5sR3R3dHhUOVJoZDdTM3ZDWWlEaU5TaDBld3d2aExzeHVGekZPdw?oc=5",
+    "https://news.google.com/rss/articles/CBMiggFBVV95cUxQbW9CVGp1cVpaWGVObGxKUFgyVUVnbDQwaUFvakpPLWxPejVhVEk1YmEzSURIaFdYQnA0ZmlFSkRqS0NMM1hYMmxRRGwyQV91eWVrUEQta3JyV1ZKOWhfaUtWMzJqeGNucHNycU1UV2pkOXBOa1hxOFhmQUZod1E3S2J3?oc=5",
+    "https://news.google.com/rss/articles/CBMiqwFBVV95cUxPWVkxUlNhUXNaNVhwdVBNcTJjT0ZHR2NEZkxzMHVudXB6dkhXQ0FTNGpUNUh6ZFZ1UHE5QkF5Tm44SXI5Tzhza0pnWk9TYXFKTUtrQmVDd0dyRTlwcWV1cW1LTVZsXy1aVDlhcVFoX1h6R0tYQlBlVlNhWlVVenFvYUxrYXFXUEVPcGZSbWswX043ZzMtT0k1TWd5T0VIVTJVX1RqUFVSVzJieXc?oc=5",
+    "https://news.google.com/rss/articles/CBMipgFBVV95cUxQQnY4NFlYS1ZlZTcwSVozSDU1RTRlY01WekctT3BGdXlvd0FjZnBackR4QWlGV0FvNjZ6dV9hMnJoOFp4OUZ1OHJyQkVSMXZKZkdhSmJtRGJyeUd3VU03ZFo4Sk11MDJxTTZOZlEzRTF5TmREUVVCV0pyTDlGZUd4NWVwQUxlbUYtT0ZjaklOR0FTMTduZThDaUxsaFFPOU9TWVphMml3?oc=5",
+    "https://news.google.com/rss/articles/CBMitAFBVV95cUxPTDhDVF9wNm5POHdQdktUU0c5Z3lUTm5udHJHbkZLSVFzYlA0R0VLaG9XOUhBdlotWDVxMlhkMjVDclNYV0RWbzZ4UV91Sk1zWDJDaV9tRUgtTFVHNTBIUWhQb2dNTGk0Z3BwbHJGY0NOYXZjRnZkbXlsMDFpYUoyQnJaNlFoT0pLQjdRemVLY0VVTVZ0VVRvNlZ5djBveHBFVDN5bFIwalZ0Y2NMbzMtZlNCcVk?oc=5",
+    "https://news.google.com/rss/articles/CBMi6AFBVV95cUxPUnB4aWdNNXZmVlpzYUdlZzhCa0VIdDduenFoN08yOWlmemJGZVJHUURBdHM3Zkp3UnJ0T2lrc1YzRUJzWjZwZEVfanBlMzJzbnhRUGg2ajY0dFBGdHJtbGpDSDhMU1VLV2xFM3IzZVRrM2ZwTFRsS01mVWhyWGtTQml6RGNKODdSdnpIYlM4N2syQjdDdmJsQXRTME1XSnZhQ2VCY1BkRXc5WDVXQWk2dVhqR2J4OUVkZFZsSjVJU1ZBTlE4NG9fbkswSjMzWENSUk02Vl9zdEo0SElsc1NjaEZkSVN4ZTJ4?oc=5",
+    "https://news.google.com/rss/articles/CBMihgFBVV95cUxOQU9xamExMm40QkdfWnBueThtNEstVl9TU1duWTBvY0MwSl9FM3hUY194dGlCZDNZX0NBeDR3b0hTNTVkT0tPcE81TFQwYS04V24xc21GelJGdEVwRGJ4NVlBWnNoRktUams2NjJvc3Y5R1l5ZnhQWFJMLXlLcGVicnQ4NlFMZw?oc=5",
+    "https://news.google.com/rss/articles/CBMidkFVX3lxTE5oQXRwQ0VPQXBZWnl1Y0JFVldNbGk0UmFYSXNncThqVHdELU9VSzR4MWg5a21kTEJjS0EtLUgtUk9LMHVvbkg5RGFuQy1VWHVzYUxYMXRkTHhUcHVYTXBqVncwWEVsNFM3VWozSVNsVXZ5NjRUMHc?oc=5",
+    "https://news.google.com/rss/articles/CBMi2AJBVV95cUxPa3dxNVY1SkVvZlRwM3pBbUF5SWhobndVQ2JGNHdDM092U05YbVlHUkpDeW9sUmM0UFFOak1HTkl5dHJFeWdXbVA2VXA5aVc4X1lJRkVTUkhNdklsdEE2bVJaeWpoU2czZTNCRkVQTlFZelY4NmpDbWtpTC1Uemo2UHVhd2dZS3ZRSHpoU05PUGdUYWtBeGdiVGpRZlFxc2RhakFXc2ExVVk4dDdUNks2OVZQRGYxdFkxenhyYk00WkpuMHNDT01WNWtBMFZnV0NzMGY2aUl3TWhDX0VsZ3U1aWNoQ1pYb3c2TzdTNjJaYmsyTmdvSTdxaWtvRkM4a1pLU2Z0M2RHRXNjQlRvVkFpdXk1eHBQd0hQdkotT0w2ajdZVHVUR0lDdFJXelo4UjZ6X19vcDRfaGNoM2U0Yl9rVmtvXzUtNXk3RnVzbUc2eDAtYWtXTWo1WQ?oc=5",
+    "https://news.google.com/rss/articles/CBMiuAFBVV95cUxOVDBHU04zZk5COUptZUtod1RRZ1lPV0RIRUxWREhkdU9EV2xTczAzU095VFIwR21lQmdrV3pFajFTOGdQa0R6TjBHOERpaU92SVVXb2JRWUlmMkFQT09FV3JkaGd2OGw0Q3QwYk4wc1p4anlsZmNpeXRiVUpZMFdmcmdMRXgwM3JmX2o1YTBWb01ScjBHMy1paVgyUW9lNDdkZmJHbU9wVTdXYlJoZ25lS2lOMWZRbDJ2?oc=5",
+    "https://news.google.com/rss/articles/CBMiT0FVX3lxTE5YR1J6RGVHRWI2WXV4Q09ral9BcVFpV19fb0VBb2lfRFlZWTh5X2NDMFNzQnduTlJ5TThIQzI5dXV1TEo1cGFqVkdzLXdVUG8?oc=5",
+    "https://news.google.com/rss/articles/CBMipAFBVV95cUxOXzhpeW9fN0VjM1dEYS1pQjU2M0dlM0dHRmV2bXJ3NXhrSUQzeUMtc0QzWUwtVThrOUVENFpuU21yRHVRdkx2VC1LZjh5a2MtcV93M3lSeGN0aGl3Q3NRQ0lYLWxyOElwXzdCcktzenNhcU1DTURPYi1jeHFQTGh0TXJHZDY4QWdpY0JOOE1KMzBtaG1LbmtMM1U5YkMwQWtTNDRiZg?oc=5",
+    "https://news.google.com/rss/articles/CBMipwFBVV95cUxQZWFsUXdqUXNYSnBPaFNoUlNST0Rob0RtbEFFV2FkQ1VSZkQxUmRfalBBRDhLdmhjMnlRYlliY1dVMVFHMFJiQTBkZWk1T2lvcDBiSjBhVE52TVA1M2ZKN3NMZUZxaG5EVGRkN1RCWk1jM0FxblFVUU92elNINFU2Qkk2eFRBbmRUeVBfclNyLVdNX24zMEZEMGZHQ3Z0d1NiTExqVGtIZw?oc=5",
+    "https://news.google.com/rss/articles/CBMic0FVX3lxTE03WEpibnVZS0hsMFNPU2w0Y2lXd05HWEpIQk9lTzU2MzBVRmdBMTBWVzFYS1UxR3cwWTNxLWVXWWFfcWZta193dHVtQVJWUmE0ODZ6SUFWTG02M21VZng1ZmF1b3lsV3dlVmhNd3pvRG10WEE?oc=5",
+    "https://news.google.com/rss/articles/CBMirAFBVV95cUxPS2xROGJreEotbU5BcnozTGMwX0FXOHZnYU1NczJVNGNPclB5emtZeGIxZjBhRHhNdFZBMXFQcnI2QW1Ua1FZMjRWbk5uZ2djYTZQcUlvazV5dnlzRFZIRmtISDRxdWJ2RHBvQnFmYmdaeDREb1YxOVZHUkNsbncxYnhSako3ZDExM0xSMk13Z3RVWUk3SGxEUWd5WUQ0ckkzX0N0UTg1ajZLclNm?oc=5",
+    "https://news.google.com/rss/articles/CBMinwFBVV95cUxOekRQeWNiN0stMUJ3dzAzQVZWMUFDSUlPQ1Bicm9rY2R1R0R5SmJjNnhUbThxVm51UUsxREJUNmxjcWpEUEhmbmxRb2Vtcm5CbW01YUE4clZVdkRCNkFlOUZJX003SHJZRU1YX1RKNnd1WllaQjBSVTNyV3U3SDFYcnlpemM1aWZ5bzNPbFpoYjJ3Znd0dkJGQTk3a2VUYzA?oc=5",
+    "https://eyeonhousing.org/2026/11/building-material-price-inflation-remains-high-despite-energy-price-declines/",
+    "https://eyeonhousing.org/2026/11/residential-building-worker-wage-growth-rebounds-but-real-wages-continue-to-decline/",
+    "https://www.housingwire.com/articles/real-estate-tech-ai-payments/",
+    "https://www.housingwire.com/articles/velocity-illusion-homebuilders-returns/",
+    "https://www.housingwire.com/articles/reverse-mortgage-title-risks/",
+    "https://www.housingwire.com/articles/smart-home-infrastructure-design/",
+    "https://www.housingwire.com/articles/sub-7-mortgage-rates-yield-spreads/",
+    "https://www.housingwire.com/articles/10-year-yield-mortgage-rates-fed/"
+  ],
+  "brief_as_of": "2026-11-20",
+  "marks": {
+    "AUTHNOTT": "2026-10-01",
+    "PERMIT": "2026-10-01",
+    "PERMIT1": "2026-10-01",
+    "HOUST1F": "2026-10-01",
+    "HOUST": "2026-10-01",
+    "MORTGAGE30US": "2026-11-19",
+    "UMCSENT": "2026-10-01",
+    "TDSP": "2026-04-01",
+    "T10Y2Y": "2026-11-20",
+    "DGS2": "2026-11-19",
+    "DGS10": "2026-11-19",
+    "DGS30": "2026-11-19",
+    "SOFR": "2026-11-20",
+    "SOFR30DAYAVG": "2026-11-23",
+    "SOFR90DAYAVG": "2026-11-23",
+    "DPRIME": "2026-11-09",
+    "FEDFUNDS": "2026-10-01",
+    "MORTGAGE15US": "2026-11-19",
+    "BAMLC0A4CBBB": "2026-11-20",
+    "BAMLH0A0HYM2": "2026-11-20",
+    "HSN1F": "2026-09-01",
+    "MSACSR": "2026-09-01",
+    "EXHOSLUSM495S": "2026-10-01",
+    "COMPUTSA": "2026-10-01",
+    "MSPUS": "2026-07-01",
+    "CSUSHPINSA": "2026-08-01",
+    "WPUSI012011": "2026-10-01",
+    "JTS2300JOL": "2026-09-01",
+    "USCONS": "2026-10-01",
+    "PRRESCONS": "2026-09-01",
+    "DRSFRMACBS": "2026-04-01",
+    "DRCRELEXFACBS": "2026-04-01",
+    "CABPPRIV": "2026-09-01",
+    "CASTHPI": "2026-04-01",
+    "LXXRSA": "2026-08-01",
+    "CAUR": "2026-10-01",
+    "DCOILWTICO": "2026-11-17",
+    "WPU081": "2026-10-01",
+    "WPU101704": "2026-10-01",
+    "WPUSI019011": "2026-10-01",
+    "WPU1333": "2026-10-01",
+    "WPU137": "2026-10-01",
+    "WPU0721": "2026-10-01",
+    "SPREAD": "2026-11-19"
+  },
+  "px": {
+    "DHI": 146.3,
+    "LEN": 81.3,
+    "PHM": 126.335,
+    "NVR": 5488.87,
+    "TOL": 145.465,
+    "KBH": 46.34,
+    "MTH": 62.685,
+    "CCS": 50.41,
+    "LGIH": 39.64,
+    "MHO": 125.64,
+    "MRP": 24.86,
+    "FOR": 22.37,
+    "FPH": 4.37,
+    "LBR=F": 539.0,
+    "HRC=F": 1401.0,
+    "HG=F": 5.688,
+    "ALI=F": 2821.75,
+    "CL=F": 80.64,
+    "HO=F": 3.6967,
+    "NG=F": 3.448
+  },
+  "next_id": 61,
+  "since": "2026-11-20",
+  "as_of": "2026-11-23",
+  "headline": "Builders' weaker summer quarter stands, LGI has narrowed its closings guidance, mortgage rates sit near 7.3%, costs stay high and KB's land chief retires.",
+  "sections": {
+    "national": [
+      "Nine builders have now reported the summer quarter: Lennar and KB Home for quarters ended August 31, and D.R. Horton, PulteGroup, M/I Homes, Meritage, Century Communities, NVR and LGI Homes for September 30. All nine describe it as weaker than the quarter before. Net orders fell everywhere they are reported (Horton down 7%, Lennar down 9%, Pulte down 6%, KB down 12%, M/I down 2%, Meritage down 15%, Century down 4%, NVR down 7%), and LGI's are down 30% for the year to date. On Nov 3, LGI called its quarter strong, with 1,222 closings up 10.4%, yet narrowed 2026 closings guidance to 4,600 to 4,800 homes on slower sales as affordability weighed [8].",
+      "Margins are still compressed year over year: Horton's home sales margin was 20.2% for fiscal 2026 against 21.5%, Lennar 15.8% against 17.5%, Pulte 24.8% against 26.2%. Rates are the stated cause. Lennar puts the 30-year mortgage at about 7% and the 10-year Treasury near 5%, up from 6.4% to 6.5% earlier in the year, and ties the move to energy-driven inflation from tension with Iran. The 30-year fixed rate was 7.28% on Nov 19 and the 10-year 5.04%. HousingWire says the Fed is staying hawkish even with lower energy prices [60], and that sub-7% mortgages need a 10-year yield below 4.85% and 2% mortgage spreads [59].",
+      "Cancellations are where the third quarter breaks from the second. Horton's rose to 23% in its September quarter from 20% a year earlier, and 19% for the fiscal year against 18%. NVR's rate rose to 21.0% from 19.4%, and LGI's reached 48.9% for the first nine months against 28.1% a year earlier, which LGI attributes to more buyers being unable to secure or keep mortgage financing. Builder shares reflect it unevenly. Through Nov 23, Lennar is down 22.0% year to date, NVR 24.6% and KB 18.8%, while Pulte is up 6.1% and Toll 7.3% [1].",
+      "Horton ended September with 17,700 unsold homes, 8,800 of them finished, expects incentives to stay elevated through fiscal 2027, and guides 79,000 to 84,000 closings for that year against 84,202 in fiscal 2026. Construction materials PPI was up 12.1% year over year in October and lumber 6.4%. On Nov 13, NAHB said building material price inflation remains high despite lower energy prices [53]. On Nov 9 it said wage growth rebounded while real wages kept falling [54]. On Nov 23, hot-rolled steel futures were up 49.0% year to date, diesel 74.8% and WTI crude 40.7% [3]."
+    ],
+    "west": [
+      "The third-quarter filings do speak to California, through each builder's western segment, and the read splits by builder. Horton's Southwest region, which includes California, Arizona, Nevada, New Mexico and Hawaii, lost the most ground on buyer commitment. Its fiscal 2026 cancellation rate rose to 19% from 15%, the largest increase of Horton's six regions, and closings fell 5% to 9,013, which Horton attributes particularly to Las Vegas and Southern California. Lennar's West segment, which includes California, is its weakest. Gross margin was 12.1% against 16.3% a year earlier, the lowest of its four segments, and the filing cites lower average prices in California among other states from base price cuts and more incentives.",
+      "Pulte's West segment, which also includes California, had closings down 18%, orders down 15% and a 21% cancellation rate, the highest of its six segments, and pre-tax income fell 57%. KB's West Coast segment (California, Idaho and Washington) is the exception. Net orders rose 8% to 937, backlog value rose 22% to $1.02 billion, average community count rose 25% to 111, and the cancellation rate improved to 16% from 18%. Prices are giving: average selling price fell 6% to $641,800 and segment gross margin slipped to 16.7%. KB's real estate chief, Albert Praw, retires Nov 30 and will advise on land relationships and transactions for up to a year [5].",
+      "Century's West segment is California and Washington, and it is where the first real write-down landed. It lost $13.5 million before tax in the quarter, against a $21.2 million profit a year earlier, after $19.1 million of impairment charges. Sumitomo Forestry closed its Tri Pointe purchase on May 14, so quarterly segment disclosure has ended. On Nov 2, Wafra and Hunt Companies launched Strata Land Partners as builders face a land-capital squeeze [50][51]. On Nov 6, a Lennar spinoff paid $42 million for a regional land portfolio [48]. Land banker shares are down this year: Millrose 16.7%, Forestar 8.0%, Five Point 19.7% [2]."
+    ],
+    "ventura": [
+      "No public builder discloses at county level. Ventura appears in none of these filings. Anything county-specific attributed to a builder filing is extrapolation. KB Home is actively selling at Beltramo Ranch in the county, and the new-home pipeline countywide is thin for a county of this size. City Ventures, a private builder, held a grand opening for Walnut Park in Simi Valley on Nov 14 [42].",
+      "The resale side, from Redfin's October county data in the resale panel on this board: median sale price $862,100, up 0.5% from a year earlier, on 509 sales, down 12.7%, with a 52-day median time on market and sales at 98.2% of list. Next door, the Los Angeles Case-Shiller index was up 1.4% year over year in August.",
+      "The two items that belong on the radar are regulatory, not corporate. The 2025 California Building Standards Code and local County amendments took effect for all applications submitted on or after January 1, 2026, and AB 1308 now requires the County to inspect completed residential work of one to ten units within ten business days, with a miss treated as a Housing Accountability Act violation. That second one is real leverage on close-out timing."
+    ]
+  },
+  "changes": [
+    {
+      "text": "LGI's Nov 3 8-K called the third quarter strong on closings (1,222, up 10.4%) but narrowed 2026 closings guidance to 4,600 to 4,800 homes, citing slower sales and affordability.",
+      "refs": [
+        8
+      ]
+    },
+    {
+      "text": "KB Home disclosed on Nov 16 that Albert Praw, EVP Real Estate and Business Development, retires Nov 30 and will advise on land relationships for up to a year.",
+      "refs": [
+        5
+      ]
+    },
+    {
+      "text": "Rates remain near 7.3%, and HousingWire says the Fed is still hawkish despite lower energy prices, with sub-7% needing a 10-year yield below 4.85% and 2% spreads.",
+      "refs": [
+        59,
+        60
+      ]
+    },
+    {
+      "text": "Cost pressure persists: NAHB flagged high building material inflation on Nov 13 and a wage rebound on Nov 9, and Nov 23 futures show steel up 49.0%, diesel up 74.8% and crude up 40.7% year to date.",
+      "refs": [
+        53,
+        54,
+        3
+      ]
+    },
+    {
+      "text": "New land capital and deals: Strata Land Partners launched Nov 2, and a Lennar spinoff paid $42 million for a regional land portfolio on Nov 6.",
+      "refs": [
+        50,
+        51,
+        48
+      ]
+    },
+    {
+      "text": "City Ventures opened Walnut Park in Simi Valley on Nov 14, a private new-home community in Ventura County.",
+      "refs": [
+        42
+      ]
+    },
+    {
+      "text": "Share prices through Nov 23 show Lennar, NVR and KB down 18% to 25% year to date, Pulte and Toll up, and all three land bankers down.",
+      "refs": [
+        1,
+        2
+      ]
+    }
+  ],
+  "revisions": [],
+  "claims": [
+    {
+      "id": "c1",
+      "section": "west",
+      "text": "Expect re-trades and walk-aways on land options underwritten in 2024 and 2025, with deposit and extension terms mattering as much as headline price.",
+      "status": "open",
+      "made": "2026-11-23",
+      "updated": "2026-11-23",
+      "note": ""
+    },
+    {
+      "id": "c2",
+      "section": "west",
+      "text": "Other builders may follow Century's $19.1 million California and Washington impairment in fourth-quarter filings.",
+      "status": "open",
+      "made": "2026-11-23",
+      "updated": "2026-11-23",
+      "note": ""
+    },
+    {
+      "id": "c3",
+      "section": "national",
+      "text": "Toll Brothers' annual report for the year ended October 31, due in December, is the next builder read.",
+      "status": "open",
+      "made": "2026-11-23",
+      "updated": "2026-11-23",
+      "note": ""
+    },
+    {
+      "id": "c4",
+      "section": "national",
+      "text": "Holders of PSAs with entry-level builders should expect slower takedowns because of high cancellation rates (Horton 23%, NVR 21%, LGI 49%).",
+      "status": "open",
+      "made": "2026-11-23",
+      "updated": "2026-11-23",
+      "note": ""
+    },
+    {
+      "id": "c5",
+      "section": "national",
+      "text": "Horton guides 79,000 to 84,000 closings for fiscal 2027 against 84,202 in fiscal 2026 and expects incentives to stay elevated through fiscal 2027.",
+      "status": "open",
+      "made": "2026-11-23",
+      "updated": "2026-11-23",
+      "note": ""
+    },
+    {
+      "id": "c6",
+      "section": "national",
+      "text": "Lennar guides fourth-quarter orders of 19,500 to 20,500 against deliveries of 22,000 to 23,000.",
+      "status": "open",
+      "made": "2026-11-23",
+      "updated": "2026-11-23",
+      "note": ""
+    },
+    {
+      "id": "c7",
+      "section": "national",
+      "text": "LGI expects 4,600 to 4,800 closings in 2026 (narrowed guidance, Nov 3).",
+      "status": "open",
+      "made": "2026-11-23",
+      "updated": "2026-11-23",
+      "note": ""
+    },
+    {
+      "id": "c8",
+      "section": "national",
+      "text": "Mortgage rates fall below 7% only if the 10-year yield drops below 4.85% and spreads narrow to about 2%; the 30-year was 7.28% on Nov 19.",
+      "status": "open",
+      "made": "2026-11-23",
+      "updated": "2026-11-23",
+      "note": ""
+    },
+    {
+      "id": "c9",
+      "section": "national",
+      "text": "Construction cost pressure (materials PPI up 12.1% YoY, steel and diesel futures sharply higher) persists into 2027 land pricing.",
+      "status": "open",
+      "made": "2026-11-23",
+      "updated": "2026-11-23",
+      "note": ""
+    },
+    {
+      "id": "c10",
+      "section": "west",
+      "text": "Tri Pointe under Sumitomo Forestry will run a different capital posture and no longer disclose quarterly segment data.",
+      "status": "open",
+      "made": "2026-11-23",
+      "updated": "2026-11-23",
+      "note": ""
+    },
+    {
+      "id": "c11",
+      "section": "west",
+      "text": "KB's land strategy continues through advisory relationships after EVP Albert Praw retires Nov 30.",
+      "status": "open",
+      "made": "2026-11-23",
+      "updated": "2026-11-23",
+      "note": ""
+    },
+    {
+      "id": "c12",
+      "section": "ventura",
+      "text": "AB 1308's ten-business-day inspection deadline for one to ten unit projects gives real leverage on close-out timing.",
+      "status": "open",
+      "made": "2026-11-23",
+      "updated": "2026-11-23",
+      "note": ""
+    }
+  ],
+  "history": [],
+  "sources": {
+    "1": {
+      "title": "Public builder share prices closes through 2026-11-23",
+      "url": "",
+      "source": "Yahoo Finance",
+      "date": "2026-11-23",
+      "kind": "market"
+    },
+    "2": {
+      "title": "Land banker share prices closes through 2026-11-23",
+      "url": "",
+      "source": "Yahoo Finance",
+      "date": "2026-11-23",
+      "kind": "market"
+    },
+    "3": {
+      "title": "Construction commodity futures closes through 2026-11-23",
+      "url": "",
+      "source": "Yahoo Finance",
+      "date": "2026-11-23",
+      "kind": "market"
+    },
+    "5": {
+      "title": "KB HOME 8-K (officer or director change)",
+      "url": "https://www.sec.gov/Archives/edgar/data/795266/000079526626000080/kbh-20261116.htm",
+      "source": "SEC EDGAR",
+      "date": "2026-11-16",
+      "kind": "8-K"
+    },
+    "8": {
+      "title": "LGI Homes, Inc. 8-K (results of operations, Reg FD disclosure)",
+      "url": "https://www.sec.gov/Archives/edgar/data/1580670/000158067026000085/lgih-20261103.htm",
+      "source": "SEC EDGAR",
+      "date": "2026-11-03",
+      "kind": "8-K"
+    },
+    "42": {
+      "title": "City Ventures Celebrates Grand Opening of Walnut Park in Simi Valley This Saturday, November 14th",
+      "url": "https://news.google.com/rss/articles/CBMi6AFBVV95cUxPUnB4aWdNNXZmVlpzYUdlZzhCa0VIdDduenFoN08yOWlmemJGZVJHUURBdHM3Zkp3UnJ0T2lrc1YzRUJzWjZwZEVfanBlMzJzbnhRUGg2ajY0dFBGdHJtbGpDSDhMU1VLV2xFM3IzZVRrM2ZwTFRsS01mVWhyWGtTQml6RGNKODdSdnpIYlM4N2syQjdDdmJsQXRTME1XSnZhQ2VCY1BkRXc5WDVXQWk2dVhqR2J4OUVkZFZsSjVJU1ZBTlE4NG9fbkswSjMzWENSUk02Vl9zdEo0SElsc1NjaEZkSVN4ZTJ4?oc=5",
+      "source": "Business Wire",
+      "date": "2026-11-11",
+      "kind": "news"
+    },
+    "48": {
+      "title": "Lennar spinoff pays $42 million for regional land portfolio",
+      "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxOXzhpeW9fN0VjM1dEYS1pQjU2M0dlM0dHRmV2bXJ3NXhrSUQzeUMtc0QzWUwtVThrOUVENFpuU21yRHVRdkx2VC1LZjh5a2MtcV93M3lSeGN0aGl3Q3NRQ0lYLWxyOElwXzdCcktzenNhcU1DTURPYi1jeHFQTGh0TXJHZDY4QWdpY0JOOE1KMzBtaG1LbmtMM1U5YkMwQWtTNDRiZg?oc=5",
+      "source": "The Business Journals",
+      "date": "2026-11-06",
+      "kind": "news"
+    },
+    "50": {
+      "title": "Strata Land launches as builders face land-capital squeeze",
+      "url": "https://news.google.com/rss/articles/CBMic0FVX3lxTE03WEpibnVZS0hsMFNPU2w0Y2lXd05HWEpIQk9lTzU2MzBVRmdBMTBWVzFYS1UxR3cwWTNxLWVXWWFfcWZta193dHVtQVJWUmE0ODZ6SUFWTG02M21VZng1ZmF1b3lsV3dlVmhNd3pvRG10WEE?oc=5",
+      "source": "HousingWire",
+      "date": "2026-11-02",
+      "kind": "news"
+    },
+    "51": {
+      "title": "Wafra and Hunt Companies Launch Strata Land Partners",
+      "url": "https://news.google.com/rss/articles/CBMirAFBVV95cUxPS2xROGJreEotbU5BcnozTGMwX0FXOHZnYU1NczJVNGNPclB5emtZeGIxZjBhRHhNdFZBMXFQcnI2QW1Ua1FZMjRWbk5uZ2djYTZQcUlvazV5dnlzRFZIRmtISDRxdWJ2RHBvQnFmYmdaeDREb1YxOVZHUkNsbncxYnhSako3ZDExM0xSMk13Z3RVWUk3SGxEUWd5WUQ0ckkzX0N0UTg1ajZLclNm?oc=5",
+      "source": "PR Newswire",
+      "date": "2026-11-02",
+      "kind": "news"
+    },
+    "53": {
+      "title": "Building Material Price Inflation Remains High Despite Energy Price Declines",
+      "url": "https://eyeonhousing.org/2026/11/building-material-price-inflation-remains-high-despite-energy-price-declines/",
+      "source": "",
+      "date": "2026-11-13",
+      "kind": "news"
+    },
+    "54": {
+      "title": "Residential Building Worker Wage Growth Rebounds, but Real Wages Continue to Decline",
+      "url": "https://eyeonhousing.org/2026/11/residential-building-worker-wage-growth-rebounds-but-real-wages-continue-to-decline/",
+      "source": "",
+      "date": "2026-11-09",
+      "kind": "news"
+    },
+    "59": {
+      "title": "Will the AI stock sell-off give us sub-7% mortgage rates before the holidays?",
+      "url": "https://www.housingwire.com/articles/sub-7-mortgage-rates-yield-spreads/",
+      "source": "HousingWire",
+      "date": "2026-11-21",
+      "kind": "news"
+    },
+    "60": {
+      "title": "Why aren\u2019t mortgage rates lower after massive stock sell-off?",
+      "url": "https://www.housingwire.com/articles/10-year-yield-mortgage-rates-fed/",
+      "source": "HousingWire",
+      "date": "2026-11-20",
+      "kind": "news"
+    }
+  },
+  "evidence_count": 60
+}
