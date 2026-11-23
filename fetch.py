@@ -1899,7 +1899,8 @@ Your job:
    earlier sources; keep them on sentences you keep. Do not invent sources.
 5. Name the public builders and what they said or did whenever builder news, 8-Ks or posts are present.
 6. Plain English, short sentences, no em dashes, no hedging boilerplate. national 2 to 4 paragraphs,
-   west 2 to 3, ventura 1 to 3, each under 120 words. The headline is one sentence under 30 words.
+   west 2 to 3, ventura 1 to 3, each under 120 words. The headline is one sentence under 25 words on
+   the single most important development, not a list. At most 5 "changes", most important first.
 7. If nothing in the new evidence is material, return exactly {{"unchanged": true}}.
 
 Return ONLY a JSON object, no prose and no code fence:
@@ -2027,7 +2028,7 @@ def refresh_narrative(state, series, stocks, commodities, landbanks, builders, l
         note("The daily narrative reply had no usable text; kept the previous edition.")
         return state
     refs = lambda r: [int(x) for x in (r or []) if str(x).isdigit() and int(x) in valid]
-    changes = [{"text": clean(c.get("text", "")), "refs": refs(c.get("refs"))} for c in out.get("changes", []) if c.get("text")][:8]
+    changes = [{"text": clean(c.get("text", "")), "refs": refs(c.get("refs"))} for c in out.get("changes", []) if c.get("text")][:6]
     revisions = [{"claim_id": r.get("claim_id"), "earlier": clean(r.get("earlier", "")), "now": clean(r.get("now", "")),
                   "why": clean(r.get("why", "")), "refs": refs(r.get("refs"))} for r in out.get("revisions", []) if r.get("now")][:6]
 
