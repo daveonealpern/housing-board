@@ -1779,7 +1779,7 @@ def eightk_text(url, limit=2500):
 def build_evidence(state, series, stocks, commodities, landbanks, builders, lb_filings, news, headlines, brief):
     """New items since the last edition, each with a stable source id."""
     seen = set(state.get("seen", []))
-    marks = state.get("marks", {})
+    marks = dict(state.get("marks", {}))       # copies: committed only once the edition is written
     nid = state.get("next_id", 1)
     ev, new_seen = [], []
 
@@ -1812,7 +1812,7 @@ def build_evidence(state, series, stocks, commodities, landbanks, builders, lb_f
         marks[sid] = last["d"]
 
     # price moves since the last edition, as one item per group
-    px = state.get("px", {})
+    px = dict(state.get("px", {}))
     def moves(rows, label, cost=False):
         parts = []
         for r in rows:
@@ -1865,8 +1865,7 @@ def build_evidence(state, series, stocks, commodities, landbanks, builders, lb_f
         add("news", h.get("title", ""), (h.get("description") or "")[:300], h.get("link", ""), "HousingWire",
             (h.get("published") or "")[:10])
 
-    state["marks"], state["px"], state["next_id"] = marks, px, nid
-    return ev, new_seen
+    return ev, new_seen, {"marks": marks, "px": px, "next_id": nid}
 
 NARRATIVE_PROMPT = """You keep a running market narrative for Colton Lee Communities, a Southern California
 land developer that entitles and sells residential land to public and private homebuilders, based in
@@ -1938,14 +1937,17 @@ def _dash_free(t):
 
 def refresh_narrative(state, series, stocks, commodities, landbanks, builders, lb_filings, news, headlines, brief):
     prev_date = state.get("as_of")
-    ev, new_seen = build_evidence(state, series, stocks, commodities, landbanks, builders, lb_filings,
-                                  news, headlines, brief)
+    ev, new_seen, cursor = build_evidence(state, series, stocks, commodities, landbanks, builders, lb_filings,
+                                          news, headlines, brief)
     state["checked"] = TODAY.isoformat()
     print("  %d new evidence items since %s" % (len(ev), prev_date or "the start"))
 
     def remember():
+        # Only after an edition is written (or judged unchanged) does the
+        # evidence count as considered; a failed call leaves it for tomorrow.
         state["seen"] = (state.get("seen", []) + new_seen)[-1500:]
         state["brief_as_of"] = brief.get("as_of")
+        state.update(cursor)
 
     if not ANTHROPIC_KEY:
         remember()
@@ -1984,7 +1986,10 @@ def refresh_narrative(state, series, stocks, commodities, landbanks, builders, l
                                      claims=ledger, history=history, snapshot="\n".join(snap), evidence=evidence or "(none)")
     reply = ""
     try:
-        reply = anthropic(prompt, 12000, timeout=420)
+        # The model reasons before it writes, and that reasoning counts
+        # against max_tokens (11k of 12k on the first try), so the limit is
+        # set well above the length of the answer itself.
+        reply = anthropic(prompt, 28000, timeout=720)
         print("  model reply: %s, %d chars" % (LAST_REPLY_META, len(reply)))
         out = parse_json_reply(reply)
         if not isinstance(out, dict):
