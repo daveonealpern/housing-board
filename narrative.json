@@ -132,54 +132,191 @@
     "https://www.housingwire.com/articles/homebuilder-cost-cuts-trade-partners/",
     "https://www.housingwire.com/articles/brokerages-agent-health-benefits/",
     "https://www.housingwire.com/articles/fha-2026-annual-report-hecm-hmbs-capital-risks/",
-    "https://www.housingwire.com/articles/ate-fears-cost-closing/"
+    "https://www.housingwire.com/articles/ate-fears-cost-closing/",
+    "https://news.google.com/rss/articles/CBMiowFBVV95cUxNRU9Wak1yY1otMTFGeElDMFY4WWhxS0ZtUk1xaEJZcEVjcDZjVXZGNW5uUTJFU19WeXk1QzAtZEw3aXhJX3lyMGNqTUJaSms2TElYdDVpMERxc1J2Z3pfekJjUjY2Sk92V2c1dUtnbjRxM3pyc2RjRzJmLWJIZlhYUWpMeVRWTE9nQzNuelVEVTdZM29BbG5TRmVhR3RmQTNUTkk4?oc=5",
+    "https://news.google.com/rss/articles/CBMiqAFBVV95cUxPb0tsQzlWbXU5dlFrVGVvcWtkZ2hYYjg5TGktLVFVSk1FNEU4WGR3ZVM5MkJmSGhlZUJtcUdHQ1VGLXdvVGpBRDZXTjZVSjVlMmEtdm0wSUpDQmt0aHlVaHJ4Mi1HUnZOMmg4YzRoQm94cEp1OE5vc2lDRHpLM2lhdkctU1NMSU9ZbFVUdW03TzA4b25oWWtXQm02bEcxODBLUmtleU82a3M?oc=5",
+    "https://news.google.com/rss/articles/CBMi7gFBVV95cUxQdEsxU2I4NVRGdTItNnhfTFNGalZmeF9jVEZjRldmZkJpcDl6cTJiUzViV1owUVpwVEV5QVFYZXUtWFBkVWRhTXdhaUZnb1ZQTmk2YzlCUG9KbG11RlpqaWs3N1BDSnp0VXNTdXZmZGlELU14WjhhUUFkU096cGxmY3AwbWxFcWY5V2E1S1p0UmhLTDJGRDZsUXk4QjlQSDhQVV9neG50Zm5xU2cwVk0tX255cFJDSmVIWVpoYnNHTnZENWZxbURUODJrMmFLb2MzanMwMm9YWW9hTFlJTndBNHpXUDhjZmZCR0NUeUxB?oc=5",
+    "https://news.google.com/rss/articles/CBMivgJBVV95cUxNYklsaTh5eUJYcDR3Mmp1MUtxVWtDQUdNSllYQ1UwNXBWN3BWckxNMXhldHROc0xMaXhHcTBNX1BuVW5lbDItdkJRXzhZamNjM1ZweHY2RGxqYWNNa2VNU2JiRFBwbXBJalpUdFRzcHJyQmVYdlFVZll3cnZmdUwwSlBwemtWMlVWNWNfVFVSY0o1UVUtbVRvdHVLUHlMUmdLbFhXT2lWeVQ4aE1sX3M1NWc2SWFvcHk0dFJJdGYtdkRpS3BYRFdqZnQweU9PV091S3VqX1VzaWRsdTJQNndPdU0yNDFQWndaal9zcXRtNVI2NFNsUm52clROcXpoYU0wZ2hENzN1ZHBHaVM5ZzBqQjBxdWxNOHNSY1d0V0VJUzZjWXRjZ0xReWJSbmEtYVZBVC1lMW1fV2VySHp2YlE?oc=5",
+    "https://news.google.com/rss/articles/CBMiowFBVV95cUxPM2VES0dydnBFUGU5MTExaGhlNVNhY0RabmU2cnBXeVZ1LTdmang5TUZFTzJ3UHcydXc1ZVM4STVrcEZ0cjFNYVdybDdQSkJTR1VpVmR1Q2tvV2xEcl9MRHV5NUMwUHRVbWtCZnVCNlNpYThNNTVOWi1tWURVdWhhbWNfUVp2alZXQ3VUZlNrLWVka0MtVVA1dTdqR3FmQm1lVm1z?oc=5"
   ],
   "brief_as_of": "2026-11-20",
   "marks": {
-    "AUTHNOTT": "2026-10-01",
-    "PERMIT": "2026-10-01",
-    "PERMIT1": "2026-10-01",
-    "HOUST1F": "2026-10-01",
-    "HOUST": "2026-10-01",
-    "MORTGAGE30US": "2026-11-19",
-    "UMCSENT": "2026-10-01",
-    "TDSP": "2026-04-01",
-    "T10Y2Y": "2026-11-23",
-    "DGS2": "2026-11-20",
-    "DGS10": "2026-11-20",
-    "DGS30": "2026-11-20",
-    "SOFR": "2026-11-20",
-    "SOFR30DAYAVG": "2026-11-23",
-    "SOFR90DAYAVG": "2026-11-23",
-    "DPRIME": "2026-11-09",
-    "FEDFUNDS": "2026-10-01",
-    "MORTGAGE15US": "2026-11-19",
-    "BAMLC0A4CBBB": "2026-11-20",
-    "BAMLH0A0HYM2": "2026-11-20",
-    "HSN1F": "2026-09-01",
-    "MSACSR": "2026-09-01",
-    "EXHOSLUSM495S": "2026-10-01",
-    "COMPUTSA": "2026-10-01",
-    "MSPUS": "2026-07-01",
-    "CSUSHPINSA": "2026-08-01",
-    "WPUSI012011": "2026-10-01",
-    "JTS2300JOL": "2026-09-01",
-    "USCONS": "2026-10-01",
-    "PRRESCONS": "2026-09-01",
-    "DRSFRMACBS": "2026-04-01",
-    "DRCRELEXFACBS": "2026-04-01",
-    "CABPPRIV": "2026-09-01",
-    "CASTHPI": "2026-04-01",
-    "LXXRSA": "2026-08-01",
-    "CAUR": "2026-10-01",
-    "DCOILWTICO": "2026-11-17",
-    "WPU081": "2026-10-01",
-    "WPU101704": "2026-10-01",
-    "WPUSI019011": "2026-10-01",
-    "WPU1333": "2026-10-01",
-    "WPU137": "2026-10-01",
-    "WPU0721": "2026-10-01",
-    "SPREAD": "2026-11-19"
+    "AUTHNOTT": [
+      "2026-10-01",
+      276000.0
+    ],
+    "PERMIT": [
+      "2026-10-01",
+      1295000.0
+    ],
+    "PERMIT1": [
+      "2026-10-01",
+      772000.0
+    ],
+    "HOUST1F": [
+      "2026-10-01",
+      864000.0
+    ],
+    "HOUST": [
+      "2026-10-01",
+      1309000.0
+    ],
+    "MORTGAGE30US": [
+      "2026-11-19",
+      7.28
+    ],
+    "UMCSENT": [
+      "2026-10-01",
+      48.0
+    ],
+    "TDSP": [
+      "2026-04-01",
+      11.111439
+    ],
+    "T10Y2Y": [
+      "2026-11-23",
+      0.29
+    ],
+    "DGS2": [
+      "2026-11-20",
+      4.63
+    ],
+    "DGS10": [
+      "2026-11-20",
+      4.92
+    ],
+    "DGS30": [
+      "2026-11-20",
+      5.31
+    ],
+    "SOFR": [
+      "2026-11-20",
+      3.92
+    ],
+    "SOFR30DAYAVG": [
+      "2026-11-23",
+      3.92533
+    ],
+    "SOFR90DAYAVG": [
+      "2026-11-23",
+      3.85011
+    ],
+    "DPRIME": [
+      "2026-11-09",
+      7.0
+    ],
+    "FEDFUNDS": [
+      "2026-10-01",
+      3.88
+    ],
+    "MORTGAGE15US": [
+      "2026-11-19",
+      6.66
+    ],
+    "BAMLC0A4CBBB": [
+      "2026-11-20",
+      122.0
+    ],
+    "BAMLH0A0HYM2": [
+      "2026-11-20",
+      376.0
+    ],
+    "HSN1F": [
+      "2026-09-01",
+      676000.0
+    ],
+    "MSACSR": [
+      "2026-09-01",
+      8.4
+    ],
+    "EXHOSLUSM495S": [
+      "2026-10-01",
+      3750000.0
+    ],
+    "COMPUTSA": [
+      "2026-10-01",
+      1272000.0
+    ],
+    "MSPUS": [
+      "2026-07-01",
+      393300.0
+    ],
+    "CSUSHPINSA": [
+      "2026-08-01",
+      336.741
+    ],
+    "WPUSI012011": [
+      "2026-10-01",
+      381.552
+    ],
+    "JTS2300JOL": [
+      "2026-09-01",
+      298000.0
+    ],
+    "USCONS": [
+      "2026-10-01",
+      8367000.0
+    ],
+    "PRRESCONS": [
+      "2026-09-01",
+      848777000000.0
+    ],
+    "DRSFRMACBS": [
+      "2026-04-01",
+      1.86
+    ],
+    "DRCRELEXFACBS": [
+      "2026-04-01",
+      1.53
+    ],
+    "CABPPRIV": [
+      "2026-09-01",
+      9329.0
+    ],
+    "CASTHPI": [
+      "2026-04-01",
+      974.97
+    ],
+    "LXXRSA": [
+      "2026-08-01",
+      446.6454829868
+    ],
+    "CAUR": [
+      "2026-10-01",
+      5.0
+    ],
+    "DCOILWTICO": [
+      "2026-11-17",
+      89.53
+    ],
+    "WPU081": [
+      "2026-10-01",
+      275.584
+    ],
+    "WPU101704": [
+      "2026-10-01",
+      319.107
+    ],
+    "WPUSI019011": [
+      "2026-10-01",
+      810.091
+    ],
+    "WPU1333": [
+      "2026-10-01",
+      394.843
+    ],
+    "WPU137": [
+      "2026-10-01",
+      486.546
+    ],
+    "WPU0721": [
+      "2026-10-01",
+      356.76
+    ],
+    "SPREAD": [
+      "2026-11-19",
+      234
+    ]
   },
   "px": {
     "DHI": 147.06,
@@ -198,12 +335,12 @@
     "LBR=F": 540.0,
     "HRC=F": 1410.0,
     "HG=F": 5.51,
-    "ALI=F": 2813.0,
-    "CL=F": 80.08,
-    "HO=F": 3.6353,
-    "NG=F": 3.543
+    "ALI=F": 2765.0,
+    "CL=F": 80.02,
+    "HO=F": 3.6375,
+    "NG=F": 3.542
   },
-  "next_id": 119,
+  "next_id": 124,
   "since": "2026-11-23",
   "as_of": "2026-11-24",
   "headline": "Southern California home sales have fallen to a 21-year low, deepening the weak demand picture builders reported for the summer quarter.",
@@ -615,6 +752,11 @@
       "id": "31603248",
       "username": "LGIHomes",
       "name": "LGI Homes"
+    },
+    "DHI": {
+      "id": "35755243",
+      "username": "DR_Horton",
+      "name": "D. R. Horton"
     }
   },
   "x_resolved": "2026-11-24",
