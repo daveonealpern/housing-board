@@ -14,6 +14,9 @@ FRED_KEY = os.environ.get("FRED_API_KEY", "").strip()
 SEC_UA   = os.environ.get("SEC_USER_AGENT", "").strip() or "Housing Signal Board research contact@example.com"
 ANTHROPIC_KEY   = os.environ.get("ANTHROPIC_API_KEY", "").strip()
 ANTHROPIC_MODEL = os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-5-5").strip()
+# A smaller, cheaper model for simple sorting jobs (screening X posts). Falls
+# back to ANTHROPIC_MODEL if the key cannot use it.
+ANTHROPIC_FAST_MODEL = os.environ.get("ANTHROPIC_FAST_MODEL", "claude-haiku-5-5").strip()
 
 # Credit status for the two paid APIs, shown on both pages so a top-up is
 # never missed. status: ok, low, out, limit, rejected, error or off (no key).
@@ -1001,9 +1004,9 @@ def strip_html(raw):
 # limit itself costs nothing.
 REASONING_ROOM = 16000
 
-def anthropic(prompt, max_tokens=4000, timeout=600, room=REASONING_ROOM):
+def anthropic(prompt, max_tokens=4000, timeout=600, room=REASONING_ROOM, model=None):
     body = json.dumps({
-        "model": ANTHROPIC_MODEL,
+        "model": model or ANTHROPIC_MODEL,
         "max_tokens": max_tokens + room,
         "messages": [{"role": "user", "content": prompt}],
     }).encode()
@@ -1044,6 +1047,10 @@ def check_anthropic_key():
                  "ANTHROPIC_MODEL secret to one of these." % (ANTHROPIC_MODEL, ", ".join(ids[:8])))
             return
         print("  API key accepted; model %s available" % ANTHROPIC_MODEL)
+        global ANTHROPIC_FAST_MODEL
+        if ANTHROPIC_FAST_MODEL not in ids:
+            print("  %s not available; screening with %s" % (ANTHROPIC_FAST_MODEL, ANTHROPIC_MODEL))
+            ANTHROPIC_FAST_MODEL = ANTHROPIC_MODEL
     except urllib.error.HTTPError as e:
         classify_anthropic_error(e.code, e.read().decode("utf-8", "ignore"))
         if BILLING["anthropic"]["status"] == "off":
@@ -1666,23 +1673,70 @@ def refresh_resale_paragraph(brief, resale):
 # once a month, and each timeline is read from the last post already seen,
 # so only new posts are billed.
 X_BEARER = os.environ.get("X_BEARER_TOKEN", "").strip()
-# Checked Nov 23, 2026. Six accounts link their builder's site and were
-# verified by the API lookup. M/I Homes' @mihomes links through a shortener,
-# but mihomes.com names it as its own account (twitter:site), so it is
-# confirmed by the builder's site instead. D.R. Horton, Century Communities and
-# NVR/Ryan Homes link no X account from their websites, so none is read: an
-# @DR_Horton account carries drhorton.com in its profile but D.R. Horton's own
-# site does not point to it.
-X_CANDIDATES = {
-    "LEN":  (["Lennar"], "lennar.com"),
-    "PHM":  (["PulteHomes", "PulteGroup"], "pulte"),
-    "TOL":  (["TollBrothers"], "tollbrothers.com"),
-    "KBH":  (["KBHome"], "kbhome.com"),
-    "MTH":  (["MeritageHomes"], "meritagehomes.com"),
-    "MHO":  (["mihomes"], "mihomes.com"),
-    "LGIH": (["LGIHomes"], "lgihomes.com"),
-}
-X_CONFIRMED_BY_SITE = {"MHO": "mihomes"}
+# Accounts read, in three groups. Each is accepted only if it is confirmed:
+# either the company's own website links or names the X handle (checked
+# automatically from its homepage), or the X profile links the company's
+# domain. D.R. Horton, Century Communities and NVR/Ryan Homes link no X
+# account from their sites, and an @DR_Horton account that carries
+# drhorton.com in its profile is not pointed to by D.R. Horton, so none of the
+# three is read; their news arrives through 8-Ks and press releases instead.
+# A company with no confirmed account is simply skipped and listed in the log.
+X_ENTITIES = [
+    # public builders (keys are tickers)
+    ("LEN",  "Lennar",               "public",  "lennar.com",              ["Lennar"]),
+    ("PHM",  "PulteGroup",           "public",  "pulte.com",               ["PulteHomes", "PulteGroup"]),
+    ("TOL",  "Toll Brothers",        "public",  "tollbrothers.com",        ["TollBrothers"]),
+    ("KBH",  "KB Home",              "public",  "kbhome.com",              ["KBHome"]),
+    ("MTH",  "Meritage Homes",       "public",  "meritagehomes.com",       ["MeritageHomes"]),
+    ("MHO",  "M/I Homes",            "public",  "mihomes.com",             ["mihomes"]),
+    ("LGIH", "LGI Homes",            "public",  "lgihomes.com",            ["LGIHomes"]),
+    # private and newly private builders in Southern California and Ventura County
+    ("shea",       "Shea Homes",             "private", "sheahomes.com",            ["SheaHomes"]),
+    ("tripointe",  "Tri Pointe Homes",       "private", "tripointehomes.com",       ["TriPointeHomes"]),
+    ("taylor",     "Taylor Morrison",        "private", "taylormorrison.com",       ["TaylorMorrison"]),
+    ("brookfield", "Brookfield Residential", "private", "brookfieldresidential.com", ["BrookfieldRes", "BrookfieldResidential"]),
+    ("trumark",    "Trumark Homes",          "private", "trumarkhomes.com",         ["TrumarkHomes"]),
+    ("cityv",      "City Ventures",          "private", "cityventures.com",         ["CityVentures"]),
+    ("olson",      "The Olson Co.",          "private", "olsonhomes.com",           ["OlsonHomes", "TheOlsonCompany"]),
+    ("risewell",   "Risewell Homes",         "private", "risewellhomes.com",        ["RisewellHomes"]),
+    ("woodside",   "Woodside Homes",         "private", "woodsidehomes.com",        ["WoodsideHomes"]),
+    ("richmond",   "Richmond American",      "private", "richmondamerican.com",     ["RichmondAmerican"]),
+    ("melia",      "Melia Homes",            "private", "meliahomes.com",           ["MeliaHomes"]),
+    ("williams",   "Williams Homes",         "private", "williamshomes.com",        ["WilliamsHomes"]),
+    ("rmv",        "Rancho Mission Viejo",   "private", "ranchomissionviejo.com",   ["RanchoMissionViejo", "RMVLiving"]),
+    # land bankers, lot developers and the capital behind private builders
+    ("MRP",        "Millrose Properties",    "capital", "millroseproperties.com",   ["MillroseProps", "MillroseProperties"]),
+    ("FOR",        "Forestar",               "capital", "forestar.com",             ["ForestarGroup"]),
+    ("FPH",        "Five Point",             "capital", "fivepoint.com",            ["FivePointComm", "FivePointHoldings"]),
+    ("varde",      "Varde Partners",         "capital", "varde.com",                ["VardePartners"]),
+    ("kennedy",    "Kennedy Lewis",          "capital", "klim.com",                 ["KennedyLewisIM"]),
+    ("walton",     "Walton Global",          "capital", "walton.com",               ["WaltonGlobal"]),
+    ("apollo",     "Apollo",                 "capital", "apollo.com",               ["apolloglobal"]),
+    ("blackstone", "Blackstone",             "capital", "blackstone.com",           ["blackstone"]),
+    ("bam",        "Brookfield",             "capital", "brookfield.com",           ["Brookfield"]),
+]
+X_ENT = {e[0]: {"name": e[1], "group": e[2], "domain": e[3], "cands": e[4]} for e in X_ENTITIES}
+X_SKIP_PATHS = {"share", "intent", "home", "i", "search", "hashtag", "login", "signup", "privacy", "tos", "x", "twitter"}
+
+def site_x_handle(domain):
+    """The X handle a company's own homepage links to or names in its
+    twitter:site tag, or None."""
+    for url in ("https://www.%s/" % domain, "https://%s/" % domain):
+        try:
+            req = urllib.request.Request(url, headers=YAHOO_HEADERS)
+            with urllib.request.urlopen(req, timeout=20) as r:
+                html = r.read(800000).decode("utf-8", "ignore")
+        except Exception:
+            continue
+        m = re.search(r'name=["\']twitter:site["\'][^>]*content=["\']@?([A-Za-z0-9_]{1,15})', html, re.I) \
+            or re.search(r'content=["\']@?([A-Za-z0-9_]{1,15})["\'][^>]*name=["\']twitter:site', html, re.I)
+        if m:
+            return m.group(1)
+        for h in re.findall(r'https?://(?:www\.)?(?:twitter|x)\.com/(?:#!/)?@?([A-Za-z0-9_]{1,15})(?=["\'/?#])', html):
+            if h.lower() not in X_SKIP_PATHS:
+                return h
+        return None
+    return None
 
 def _x_get(path, **params):
     url = "https://api.x.com/2/" + path + ("?" + urllib.parse.urlencode(params) if params else "")
@@ -1729,6 +1783,109 @@ def x_http_error(e, what):
     else:
         print("  X %s failed: HTTP %s %s" % (what, e.code, body[:160]))
 
+def resolve_x_accounts(state, keys):
+    """Confirm accounts for the given entity keys and store them."""
+    accts = state.setdefault("x_accounts", {})
+    site = {}
+    for k in keys:
+        h = site_x_handle(X_ENT[k]["domain"])
+        if h:
+            site[k] = h
+    names = sorted({n for k in keys for n in X_ENT[k]["cands"] + ([site[k]] if k in site else [])})
+    found = {}
+    for i in range(0, len(names), 90):
+        j = _x_get("users/by", usernames=",".join(names[i:i + 90]),
+                   **{"user.fields": "url,entities,description,verified,name"})
+        found.update({u["username"].lower(): u for u in j.get("data", [])})
+    for k in keys:
+        e = X_ENT[k]
+        order = ([site[k]] if k in site else []) + e["cands"]
+        for c in order:
+            u = found.get(c.lower())
+            if not u:
+                continue
+            urls = " ".join(x.get("expanded_url", "") for x in
+                            ((u.get("entities") or {}).get("url") or {}).get("urls", []))
+            by_site = k in site and site[k].lower() == u["username"].lower()
+            by_link = e["domain"].split(".")[0] in (urls + " " + (u.get("description") or "")).lower()
+            if by_site or by_link:
+                accts[k] = {"id": u["id"], "username": u["username"], "name": u.get("name"),
+                            "confirmed": "site" if by_site else "profile link"}
+                break
+            print("  X %-10s @%s not confirmed (name %r, link %r)" % (k, u["username"], u.get("name"), urls[:70]))
+        print("  X %-10s %s" % (k, ("@" + accts[k]["username"] + " (" + accts[k]["confirmed"] + ")")
+                                if k in accts else "no confirmed account"))
+    state.setdefault("x_unconfirmed", {})
+    for k in keys:
+        if k in accts:
+            state["x_unconfirmed"].pop(k, None)
+        else:
+            state["x_unconfirmed"][k] = TODAY.isoformat()
+
+
+# Which posts are worth showing. The screen keeps business news (rates and
+# market views, land and capital, deals, results and guidance, leadership,
+# Southern California and Ventura County projects) and drops promotion: home
+# tours, floor plans, decorating, holidays, giveaways, lifestyle, hiring and
+# brand content. A cheap model does the sorting; if it is unavailable a
+# keyword screen stands in.
+X_TOPICS = {"rates_market": "Rates and market", "land_capital": "Land and capital", "deals": "Deals",
+            "results": "Results and guidance", "leadership": "Leadership", "socal": "SoCal and Ventura",
+            "policy_costs": "Policy and costs"}
+X_PROMO = re.compile(r"floor ?plan|tour|decor|holiday|thanksgiving|christmas|season|giveaway|sweepstakes|"
+                     r"model home|dream home|kitchen|backyard|design|style|tips?\b|cozy|recipe|#\w*home\b|"
+                     r"we.?re hiring|join our team|career|webinar|grand opening|now selling|coming soon", re.I)
+X_BUSINESS = re.compile(r"rate|mortgage|fed\b|inflation|tariff|lumber|land|lots?\b|homesites?|acres?\b|acqui|merger|"
+                        r"partner|joint venture|fund|capital|invest|financ|earnings|quarter|results|guidance|"
+                        r"outlook|ceo|cfo|president|appoint|named|retire|california|los angeles|orange county|"
+                        r"ventura|inland empire|san diego|entitle|permit|policy|legislat", re.I)
+
+X_SCREEN_PROMPT = """Sort these posts from official company accounts on X for a land developer in
+Southern California who wants business news only. Keep a post if it carries information about
+interest rates or the housing market, land, lots or capital, acquisitions, partnerships or fundraising,
+results or guidance, executive changes, policy or construction costs, or a specific project, land deal
+or community in Southern California or Ventura County. Drop promotion: home tours, floor plans,
+decorating and design, holidays and seasons, giveaways, lifestyle, hiring, events, awards and brand
+content, and anything about other industries (for the investment firms, keep only real estate,
+housing, land or homebuilding news).
+
+Return ONLY a JSON list, no prose: [{{"id": "post id", "keep": true or false,
+"topic": "rates_market|land_capital|deals|results|leadership|socal|policy_costs" (when kept),
+"summary": "the business point in under 20 words, no em dashes" (when kept)}}]
+
+POSTS:
+{posts}
+"""
+
+def screen_x_posts(items):
+    todo = [p for p in items if "keep" not in p]
+    if not todo:
+        return
+    by_id = {p["id"]: p for p in todo}
+    if ANTHROPIC_KEY:
+        try:
+            listing = "\n".join("id %s | %s (%s) | %s" % (p["id"], p.get("name") or p["handle"], p.get("group", ""),
+                                                        re.sub(r"\s+", " ", p["text"])[:400]) for p in todo)
+            reply = anthropic(X_SCREEN_PROMPT.format(posts=listing), 3000, timeout=300,
+                              room=6000, model=ANTHROPIC_FAST_MODEL)
+            a, b = reply.find("["), reply.rfind("]")
+            got = json.loads(reply[a:b + 1]) if a >= 0 and b > a else None
+            for r in got if isinstance(got, list) else []:
+                p = by_id.get(str(r.get("id")))
+                if p is not None:
+                    p["keep"] = bool(r.get("keep"))
+                    if p["keep"]:
+                        p["topic"] = r.get("topic") if r.get("topic") in X_TOPICS else "rates_market"
+                        p["summary"] = re.sub(r"\s*—\s*", ", ", str(r.get("summary") or ""))[:200]
+            print("  X screen: %d posts sorted, %d kept" % (len(todo), sum(1 for p in todo if p.get("keep"))))
+        except Exception as e:
+            print("  X screen by model failed (%s); using the keyword screen" % e)
+    for p in todo:
+        if "keep" not in p:
+            p["keep"] = bool(X_BUSINESS.search(p["text"])) and not X_PROMO.search(p["text"])
+            p["screen"] = "keywords"
+
+
 def pull_x_posts(state, previous):
     old = (previous or {}).get("items", [])
     if not X_BEARER:
@@ -1737,69 +1894,57 @@ def pull_x_posts(state, previous):
     if bal is not None and bal <= 0 or BILLING["x"]["status"] in ("rejected", "out"):
         return previous or {}
     accts = state.setdefault("x_accounts", {})
+    for k in [k for k in accts if k not in X_ENT]:          # dropped from the list
+        accts.pop(k, None)
     try:
         stale = (TODAY - datetime.date.fromisoformat(state.get("x_resolved", "2000-01-01"))).days > 30
-        missing = [tk for tk in X_CANDIDATES if tk not in accts]
-        retry = bool(missing) and os.environ.get("GITHUB_EVENT_NAME") == "workflow_dispatch"
-        if not accts or stale or retry:
-            # A manual run retries only the builders not yet found; the full
-            # lookup repeats monthly. Lookups are billed per account found.
-            todo = X_CANDIDATES if (not accts or stale) else {tk: X_CANDIDATES[tk] for tk in missing}
-            names = [n for c, _ in todo.values() for n in c]
-            j = _x_get("users/by", usernames=",".join(names),
-                       **{"user.fields": "url,entities,description,verified,name"})
-            found = {u["username"].lower(): u for u in j.get("data", [])}
-            if todo is X_CANDIDATES:
-                accts.clear()
-            for tk, (cands, domain) in todo.items():
-                for c in cands:
-                    u = found.get(c.lower())
-                    if not u:
-                        continue
-                    urls = " ".join(x.get("expanded_url", "") for x in
-                                    ((u.get("entities") or {}).get("url") or {}).get("urls", []))
-                    if (domain in (urls + " " + (u.get("description") or "")).lower()
-                            or X_CONFIRMED_BY_SITE.get(tk, "").lower() == u["username"].lower()):
-                        accts[tk] = {"id": u["id"], "username": u["username"], "name": u.get("name")}
-                        break
-                    print("  X %-5s @%s exists but does not link %s (name %r, link %r)"
-                          % (tk, u["username"], domain, u.get("name"), urls[:80]))
-                print("  X %-5s %s" % (tk, accts.get(tk, {}).get("username", "no verified account")))
-            state["x_resolved"] = TODAY.isoformat()
+        tried = state.get("x_unconfirmed", {})
+        # Look up companies never tried, everything monthly, and unconfirmed
+        # ones again on a manual run. Lookups are billed per account found.
+        keys = list(X_ENT) if stale else [k for k in X_ENT if k not in accts and
+                                           (k not in tried or os.environ.get("GITHUB_EVENT_NAME") == "workflow_dispatch")]
+        if keys:
+            resolve_x_accounts(state, keys)
+            if stale:
+                state["x_resolved"] = TODAY.isoformat()
     except urllib.error.HTTPError as e:
         x_http_error(e, "account lookup")
         return previous or {}
     except Exception as e:
         print("  X lookup failed: %s" % e)
-        return previous or {}
-    for tk in [t for t in accts if t not in X_CANDIDATES]:      # dropped from the list
-        accts.pop(tk, None)
     since = state.setdefault("x_since", {})
     new = []
-    for tk, a in accts.items():
+    for k, a in accts.items():
         params = {"max_results": 5, "exclude": "retweets,replies", "tweet.fields": "created_at"}
-        if since.get(tk):
-            params["since_id"] = since[tk]
+        if since.get(k):
+            params["since_id"] = since[k]
         try:
             j = _x_get("users/%s/tweets" % a["id"], **params)
         except urllib.error.HTTPError as e:
-            x_http_error(e, "%s timeline" % tk)
+            x_http_error(e, "%s timeline" % k)
             if BILLING["x"]["status"] in ("rejected", "out"):
                 break
             continue
         except Exception as e:
-            print("  X %s timeline failed: %s" % (tk, e)); continue
+            print("  X %s timeline failed: %s" % (k, e)); continue
+        e = X_ENT[k]
         for t in j.get("data", []):
-            new.append({"ticker": tk, "handle": a["username"], "text": t.get("text", ""),
+            new.append({"ticker": k if e["group"] == "public" else None, "key": k, "name": e["name"],
+                        "group": e["group"], "handle": a["username"], "text": t.get("text", ""),
                         "published": (t.get("created_at") or "")[:10], "id": t["id"],
                         "link": "https://x.com/%s/status/%s" % (a["username"], t["id"])})
         newest = (j.get("meta") or {}).get("newest_id")
         if newest:
-            since[tk] = newest
-        time.sleep(1)
+            since[k] = newest
+        time.sleep(0.5)
+    for o in old:                                   # older items from before groups existed
+        o.setdefault("group", "public"); o.setdefault("key", o.get("ticker"))
+        o.setdefault("name", (X_ENT.get(o.get("key") or "") or {}).get("name", o.get("handle")))
     items = sorted(new + [o for o in old if o.get("id") not in {n["id"] for n in new}],
-                   key=lambda x: x.get("published", ""), reverse=True)[:30]
-    print("  X posts: %d new, %d kept" % (len(new), len(items)))
+                   key=lambda x: x.get("published", ""), reverse=True)[:80]
+    screen_x_posts(items)
+    print("  X posts: %d new, %d stored, %d kept as business news"
+          % (len(new), len(items), sum(1 for p in items if p.get("keep"))))
     return {"items": items, "fetched": TODAY.isoformat()}
 
 
@@ -1955,10 +2100,16 @@ def build_evidence(state, series, stocks, commodities, landbanks, builders, lb_f
     # news, headlines and builder posts
     labels = {"builders": "public builder news", "west": "California housing news", "ventura": "Ventura County news",
               "ca_private": "California private builder news", "landbank": "land banking news", "costs": "NAHB cost news",
-              "x_posts": "builder post on X"}
+              "x_posts": "official post on X"}
+    group_label = {"public": "public builder", "private": "private builder", "capital": "land or capital"}
     for key, label in labels.items():
-        for it in ((news.get(key) or {}).get("items") or [])[:12]:
-            text = it.get("text") if key == "x_posts" else it.get("title")
+        rows = ((news.get(key) or {}).get("items") or [])
+        if key == "x_posts":
+            rows = [dict(r, title=r.get("summary") or r["text"],
+                         tickers=[r["name"] + ", " + group_label.get(r.get("group"), "")])
+                    for r in rows if r.get("keep")]
+        for it in rows[:12]:
+            text = (it.get("summary") or it.get("text")) if key == "x_posts" else it.get("title")
             add("x" if key == "x_posts" else "news", text[:280], label + (" (%s)" % ", ".join(it["tickers"]) if it.get("tickers") else ""),
                 it.get("link", ""), it.get("handle") and "@" + it["handle"] or it.get("source", ""), it.get("published"))
     for h in (headlines or [])[:6]:
@@ -1997,6 +2148,8 @@ Your job:
    evidence with its id in square brackets, e.g. [214]. Markers already in the previous edition point at
    earlier sources; keep them on sentences you keep. Do not invent sources.
 5. Name the public builders and what they said or did whenever builder news, 8-Ks or posts are present.
+   Official posts on X from builders, land bankers and investment firms are company statements: use
+   them to corroborate or update the narrative, and name the company when you cite one.
 6. Plain English, short sentences, no em dashes, no hedging boilerplate. national 2 to 4 paragraphs,
    west 2 to 3, ventura 1 to 3, each under 120 words. The headline is one sentence under 25 words on
    the single most important development, not a list. At most 5 "changes", most important first.

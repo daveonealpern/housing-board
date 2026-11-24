@@ -464,7 +464,7 @@ function renderBuilders(){
         }).join('')
       + ((lb.private || []).length ? '<div style="margin-top:2px">' + lb.private.map(p => '<div class="stack-row"><div class="t"><b>' + esc(p.name) + '</b>' + (p.url ? '<a href="' + esc(p.url) + '" target="_blank" rel="noopener" class="mid" style="font-size:12px;text-decoration:none">source \u2197</a>' : '') + '</div><p>' + esc(p.text) + '</p></div>').join('') + '</div>' : '')
       + '</section>';
-    const ln = ((D.news || {}).landbank || {}).items || [];
+    const ln = (((D.news || {}).landbank || {}).items || []).concat(xNews('capital')).sort(byDate);
     if(ln.length) h += '<section class="sec" style="gap:0"><h2 style="margin-bottom:4px">Land banking news</h2>' + newsRows(ln, 6) + '</section>';
   }
   if((app.next_filings || []).length){
@@ -540,11 +540,11 @@ function renderBuilder(tk){
   const brec = (D.builders || []).find(x => x.ticker === tk) || {};
   const k8 = (brec.recent_8k || []).filter(k => (k.items || []).length);
   const bn = (((D.news || {}).builders || {}).items || []).filter(it => (it.tickers || []).includes(tk));
-  const xp = (((D.news || {}).x_posts || {}).items || []).filter(it => it.ticker === tk);
+  const xp = xNews('public', tk);
   if(k8.length || bn.length || xp.length){
     h += '<section class="sec" style="gap:0"><div class="sec-head" style="margin-bottom:4px"><h2>Latest from ' + esc(SHORT[tk] || tk) + '</h2><span>8-Ks, news, posts</span></div>'
       + k8.map(k => '<a class="news-row" href="' + esc(k.url) + '" target="_blank" rel="noopener"><span class="news-t">8-K: ' + esc((k.item_names || []).join(', ')) + '</span><span class="news-m">SEC \u00b7 ' + esc(shortDate(k.filed)) + '</span></a>').join('')
-      + newsRows(xp.map(p => ({title: p.text, link: p.link, source: '@' + p.handle + ' on X', published: p.published})), 4)
+      + newsRows(xp, 4)
       + newsRows(bn, 6) + '</section>';
   }
   const cr = (((b.construction || {}).builders) || []).find(r => r.ticker === tk);
@@ -602,7 +602,7 @@ function renderSoCal(){
     h += '<section class="sec" style="gap:4px"><div class="sec-head" style="margin-bottom:6px"><h2>Private builders</h2><span>California</span></div>'
       + (pb.summary ? '<p class="body-note" style="margin-bottom:4px">' + esc(pb.summary) + '</p>' : '')
       + pb.list.map(p => '<div class="stack-row"><div class="t"><b>' + esc(p.name) + '</b></div><p>' + esc(p.text) + '</p></div>').join('') + '</section>';
-    const pn = ((D.news || {}).ca_private || {}).items || [];
+    const pn = (((D.news || {}).ca_private || {}).items || []).concat(xNews('private')).sort(byDate);
     h += '<section class="sec" style="gap:0"><h2 style="margin-bottom:4px">Private builder news</h2>'
       + (pn.length ? newsRows(pn, 8) : '<p class="note">The news feed fills on the next nightly run.</p>') + '</section>';
   }

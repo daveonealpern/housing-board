@@ -1477,7 +1477,7 @@ function renderLandbanks(){
   document.getElementById('lb-asof').textContent = writtenD(lb.as_of);
   const px = {}; (D.landbanks || []).forEach(r => px[r.ticker] = r);
   const fil = {}; (D.landbank_filings || []).forEach(f => fil[f.ticker] = f);
-  const news = ((D.news || {}).landbank || {}).items || [];
+  const news = (((D.news || {}).landbank || {}).items || []).concat(xNews('capital')).sort(byDate);
   host.innerHTML = (lb.summary ? '<p class="lead-p">' + esc(lb.summary) + '</p>' : '')
     + '<div class="parcel-grid">' + (lb.public || []).map(p => {
         const r = px[p.ticker], t = r ? priceTone(r.ytd_pct, false) : null, f = fil[p.ticker];
@@ -1498,7 +1498,7 @@ function renderLandbanks(){
 function renderPrivate(){
   const host = document.getElementById('pv-body'), pb = (D.brief || {}).private_builders || {};
   document.getElementById('pv-asof').textContent = writtenD(pb.as_of);
-  const news = ((D.news || {}).ca_private || {}).items || [];
+  const news = (((D.news || {}).ca_private || {}).items || []).concat(xNews('private')).sort(byDate);
   const src = pb.source || {};
   host.innerHTML = (pb.summary ? '<p class="lead-p">' + esc(pb.summary) + '</p>' : '')
     + '<div class="plist">' + (pb.list || []).map(p => '<div class="prow"><b>' + esc(p.name) + '</b>' + esc(p.text) + '</div>').join('') + '</div>'
@@ -1762,7 +1762,7 @@ function renderBrief(){
   // Latest public builder news, 8-Ks and posts on X under the brief.
   const k8 = (D.builders || []).flatMap(x => (x.recent_8k || []).filter(k => (k.items || []).length)
       .map(k => ({title: (x.name || x.ticker).replace(/ (INC|CORP|CORPORATION|INC\.|\/DE\/|\/NEW\/).*$/i, '') + ' 8-K: ' + (k.item_names || []).join(', '), link: k.url, source: 'SEC EDGAR', published: k.filed})));
-  const xp = (((D.news || {}).x_posts || {}).items || []).map(p => ({title: p.text, link: p.link, source: '@' + p.handle + ' on X', published: p.published}));
+  const xp = xNews('public');
   const bn = ((D.news || {}).builders || {}).items || [];
   const latest = k8.concat(xp, bn).sort((a, c) => (c.published || '').localeCompare(a.published || '')).slice(0, 14);
   const latestHtml = latest.length ? '<h3 class="sub-h" style="margin-top:26px">Latest from the public builders</h3><div class="news-list">' + newsRows(latest, 14) + '</div>' : '';

@@ -484,3 +484,15 @@ function xBalanceLine(){
   const x = (D.billing || {}).x || {};
   return x.balance != null && ['ok', 'low'].includes(x.status) ? 'X credit $' + Number(x.balance).toFixed(2) : '';
 }
+
+// Official posts on X that passed the business-news screen, as news rows.
+// group: 'public', 'private' or 'capital'; optional key narrows to one company.
+function xNews(group, key){
+  return ((((D.news || {}).x_posts || {}).items) || [])
+    .filter(p => p.keep && (!group || (p.group || 'public') === group) && (!key || p.key === key || p.ticker === key))
+    .map(p => ({title: p.summary || p.text, link: p.link, published: p.published,
+                source: (p.name || '@' + p.handle) + ' on X' + (p.topic && typeof X_TOPIC_NAMES !== 'undefined' ? ' · ' + (X_TOPIC_NAMES[p.topic] || '') : '')}));
+}
+const X_TOPIC_NAMES = {rates_market: 'rates and market', land_capital: 'land and capital', deals: 'deal',
+                       results: 'results', leadership: 'leadership', socal: 'SoCal', policy_costs: 'policy and costs'};
+const byDate = (a, b) => (b.published || '').localeCompare(a.published || '');
