@@ -245,6 +245,28 @@ kept (rates and market, land and capital, deals, results, leadership, policy and
 costs, and Southern California land, entitlements, launches, sellouts and price
 changes); ads, design, lifestyle and events are dropped.
 
+Four research and industry accounts are read the same way (group `research`):
+John Burns Research and Consulting, Zonda, CBIA and BIA of Southern California.
+Their kept posts show under Top headlines on the board and on the app's Macro tab,
+and feed the daily narrative.
+
+### What management said (earnings calls)
+
+For each builder and public land banker, the run finds the latest 8-K carrying
+Item 2.02 (the earnings release, filed the day of the call) and has Claude write a
+short summary: a headline, four to seven points tagged demand, pricing, margins and
+costs, land, capital, guidance, rates or West, and anything said about California.
+The release (exhibit 99) is always read. When a free transcript of the call turns up
+through a Bing News search (Motley Fool, Insider Monkey, Investing.com, Yahoo
+Finance), it is read too and preferred, since the analyst Q&A is where rates,
+incentives and land come up. The card says which source it used.
+
+Each earnings event is summarized once and kept in `narrative.json` under `calls`;
+a new summary is written only when a new release is filed, so the cost is about
+13 summaries a quarter (well under a dollar a month). Summaries show on the app's
+Builders tab, each builder's page and the land banker cards, on the board under
+the filing brief, and they enter the narrative as management commentary.
+
 ### Business-news screen on the news feeds
 
 The same fast model sorts every new headline in the builders, private builders,

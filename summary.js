@@ -500,3 +500,29 @@ function xNews(group, key){
 const X_TOPIC_NAMES = {rates_market: 'rates and market', land_capital: 'land and capital', deals: 'deal',
                        results: 'results', leadership: 'leadership', socal: 'SoCal', policy_costs: 'policy and costs'};
 const byDate = (a, b) => (b.published || '').localeCompare(a.published || '');
+
+// ---------------------------------------------------------------------------
+// What management said on each company's latest earnings call (D.calls),
+// summarized by fetch.py from the call transcript when a free one exists and
+// from the SEC-filed earnings release otherwise.
+const CALL_TOPIC_NAMES = {demand: 'Demand', pricing: 'Pricing', margins_costs: 'Margins and costs', land: 'Land',
+                          capital: 'Capital', guidance: 'Guidance', west: 'West', rates: 'Rates'};
+function callFor(tk){ return (D.calls || []).find(c => c.ticker === tk) || null; }
+function callDate(iso){
+  if(!iso) return '';
+  const [y, m, d] = iso.split('-').map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
+}
+function callWhen(c){
+  return [c.period, (c.source === 'call' ? 'earnings call' : 'earnings release') + (c.filed ? ', ' + callDate(c.filed) : '')].filter(Boolean).join(' \u00b7 ');
+}
+function callPointsHtml(c){
+  return '<ul class="call-pts">' + (c.points || []).map(p => '<li><span class="call-k">' + esc(CALL_TOPIC_NAMES[p.topic] || p.topic) + '</span>' + esc(p.text) + '</li>').join('') + '</ul>'
+    + (c.west && !(c.points || []).some(p => p.topic === 'west') ? '<div class="call-west"><span class="call-k">West</span>' + esc(c.west) + '</div>' : '');
+}
+function callSourceHtml(c){
+  const links = [];
+  if(c.transcript_url) links.push('<a href="' + esc(c.transcript_url) + '" target="_blank" rel="noopener">Call transcript' + (c.transcript_source ? ', ' + esc(c.transcript_source) : '') + ' \u2197</a>');
+  if(c.release_url) links.push('<a href="' + esc(c.release_url) + '" target="_blank" rel="noopener">Earnings release 8-K on SEC.gov \u2197</a>');
+  return '<div class="call-src">' + links.join('<span class="dim"> \u00b7 </span>') + '</div>';
+}

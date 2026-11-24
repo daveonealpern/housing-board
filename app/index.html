@@ -115,6 +115,23 @@
   details.more > summary::-webkit-details-marker { display: none; }
   details.more .m-o, details.more[open] .m-c { display: none; }
   details.more[open] .m-o { display: inline; }
+
+  .call-lede { margin: 0; font-size: 15px; line-height: 1.5; font-weight: 500; color: var(--paper); }
+  .call-pts { margin: 0; padding-left: 17px; display: flex; flex-direction: column; gap: 7px; font-size: 13.5px; line-height: 1.5; color: var(--stone); }
+  .call-k { font-size: 10.5px; letter-spacing: 0.07em; text-transform: uppercase; color: var(--gold-light); font-weight: 600; margin-right: 6px; }
+  .call-west { font-size: 13.5px; line-height: 1.5; color: var(--stone); }
+  .call-src { font-size: 12px; line-height: 1.6; }
+  .call-src a { color: var(--gold-light); text-decoration: none; }
+  a.call-row { display: flex; flex-direction: column; gap: 3px; padding: 12px 0; border-bottom: 1px solid var(--line); text-decoration: none; color: inherit; }
+  a.call-row .t { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+  a.call-row .t b { font-size: 14px; font-weight: 600; color: var(--paper); }
+  a.call-row .t span { font-size: 11.5px; color: var(--dim); white-space: nowrap; }
+  a.call-row p { margin: 0; font-size: 13px; line-height: 1.45; color: var(--stone); }
+  details.lb-call { border-top: 1px solid var(--line); padding-top: 8px; }
+  details.lb-call > summary { list-style: none; cursor: pointer; font-size: 13px; line-height: 1.45; color: var(--paper); }
+  details.lb-call > summary::-webkit-details-marker { display: none; }
+  details.lb-call > summary .call-k { display: block; margin-bottom: 2px; }
+  details.lb-call[open] > summary { margin-bottom: 8px; }
   sup.cite { font-size: 10px; margin-left: 1px; color: var(--dim); }
   sup.cite a { color: var(--gold-light); text-decoration: none; padding: 0 1px; }
   .bill { margin: 0 0 12px; padding: 11px 14px; border-radius: 12px; border: 1px solid var(--gold); background: rgba(184,130,58,0.10); font-size: 13.5px; line-height: 1.45; color: var(--stone); }
@@ -508,6 +525,14 @@ function renderBuilders(){
     h += fold('pub-latest', 'Latest from the public builders', '8-K filings, official posts on X, news', more(newsList(latest, 15), 5), {gap: 0});
   }
 
+  // What management said on each builder's latest earnings call.
+  const bt = new Set((D.builders || []).map(x => x.ticker));
+  const calls = (D.calls || []).filter(c => bt.has(c.ticker));
+  if(calls.length){
+    h += fold('calls', 'What management is saying', 'Latest earnings call or release for each builder \u00b7 tap for detail',
+      more(calls.map(c => '<a class="call-row" href="#b/' + esc(c.ticker) + '"><div class="t"><b>' + esc(SHORT[c.ticker] || c.name) + '</b><span>' + esc(callWhen(c)) + '</span></div><p>' + esc(c.headline) + '</p></a>'), 4, 'builders'), {gap: 0});
+  }
+
   // The filing brief: rewritten each time a builder files a 10-Q or 10-K.
   if((b.national || []).length){
     const bsec = (label, key, sub) => (b[key] || []).length ? accH(label, sub, (b[key] || []).map(p => '<p>' + esc(p) + '</p>').join('')) : '';
@@ -539,6 +564,7 @@ function renderBuilders(){
             + (r ? ytdSvg(r.series, t.color, 40) : '')
             + '<p class="note">' + esc(p.role || '') + '</p>'
             + '<ul>' + (p.facts || []).slice(0, 4).map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>'
+            + (callFor(p.ticker) ? (c => '<details class="lb-call"><summary><span class="call-k">Management \u00b7 ' + esc(callWhen(c)) + '</span>' + esc(c.headline) + '</summary>' + callPointsHtml(c) + callSourceHtml(c) + '</details>')(callFor(p.ticker)) : '')
             + (url ? '<a href="' + esc(url) + '" target="_blank" rel="noopener">' + esc(f && f.form ? 'Latest ' + f.form + ' on SEC.gov' : 'Source filing') + ' ↗</a>' : '') + '</div>';
         }).join('')
       + ((lb.private || []).length ? '<div style="--g:0px">' + more(lb.private.map(p => '<div class="stack-row"><div class="t"><b>' + esc(p.name) + '</b>' + (p.url ? '<a href="' + esc(p.url) + '" target="_blank" rel="noopener" class="mid" style="font-size:12px;text-decoration:none">source ↗</a>' : '') + '</div><p>' + esc(p.text) + '</p></div>'), 2, 'private land bankers') + '</div>' : ''));
@@ -578,6 +604,11 @@ function renderBuilder(tk){
   const tiles = [['Deliveries', m.deliveries], ['Net orders', m.orders], ['Gross margin', m.margin], ['Cancellation rate', m.cancels], ['Communities', m.communities], ['Incentives', m.incentives]]
     .filter(t => t[1]);
   h += '<section class="tiles">' + tiles.map(t => '<div class="tile"><span class="k">' + esc(t[0]) + '</span><span class="v text">' + esc(t[1]) + '</span></div>').join('') + '</section>';
+  const call = callFor(tk);
+  if(call){
+    h += fold('b-call', 'What management said', callWhen(call),
+      '<p class="call-lede">' + esc(call.headline) + '</p>' + callPointsHtml(call) + callSourceHtml(call));
+  }
 
   const num = s => { const t = String(s || '').replace(/,/g, '').trim(); return /^\d+$/.test(t) ? parseInt(t, 10) : null; };
   const own = num(m.lots_owned), opt = num(m.lots_optioned);
@@ -769,6 +800,8 @@ function renderMacro(){
   h += '<section class="tiles">' + rate('MORTGAGE30US', '30-year fixed', v => v.toFixed(2) + '%') + rate('SPREAD', 'Spread over 10-year', v => Math.round(v) + ' bp')
     + rate('DGS10', '10-year Treasury', v => v.toFixed(2) + '%') + rate('FEDFUNDS', 'Fed funds', v => v.toFixed(2) + '%') + '</section>';
   h += fold('activity', 'Housing activity', 'Annual rate · vs last year', ['HOUST1F', 'PERMIT1', 'HSN1F', 'MSACSR', 'EXHOSLUSM495S', 'PRRESCONS'].map(seriesRow).join(''), {gap: 0});
+  const rx = xNews('research').sort(byDate);
+  if(rx.length) h += fold('research', 'From housing research and industry groups', 'John Burns, Zonda, CBIA, BIA SoCal \u00b7 official posts on X', more(newsList(rx, 12), 4), {gap: 0});
   h += fold('consumers', 'Consumers and credit', 'Sentiment and delinquency', ['UMCSENT', 'DRSFRMACBS'].map(seriesRow).join(''), {gap: 0});
   h += upcoming(MACRO_RELEASES, 5);
   return h;

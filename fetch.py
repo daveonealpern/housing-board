@@ -600,6 +600,20 @@ def recent_8ks(cik, f, days=21):
                            % (int(cik), acc.replace("-", ""), f["primaryDocument"][i])})
     return out[:6]
 
+def latest_earnings_8k(cik, f, days=135):
+    """The most recent 8-K carrying Item 2.02 (results of operations): the
+    earnings release, filed the day of the call."""
+    cutoff = (TODAY - datetime.timedelta(days=days)).isoformat()
+    for i, form in enumerate(f.get("form", [])):
+        if f["filingDate"][i] < cutoff:
+            break
+        if form in ("8-K", "8-K/A") and "2.02" in (f.get("items", [""] * (i + 1))[i] or ""):
+            acc = f["accessionNumber"][i]
+            return {"filed": f["filingDate"][i], "acc": acc,
+                    "url": "https://www.sec.gov/Archives/edgar/data/%s/%s/%s"
+                           % (int(cik), acc.replace("-", ""), f["primaryDocument"][i])}
+    return None
+
 def pull_builders():
     rows = []
     try:
@@ -626,6 +640,7 @@ def pull_builders():
                 rec["name"] = ent
             f = sub.get("filings", {}).get("recent", {})
             rec["recent_8k"] = recent_8ks(cik, f)
+            rec["earnings_8k"] = latest_earnings_8k(cik, f)
             for i, form in enumerate(f.get("form", [])):
                 if form in ("10-Q", "10-K"):
                     acc = f["accessionNumber"][i].replace("-", "")
@@ -675,6 +690,7 @@ def pull_filings(tickers):
             rec["name"] = sub.get("name") or title
             f = sub.get("filings", {}).get("recent", {})
             rec["recent_8k"] = recent_8ks(cik, f)
+            rec["earnings_8k"] = latest_earnings_8k(cik, f)
             for i, form in enumerate(f.get("form", [])):
                 if form in ("10-Q", "10-K"):
                     acc = f["accessionNumber"][i].replace("-", "")
@@ -1806,6 +1822,11 @@ X_ENTITIES = [
     ("apollo",     "Apollo",                 "capital", "apollo.com",               ["apolloglobal"]),
     ("blackstone", "Blackstone",             "capital", "blackstone.com",           ["blackstone"]),
     ("bam",        "Brookfield",             "capital", "brookfield.com",           ["Brookfield"]),
+    # housing research firms and builder industry groups: market data and commentary
+    ("jbrec",      "John Burns Research and Consulting", "research", "jbrec.com", ["JBREC", "johnburnsrc", "JohnBurnsREC"]),
+    ("zonda",      "Zonda",                  "research", "zondahome.com",            ["zondahome", "ZondaHome"]),
+    ("cbia",       "California Building Industry Association", "research", "cbia.org", ["CBIA", "CBIAnews", "CBIAHomes"]),
+    ("biasc",      "BIA of Southern California", "research", "biasc.org",            ["BIASoCal", "BIASC", "biasocal"]),
 ]
 X_ENT = {e[0]: {"name": e[1], "group": e[2], "domain": e[3], "cands": e[4]} for e in X_ENTITIES}
 X_SKIP_PATHS = {"share", "intent", "home", "i", "search", "hashtag", "login", "signup", "privacy", "tos", "x", "twitter"}
@@ -1944,7 +1965,9 @@ new community launch, sellout or price or incentive change in Southern Californi
 Drop ads for homes for sale and promotion: home tours, floor plans,
 decorating and design, holidays and seasons, giveaways, lifestyle, hiring, events, awards and brand
 content, and anything about other industries (for the investment firms, keep only real estate,
-housing, land or homebuilding news).
+housing, land or homebuilding news). For the research firms and industry groups (group "research"),
+keep market data, forecasts, survey results and commentary on rates, demand, prices, land, construction
+costs and housing policy or legislation; drop webinar, conference and event promotion, awards and hiring.
 
 Return ONLY a JSON list, no prose: [{{"id": "post id", "keep": true or false,
 "topic": "rates_market|land_capital|deals|results|leadership|socal|policy_costs" (when kept),
@@ -2116,6 +2139,116 @@ def eightk_text(url, limit=2500):
     except Exception as e:
         return "(text unavailable: %s)" % e
 
+# ---------------------------------------------------------------------------
+# What management said on the latest earnings call. The earnings release
+# (exhibit 99 of the Item 2.02 8-K) is always read; when a free transcript of
+# the call can be found it is read too, since the analyst Q&A is where rates,
+# incentives and land get discussed. One summary per earnings event, kept in
+# narrative.json under "calls" and rewritten only when a new release is filed.
+CALL_NAMES = {"DHI": "D.R. Horton", "LEN": "Lennar", "PHM": "PulteGroup", "KBH": "KB Home", "TOL": "Toll Brothers",
+              "NVR": "NVR", "MTH": "Meritage Homes", "CCS": "Century Communities", "MHO": "M/I Homes",
+              "LGIH": "LGI Homes", "MRP": "Millrose Properties", "FOR": "Forestar Group", "FPH": "Five Point Holdings"}
+CALL_TOPICS = ("demand", "pricing", "margins_costs", "land", "capital", "guidance", "west", "rates")
+TRANSCRIPT_HOSTS = ("fool.com", "insidermonkey.com", "investing.com", "finance.yahoo.com")
+CALLS_PER_RUN = 13
+
+CALL_PROMPT = """Summarize what {name}'s management said about the business in its latest quarterly
+results, for a land developer in Southern California. Use only the text below. {source_note}
+
+Return ONLY JSON:
+{{"period": "the fiscal quarter as the company labels it, e.g. Q4 FY2026",
+  "headline": "management's single most important message, under 25 words",
+  "points": [{{"topic": "demand|pricing|margins_costs|land|capital|guidance|west|rates", "text": "..."}}],
+  "west": "what management said about California or the West, or empty string if nothing"}}
+
+Rules: 4 to 7 points, each under 35 words. Attribute views to management ("Management said",
+"the CEO expects"). Keep reported results separate from expectations. Use the specific figures given:
+orders, incentives, gross margin, cycle times, lot counts, land spend, guidance. Cover what management
+said about interest rates and affordability when they said anything. Paraphrase; do not quote. Plain
+English, no em dashes.
+
+TEXT:
+{text}
+"""
+
+def find_transcript(name, filed):
+    """A free transcript of the call held on or just before `filed`, or None.
+    Searched through Bing News, which returns the publisher's own link."""
+    lo = (datetime.date.fromisoformat(filed) - datetime.timedelta(days=2)).isoformat()
+    hi = (datetime.date.fromisoformat(filed) + datetime.timedelta(days=10)).isoformat()
+    try:
+        url = "https://www.bing.com/news/search?" + urllib.parse.urlencode(
+            {"q": '"%s" earnings call transcript' % name, "format": "rss"})
+        items = _rss_items(url)
+    except Exception as e:
+        print("    transcript search failed: %s" % e)
+        return None
+    first = name.split()[0].lower()
+    for it in items:
+        host = urllib.parse.urlparse(it["link"]).netloc.lower()
+        if not any(h in host for h in TRANSCRIPT_HOSTS) or "transcript" not in it["title"].lower():
+            continue
+        if first not in it["title"].lower() or not (lo <= (it.get("published") or "") <= hi):
+            continue
+        try:
+            req = urllib.request.Request(it["link"], headers=YAHOO_HEADERS)
+            with urllib.request.urlopen(req, timeout=40) as r:
+                text = strip_html(r.read(3000000).decode("utf-8", "ignore"))
+        except Exception as e:
+            print("    transcript fetch failed (%s): %s" % (host, e))
+            continue
+        text = re.sub(r"\s+", " ", text)
+        m = re.search(r"\bOperator\b", text)
+        text = text[m.start():] if m else text
+        if len(text) > 8000:
+            return {"url": it["link"], "source": it.get("source") or host, "text": text[:90000]}
+    return None
+
+def refresh_calls(state, builders, lb_filings):
+    calls = state.setdefault("calls", {})
+    if not ANTHROPIC_KEY or BILLING["anthropic"].get("status") not in ("ok", "low"):
+        return calls
+    done = 0
+    for rec in builders + lb_filings:
+        tk, e = rec.get("ticker"), rec.get("earnings_8k")
+        if not e or (calls.get(tk) or {}).get("acc") == e["acc"]:
+            continue
+        if done >= CALLS_PER_RUN:
+            print("  %s waits for the next run" % tk)
+            continue
+        name = CALL_NAMES.get(tk, rec.get("name", tk))
+        release = eightk_text(e["url"], limit=45000)
+        tr = find_transcript(name, e["filed"])
+        if tr:
+            note_src = ("Two sources: the call transcript ({src}) and the earnings release. Prefer the call, "
+                        "especially the analyst Q&A.").format(src=tr["source"])
+            text = "CALL TRANSCRIPT:\n" + tr["text"] + "\n\nEARNINGS RELEASE:\n" + release[:20000]
+        else:
+            note_src = "The source is the earnings release filed with the SEC; quotes in it are management's prepared remarks."
+            text = release
+        try:
+            got = parse_json_reply(anthropic(CALL_PROMPT.format(name=name, source_note=note_src, text=text), 2500))
+            if not got or not got.get("headline") or not isinstance(got.get("points"), list):
+                raise ValueError("reply missing headline or points")
+        except Exception as ex:
+            print("  %s commentary failed: %s" % (tk, ex))
+            continue
+        clean = lambda t: re.sub(r"\s*—\s*", ", ", str(t or "")).strip()
+        calls[tk] = {"ticker": tk, "name": name, "acc": e["acc"], "filed": e["filed"], "release_url": e["url"],
+                     "transcript_url": tr["url"] if tr else None, "transcript_source": tr["source"] if tr else None,
+                     "source": "call" if tr else "release", "period": clean(got.get("period"))[:40],
+                     "headline": clean(got["headline"])[:240], "west": clean(got.get("west"))[:400],
+                     "points": [{"topic": p.get("topic") if p.get("topic") in CALL_TOPICS else "demand",
+                                 "text": clean(p.get("text"))[:300]} for p in got["points"][:7] if isinstance(p, dict) and p.get("text")],
+                     "as_of": TODAY.isoformat()}
+        done += 1
+        print("  %-5s %s, %s (%s)" % (tk, calls[tk]["period"], e["filed"], "call transcript" if tr else "earnings release"))
+        time.sleep(1)
+    return calls
+
+def calls_for_page(state):
+    return sorted((state.get("calls") or {}).values(), key=lambda c: c.get("filed", ""), reverse=True)
+
 def build_evidence(state, series, stocks, commodities, landbanks, builders, lb_filings, news, headlines, brief):
     """New items since the last edition, each with a stable source id."""
     seen = set(state.get("seen", []))
@@ -2199,11 +2332,20 @@ def build_evidence(state, series, stocks, commodities, landbanks, builders, lb_f
             n8 += 1
             time.sleep(0.2)
 
+    # management commentary from the latest earnings calls
+    for c in calls_for_page(state):
+        add("call", "%s management, %s: %s" % (c["name"], c.get("period") or "latest quarter", c["headline"]),
+            " ".join(p["text"] for p in c.get("points", [])) + ((" West: " + c["west"]) if c.get("west") else ""),
+            c.get("transcript_url") or c.get("release_url"),
+            "earnings call" if c.get("source") == "call" else "earnings release", c.get("filed"),
+            key="call:" + c["acc"])
+
     # news, headlines and builder posts
     labels = {"builders": "public builder news", "west": "California housing news", "ventura": "Ventura County news",
               "ca_private": "California private builder news", "landbank": "land banking news", "costs": "NAHB cost news",
               "x_posts": "official post on X"}
-    group_label = {"public": "public builder", "private": "private builder", "capital": "land or capital"}
+    group_label = {"public": "public builder", "private": "private builder", "capital": "land or capital",
+                   "research": "housing research firm or industry group"}
     for key, label in labels.items():
         rows = ((news.get(key) or {}).get("items") or [])
         if key == "x_posts":
@@ -2251,7 +2393,8 @@ Your job:
    earlier sources; keep them on sentences you keep. Do not invent sources.
 5. Name the public builders and what they said or did whenever builder news, 8-Ks or posts are present.
    Official posts on X from builders, land bankers and investment firms are company statements: use
-   them to corroborate or update the narrative, and name the company when you cite one.
+   them to corroborate or update the narrative, and name the company when you cite one. Management
+   commentary from earnings calls is the company's own view; attribute it ("Toll's management said").
 6. Plain English, short sentences, no em dashes, no hedging boilerplate. national 2 to 4 paragraphs,
    west 2 to 3, ventura 1 to 3, each under 120 words. The headline is one sentence under 25 words on
    the single most important development, not a list. At most 5 "changes", most important first.
@@ -2476,6 +2619,7 @@ def main():
     except Exception:
         previous_news = None
     narrative = load_narrative()
+    print("Earnings calls...");  refresh_calls(narrative, builders, lb_filings)
     print("News...");            news = pull_news(previous_news, narrative)
     print("X posts...");         news["x_posts"] = pull_x_posts(narrative, (previous_news or {}).get("x_posts"))
     print("Narrative...")
@@ -2496,6 +2640,7 @@ def main():
         "landbank_filings": lb_filings,
         "news": news,
         "narrative": narrative_for_page(narrative),
+        "calls": calls_for_page(narrative),
         "billing": BILLING,
         "resale": resale,
         "headlines": headlines,

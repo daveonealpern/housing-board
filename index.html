@@ -327,6 +327,18 @@ window.ciIsDark=function(){var t=document.documentElement.getAttribute('data-the
     display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
   }
   .brief .tbl-scroll { margin: 4px 0 6px; }
+  .calls-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); margin: 4px 0 6px; }
+  .call-card { border: 1px solid var(--line); background: var(--panel); padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+  .call-card .card-name { font-weight: 600; }
+  .call-when { font-family: var(--font-mono); font-size: 10.5px; color: var(--paper-dim); }
+  .call-h { font-size: 14px; line-height: 1.5; font-weight: 500; color: var(--paper); }
+  .call-pts { margin: 0; padding-left: 16px; font-size: 12.5px; line-height: 1.5; color: var(--paper-dim); }
+  .call-pts li { margin-bottom: 5px; }
+  .call-k { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.07em; text-transform: uppercase; color: var(--brass); margin-right: 6px; }
+  .call-west { font-size: 12.5px; line-height: 1.5; color: var(--paper-dim); }
+  .call-src { font-family: var(--font-mono); font-size: 10.5px; line-height: 1.6; margin-top: auto; }
+  .call-src a { color: var(--brass); text-decoration: none; }
+  .lb-call { border-top: 1px solid var(--line); padding-top: 10px; display: flex; flex-direction: column; gap: 6px; }
 
   /* commodities, construction costs, land bankers, private builders */
   .sub-h { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
@@ -559,6 +571,7 @@ window.ciIsDark=function(){var t=document.documentElement.getAttribute('data-the
     </div></summary>
     <p class="sec-note">The six most recent items from HousingWire's own feed, title and their short summary, linking straight to the source. Not curated for importance, just recency; judge significance yourself the way you would skimming any trade press.</p>
     <div class="headlines-grid" id="headlines-grid"></div>
+    <div id="research-x"></div>
   </details>
 
   <details class="book-section spine-block" open>
@@ -1487,6 +1500,7 @@ function renderLandbanks(){
           + (r ? ytdSvg(r.series, t.color, 54) : '')
           + '<p class="lb-role">' + esc(p.role || '') + '</p>'
           + '<ul class="facts">' + (p.facts || []).map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>'
+          + (callFor(p.ticker) ? (c => '<div class="lb-call"><div class="call-k">Management \u00b7 ' + esc(callWhen(c)) + '</div><div class="call-h">' + esc(c.headline) + '</div>' + callPointsHtml(c) + callSourceHtml(c) + '</div>')(callFor(p.ticker)) : '')
           + '<div class="card-foot">' + ((f && f.url) || p.url ? '<a href="' + esc((f && f.url) || p.url) + '" target="_blank" rel="noopener">' + esc(f && f.form ? 'Latest ' + f.form + (f.filed ? ', filed ' + shortD(f.filed) : '') : 'Source filing') + ' \u2197</a>' : '') + '</div></div>';
       }).join('') + '</div>'
     + ((lb.private || []).length ? '<h3 class="sub-h" style="margin-top:26px">Private land bankers</h3><div class="plist">'
@@ -1507,6 +1521,9 @@ function renderPrivate(){
 }
 
 function renderHeadlines(){
+  const rx = xNews('research').sort(byDate);
+  document.getElementById('research-x').innerHTML = rx.length
+    ? '<h3 class="sub-h" style="margin-top:26px">From housing research firms and industry groups on X</h3><div class="news-list">' + newsRows(rx, 8) + '</div>' : '';
   const host = document.getElementById('headlines-grid');
   const items = D.headlines || [];
   if(!items.length){
@@ -1765,6 +1782,12 @@ function renderBrief(){
   const xp = xNews('public');
   const bn = ((D.news || {}).builders || {}).items || [];
   const latest = k8.concat(xp, bn).sort((a, c) => (c.published || '').localeCompare(a.published || '')).slice(0, 14);
+  // What management said on each builder's latest earnings call.
+  const bt = new Set((D.builders || []).map(x => x.ticker));
+  const calls = (D.calls || []).filter(c => bt.has(c.ticker));
+  const callsHtml = calls.length ? '<h3 class="sub-h" style="margin-top:26px">What management said on the latest calls</h3><div class="calls-grid">'
+    + calls.map(c => '<div class="call-card"><div><div class="card-name">' + esc(c.name) + ' <span class="tk">' + esc(c.ticker) + '</span></div><div class="call-when">' + esc(callWhen(c)) + '</div></div>'
+        + '<div class="call-h">' + esc(c.headline) + '</div>' + callPointsHtml(c) + callSourceHtml(c) + '</div>').join('') + '</div>' : '';
   const latestHtml = latest.length ? '<h3 class="sub-h" style="margin-top:26px">Latest from the public builders</h3><div class="news-list">' + newsRows(latest, 14) + '</div>' : '';
 
   host.innerHTML = stale
@@ -1778,7 +1801,7 @@ function renderBrief(){
     + sec('Ventura County', 'ventura')
     + sec('What it implies', 'takeaway')
     + '<div class="brief-meta"><span>' + (b.source === 'auto' ? 'Read from filings automatically' : 'Read from filings by hand')
-    + '</span><span>' + Object.keys(b.covered || {}).length + ' builders covered</span></div>' + latestHtml + '</div>';
+    + '</span><span>' + Object.keys(b.covered || {}).length + ' builders covered</span></div>' + callsHtml + latestHtml + '</div>';
 
   document.getElementById('brief-asof').textContent = 'rewritten after each filing';
 }
