@@ -2129,8 +2129,20 @@ def eightk_text(url, limit=2500):
     try:
         base = url.rsplit("/", 1)[0]
         idx = get_json(base + "/index.json", headers=SEC_HEADERS)
-        docs = [x["name"] for x in idx.get("directory", {}).get("item", [])]
-        ex = next((d for d in docs if re.search(r"ex-?99", d, re.I) and d.lower().endswith((".htm", ".html"))), None)
+        items = idx.get("directory", {}).get("item", [])
+        docs = [x["name"] for x in items]
+        htm = [d for d in docs if d.lower().endswith((".htm", ".html"))]
+        # Exhibit 99 goes by many names: ex99, ex-99, ex_99, exhibit991, d123ex991.
+        ex = next((d for d in htm if re.search(r"ex(hibit)?[-_. ]?99", d, re.I)), None)
+        if not ex:
+            # Otherwise the largest document that is not the 8-K itself, an
+            # index page or an XBRL viewer page is almost always the release.
+            primary = url.rsplit("/", 1)[1]
+            size = {x["name"]: int(x.get("size") or 0) if str(x.get("size") or "").isdigit() else 0 for x in items}
+            rest = [d for d in htm if d != primary and "index" not in d.lower() and not re.match(r"R\d+\.htm", d)]
+            if rest:
+                ex = max(rest, key=lambda d: size.get(d, 0))
+                print("    no exhibit 99 by name in %s; using %s" % (", ".join(htm)[:200], ex))
         text = filing_text(base + "/" + ex if ex else url, limit=60000)
         if not ex:
             m = re.search(r"Item\s+\d\.\d\d", text)
@@ -2219,6 +2231,9 @@ def refresh_calls(state, builders, lb_filings):
         name = CALL_NAMES.get(tk, rec.get("name", tk))
         release = eightk_text(e["url"], limit=45000)
         tr = find_transcript(name, e["filed"])
+        if not tr and len(release) < 4000:
+            print("  %s: only the 8-K cover was found (%d characters); trying again next run" % (tk, len(release)))
+            continue
         if tr:
             note_src = ("Two sources: the call transcript ({src}) and the earnings release. Prefer the call, "
                         "especially the analyst Q&A.").format(src=tr["source"])
@@ -2230,13 +2245,17 @@ def refresh_calls(state, builders, lb_filings):
             got = parse_json_reply(anthropic(CALL_PROMPT.format(name=name, source_note=note_src, text=text), 2500))
             if not got or not got.get("headline") or not isinstance(got.get("points"), list):
                 raise ValueError("reply missing headline or points")
+            if re.search(r"not included|no management commentary|cover page|nothing (can|to) (be )?summari|"
+                         r"(provided|supplied) text (is|only|contains)", got["headline"], re.I):
+                raise ValueError("the text held no commentary: " + got["headline"][:120])
         except Exception as ex:
             print("  %s commentary failed: %s" % (tk, ex))
             continue
         clean = lambda t: re.sub(r"\s*—\s*", ", ", str(t or "")).strip()
         calls[tk] = {"ticker": tk, "name": name, "acc": e["acc"], "filed": e["filed"], "release_url": e["url"],
                      "transcript_url": tr["url"] if tr else None, "transcript_source": tr["source"] if tr else None,
-                     "source": "call" if tr else "release", "period": clean(got.get("period"))[:40],
+                     "source": "call" if tr else "release",
+                     "period": "" if re.search(r"not stated|unknown|n/?a\b", str(got.get("period") or ""), re.I) else clean(got.get("period"))[:40],
                      "headline": clean(got["headline"])[:240], "west": clean(got.get("west"))[:400],
                      "points": [{"topic": p.get("topic") if p.get("topic") in CALL_TOPICS else "demand",
                                  "text": clean(p.get("text"))[:300]} for p in got["points"][:7] if isinstance(p, dict) and p.get("text")],

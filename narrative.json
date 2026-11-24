@@ -170,9 +170,6 @@
     "https://news.google.com/rss/articles/CBMi1gFBVV95cUxOVVFCU0xBYVZMaDJyeTM5UjVwRDNIYTVUd3pvaEhLeVlpbHJpVjJFYWxZZy1RZEV4MHJhNkJLazhfaWdYeGR0M0ppOWF6OFZHNXpaakdpWjFCc2Q3RFBqRDN4V1ZMWVkxYXdyQ1BQR3J2YXg4UlJRU1E3dktHRkRzaVRXSG9hMlZxbDR6YnB4djNWMmRiSGp5ekgzNHh0dmZYWnp3SVFueXJoSHU0ZUNvRWpaWkEycU9feFFYMzJQa2g5RjhMREZKSGx2VUV2Wm01NHFNb2V3?oc=5",
     "https://news.google.com/rss/articles/CBMiygFBVV95cUxQYnVlNExjWlJfajNqeTdoZ20yM2FjU2F5a3VZR2w1U2JtNzVMYXhqTV9GeWc0SVF4cWJFOVNOR2V1cVplNEFaMkZzVkhpMFBsaTRuUE0zUWpZT3VzdDdpMTRfSXBRN09tdU0xcEVrZHpvSmZhRzZRZV9xZmdOVFh0U1FkOHVoTDhZSEs5dVN5R1Q0RHpVWGJ6NEdwX2tLZlRoaXpmOFpJdkV5RVhSZWR6a3hOTVJPVmR6cEtWNVlNZi0yNS1SUnRwY1BR?oc=5",
     "call:0001580670-26-000085",
-    "call:0000882184-26-000119",
-    "call:0001628280-26-068139",
-    "call:0000833079-26-000133",
     "call:0001576940-26-000069",
     "call:0001193125-26-432747",
     "call:0000822416-26-000041",
@@ -181,7 +178,6 @@
     "call:0000799292-26-000030",
     "call:0000795266-26-000068",
     "call:0001628280-26-062287",
-    "call:0000794170-26-000096",
     "https://news.google.com/rss/articles/CBMivgFBVV95cUxQX3JicXBjSXoxaGxiMUU4ZzN0dWRZNktUbk56TmpNdzlzakpoVkpscTJLUEFKdTdRMVQ4YTg0SWYwWmE4R1lNazBWUXZnc3EyS3VQbnNNSFhGOWsyaDlXd1R6NlhZb0hHTEdkTU9ON1A3OThEVlg3QkpncUJrWmlwLTNpeV8tNVdRNWVuVmFzc2tFYm5jU1BaUFhsOVlRQ04wZ1NxVENMbWVLRXpwTkxrQ2FnaVJwalRKanhaTkZR?oc=5",
     "https://news.google.com/rss/articles/CBMioAFBVV95cUxQTTc4endRTEJrbmluS1JHY3QwckN6LVBtMU9BbFY2bFBxLUlSWmpOLTJuLUppYlJqUzk4LTFrVElIM044cjJUa25QZzZBMnNkNnRHbTRZZW5Bd2NKem5Zc29Kc3U4Q0paSmwyLUJrU213ZUI4VXdEMHdyOWRYYkRFQWJKUUJtRG1yTDlYcnV2Z3FTZGlyaTFjcXpweGZuQjVX?oc=5",
     "https://news.google.com/rss/articles/CBMiogFBVV95cUxPSExsUktnYlVkcUpWVXhiNXp3bGMtcHJQdHFPMHBuT3pEcUd6a2k3Wndubmt1d1Y4eE81ZjNIM2FMWkc2dUhrQThMTHFqblBrak5Ob2RJQ0EtTjFaQU1vWVNUUGZxeGV1eDV3MkowUmFTZ3pOSFlEbmZTOGE2bUtjNXNMZ1hnblgtS3FNaFZKXzZ5R2dvSm1CMXFRQ3VLbXM0MXc?oc=5",
@@ -1746,30 +1742,6 @@
     ]
   },
   "calls": {
-    "DHI": {
-      "ticker": "DHI",
-      "name": "D.R. Horton",
-      "acc": "0000882184-26-000119",
-      "filed": "2026-10-29",
-      "release_url": "https://www.sec.gov/Archives/edgar/data/882184/000088218426000119/dhi-20261029.htm",
-      "transcript_url": null,
-      "transcript_source": null,
-      "source": "release",
-      "period": "Q4 FY2026",
-      "headline": "The text provided is only the filing cover and exhibit list, with no management commentary or results, so no business summary is possible.",
-      "west": "",
-      "points": [
-        {
-          "topic": "capital",
-          "text": "The company said it issued a press release on October 29, 2026 with fourth quarter and fiscal year results and declared its quarterly dividend. The dividend amount is not given."
-        },
-        {
-          "topic": "guidance",
-          "text": "The text contains no outlook or guidance. The press release with the results and management remarks (Exhibit 99.1) is referenced but not included, so orders, margins, incentives and land figures cannot be reported."
-        }
-      ],
-      "as_of": "2026-11-24"
-    },
     "LEN": {
       "ticker": "LEN",
       "name": "Lennar",
@@ -1898,21 +1870,6 @@
       ],
       "as_of": "2026-11-24"
     },
-    "TOL": {
-      "ticker": "TOL",
-      "name": "Toll Brothers",
-      "acc": "0000794170-26-000096",
-      "filed": "2026-08-18",
-      "release_url": "https://www.sec.gov/Archives/edgar/data/794170/000079417026000096/tol-20260818.htm",
-      "transcript_url": null,
-      "transcript_source": null,
-      "source": "release",
-      "period": "Q3 FY2026",
-      "headline": "The supplied text is only the 8-K cover page. The press release with management's comments and results is not included, so nothing can be summarized.",
-      "west": "",
-      "points": [],
-      "as_of": "2026-11-24"
-    },
     "KBH": {
       "ticker": "KBH",
       "name": "KB Home",
@@ -1955,21 +1912,6 @@
           "text": "Management repurchased about 890,000 shares and plans up to $50 million more in Q4. Debt-to-capital was 35.7%, liquidity was $942 million, and the long-term 22% gross margin target stays."
         }
       ],
-      "as_of": "2026-11-24"
-    },
-    "MTH": {
-      "ticker": "MTH",
-      "name": "Meritage Homes",
-      "acc": "0000833079-26-000133",
-      "filed": "2026-10-28",
-      "release_url": "https://www.sec.gov/Archives/edgar/data/833079/000083307926000133/mth-20261028.htm",
-      "transcript_url": null,
-      "transcript_source": null,
-      "source": "release",
-      "period": "Not stated in the provided text",
-      "headline": "The provided text is only the 8-K cover and exhibit list; the press release with management's results and commentary is not included.",
-      "west": "",
-      "points": [],
       "as_of": "2026-11-24"
     },
     "CCS": {
@@ -2146,21 +2088,6 @@
           "text": "Management said the rental pilot bought 1,233 homes for about $333 million, with $120 million net equity. Roughly 10% are leased at rents about 10% above underwriting; further investment is paused pending evaluation."
         }
       ],
-      "as_of": "2026-11-24"
-    },
-    "FOR": {
-      "ticker": "FOR",
-      "name": "Forestar Group",
-      "acc": "0001628280-26-068139",
-      "filed": "2026-10-29",
-      "release_url": "https://www.sec.gov/Archives/edgar/data/1406587/000162828026068139/for-20261029.htm",
-      "transcript_url": null,
-      "transcript_source": null,
-      "source": "release",
-      "period": "Q4 FY2026",
-      "headline": "The provided text only announces the results release and contains no management commentary, figures, or outlook to summarize.",
-      "west": "",
-      "points": [],
       "as_of": "2026-11-24"
     },
     "FPH": {
