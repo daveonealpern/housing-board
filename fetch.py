@@ -871,7 +871,8 @@ def _tidy(items, n=8, days=None):
     cutoff = (TODAY - datetime.timedelta(days=(days or NEWS_DAYS) + (15 if not days else 2))).isoformat()
     seen, out, alert = set(), [], False
     for it in sorted(items, key=lambda x: x.get("published") or "", reverse=True):
-        key = re.sub(r"[^a-z0-9]", "", it["title"].lower())[:60]
+        # First 40 letters, so a reworded repeat of the same story is caught too.
+        key = re.sub(r"[^a-z0-9]", "", it["title"].lower())[:40]
         if key in seen or (it.get("published") and it["published"] < cutoff):
             continue
         if LAW_FIRM_ALERT.search(it["title"]):
