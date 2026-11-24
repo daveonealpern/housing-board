@@ -456,3 +456,31 @@ function narrHistoryHtml(N){
   return (N.history || []).slice().reverse().map(h => '<li><b>' + esc(narrDate(h.date)) + '</b> ' + esc(h.headline)
     + ((h.revisions || []).length ? ' <span class="dim">Revised: ' + esc(h.revisions.join(' ')) + '</span>' : '') + '</li>').join('');
 }
+
+
+// ---------------------------------------------------------------------------
+// Credit alerts for the two paid APIs (D.billing, set by fetch.py each run).
+// Anything other than ok/off gets an alert with a link to where credits are
+// bought; the X balance also shows as a quiet line while it is healthy.
+const BILLING_LINKS = {
+  anthropic: {name: 'Claude API', url: 'https://platform.claude.com/settings/billing', where: 'Claude Console'},
+  x: {name: 'X API', url: 'https://console.x.com', where: 'X Developer Console'},
+};
+function billingAlerts(){
+  const b = D.billing || {};
+  return Object.keys(BILLING_LINKS).map(k => ({k, ...(b[k] || {}), ...BILLING_LINKS[k]}))
+    .filter(x => x.status && !['ok', 'off'].includes(x.status));
+}
+function billingAlertHtml(a){
+  const head = a.status === 'low' ? a.name + ' credits running low'
+    : a.status === 'out' ? a.name + ' credits used up'
+    : a.status === 'limit' ? a.name + ' spend limit reached'
+    : a.status === 'rejected' ? a.name + ' key rejected' : a.name + ' check failed';
+  const action = ['low', 'out', 'limit'].includes(a.status) ? 'Buy credits' : 'Open';
+  return '<strong>' + esc(head) + '.</strong> ' + esc(a.message || '')
+    + ' <a href="' + esc(a.url) + '" target="_blank" rel="noopener">' + esc(action) + ' in the ' + esc(a.where) + ' ↗</a>';
+}
+function xBalanceLine(){
+  const x = (D.billing || {}).x || {};
+  return x.balance != null && ['ok', 'low'].includes(x.status) ? 'X credit $' + Number(x.balance).toFixed(2) : '';
+}

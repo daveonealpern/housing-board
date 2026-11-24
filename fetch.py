@@ -14,6 +14,32 @@ FRED_KEY = os.environ.get("FRED_API_KEY", "").strip()
 SEC_UA   = os.environ.get("SEC_USER_AGENT", "").strip() or "Housing Signal Board research contact@example.com"
 ANTHROPIC_KEY   = os.environ.get("ANTHROPIC_API_KEY", "").strip()
 ANTHROPIC_MODEL = os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-5-5").strip()
+
+# Credit status for the two paid APIs, shown on both pages so a top-up is
+# never missed. status: ok, low, out, limit, rejected, error or off (no key).
+BILLING = {"anthropic": {"status": "off"}, "x": {"status": "off"}}
+X_LOW_BALANCE = 2.00          # USD; below this the pages say X credits are running low
+
+def set_billing(service, status, message="", **extra):
+    BILLING[service] = {"status": status, "message": message, "checked": TODAY.isoformat(), **extra}
+    print("  billing %s: %s %s" % (service, status, message))
+
+# Anthropic answers an empty account or a reached spend limit with HTTP 400 or
+# 429 and these phrases in the error message.
+ANTHROPIC_CREDIT_RX = re.compile(r"credit balance is too low|purchase credits|plans? (&|and) billing", re.I)
+ANTHROPIC_LIMIT_RX = re.compile(r"usage limit|spend(ing)? limit|regain access", re.I)
+
+def classify_anthropic_error(code, body):
+    if code == 401:
+        set_billing("anthropic", "rejected", "The Claude API key was rejected. Create a new key in the "
+                    "Claude Console and replace the ANTHROPIC_API_KEY secret in GitHub.")
+    elif ANTHROPIC_CREDIT_RX.search(body):
+        set_billing("anthropic", "out", "The daily narrative and filing reads are paused until credits "
+                    "are added.")
+    elif ANTHROPIC_LIMIT_RX.search(body):
+        m = re.search(r"regain access on ([^.]+)", body)
+        set_billing("anthropic", "limit", "The Claude Console spend limit has been reached%s. Raise the "
+                    "limit or wait for it to reset." % (" (access returns %s)" % m.group(1) if m else ""))
 BRIEF_PATH      = os.environ.get("BRIEF_PATH", "brief.json")
 FRED_BASE = "https://api.stlouisfed.org/fred"
 OUT_PATH  = os.environ.get("OUT_PATH", "data.json")
@@ -985,8 +1011,13 @@ def anthropic(prompt, max_tokens=4000, timeout=600, room=REASONING_ROOM):
         "https://api.anthropic.com/v1/messages", data=body, method="POST",
         headers={"x-api-key": ANTHROPIC_KEY, "anthropic-version": "2023-06-01",
                  "content-type": "application/json"})
-    with urllib.request.urlopen(req, timeout=timeout) as r:
-        out = json.loads(r.read().decode("utf-8"))
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            out = json.loads(r.read().decode("utf-8"))
+    except urllib.error.HTTPError as e:
+        body = e.read().decode("utf-8", "ignore")
+        classify_anthropic_error(e.code, body)
+        raise RuntimeError("Anthropic API HTTP %s: %s" % (e.code, body[:300]))
     global LAST_REPLY_META
     LAST_REPLY_META = {"stop_reason": out.get("stop_reason"), "usage": out.get("usage"),
                        "blocks": [b.get("type") for b in out.get("content", [])]}
@@ -996,10 +1027,11 @@ LAST_REPLY_META = {}
 
 
 def check_anthropic_key():
-    """Confirms the API key and model work, so a bad key shows up the night it
-    is saved rather than the morning a filing lands and cannot be read. The
-    model list costs nothing; a manual run also sends a one-token message,
-    which is what catches an account with no credits."""
+    """Confirms the API key, model and credits every run, so an empty account
+    shows up on the pages that morning rather than when a filing cannot be
+    read. The model list is free; the five-token test message costs a small
+    fraction of a cent and is what tells an account with credits from one
+    without."""
     if not ANTHROPIC_KEY:
         print("  ANTHROPIC_API_KEY not set; new filings will wait for a manual read")
         return
@@ -1013,22 +1045,19 @@ def check_anthropic_key():
             return
         print("  API key accepted; model %s available" % ANTHROPIC_MODEL)
     except urllib.error.HTTPError as e:
-        note("ANTHROPIC_API_KEY was rejected (HTTP %s). Create a new key in the Claude Console "
-             "and replace the GitHub secret." % e.code)
+        classify_anthropic_error(e.code, e.read().decode("utf-8", "ignore"))
+        if BILLING["anthropic"]["status"] == "off":
+            set_billing("anthropic", "error", "The Claude API answered HTTP %s to the key check." % e.code)
         return
     except Exception as e:
         print("  could not reach the Anthropic API to check the key: %s" % e)
         return
-    if os.environ.get("GITHUB_EVENT_NAME") == "workflow_dispatch":
-        try:
-            anthropic("Reply with the word OK.", max_tokens=5, timeout=120, room=0)
-            print("  test message succeeded; the account has credits")
-        except urllib.error.HTTPError as e:
-            detail = e.read().decode("utf-8", "ignore")[:200]
-            note("The Anthropic API key works but a test message failed (HTTP %s): %s. "
-                 "Check the Console for credits or a linked plan." % (e.code, detail))
-        except Exception as e:
-            print("  test message failed: %s" % e)
+    try:
+        anthropic("Reply with the word OK.", max_tokens=5, timeout=120, room=0)
+        set_billing("anthropic", "ok", "Key, model and credits confirmed.")
+    except Exception as e:
+        if BILLING["anthropic"]["status"] in ("off", "ok"):
+            set_billing("anthropic", "error", "The Claude API test message failed: %s" % str(e)[:200])
 
 
 def parse_json_reply(txt):
@@ -1657,9 +1686,50 @@ def _x_get(path, **params):
     with urllib.request.urlopen(req, timeout=30) as r:
         return json.loads(r.read().decode("utf-8"))
 
+def x_credit_check():
+    """Remaining X API credit, from the usage endpoint (returns no posts, so
+    nothing is billed per resource). Sets the billing status the pages show."""
+    try:
+        j = _x_get("usage/credits")
+        bal = float((j.get("data") or {}).get("total_balance", 0))
+        free = float((j.get("data") or {}).get("free_balance", 0))
+        if bal <= 0:
+            set_billing("x", "out", "Builder posts on X are paused until credits are added.",
+                        balance=bal, free=free)
+        elif bal < X_LOW_BALANCE:
+            set_billing("x", "low", "$%.2f left." % bal, balance=bal, free=free)
+        else:
+            set_billing("x", "ok", "$%.2f of X API credit left." % bal, balance=bal, free=free)
+        return bal
+    except urllib.error.HTTPError as e:
+        x_http_error(e, "credit check")
+    except Exception as e:
+        set_billing("x", "error", "Could not check X API credits: %s" % e)
+    return None
+
+def x_http_error(e, what):
+    body = ""
+    try:
+        body = e.read().decode("utf-8", "ignore")
+    except Exception:
+        pass
+    if e.code == 401:
+        set_billing("x", "rejected", "The X API token was rejected (%s). Regenerate the Bearer Token "
+                    "and replace the X_BEARER_TOKEN secret in GitHub." % what)
+    elif e.code == 402 or re.search(r"credit|payment|billing|spend", body, re.I):
+        set_billing("x", "out", "Credits are used up or the monthly spending limit was reached (seen on "
+                    "the %s). Builder posts on X are paused until credits are added or the limit resets." % what)
+    elif e.code == 403:
+        set_billing("x", "error", "The X API refused access (%s, HTTP 403): %s" % (what, body[:160]))
+    else:
+        print("  X %s failed: HTTP %s %s" % (what, e.code, body[:160]))
+
 def pull_x_posts(state, previous):
     old = (previous or {}).get("items", [])
     if not X_BEARER:
+        return previous or {}
+    bal = x_credit_check()
+    if bal is not None and bal <= 0 or BILLING["x"]["status"] in ("rejected", "out"):
         return previous or {}
     accts = state.setdefault("x_accounts", {})
     try:
@@ -1683,7 +1753,7 @@ def pull_x_posts(state, previous):
                 print("  X %-5s %s" % (tk, accts.get(tk, {}).get("username", "no verified account")))
             state["x_resolved"] = TODAY.isoformat()
     except urllib.error.HTTPError as e:
-        note("X API account lookup failed (HTTP %s). Check the X_BEARER_TOKEN secret and X API credits." % e.code)
+        x_http_error(e, "account lookup")
         return previous or {}
     except Exception as e:
         print("  X lookup failed: %s" % e)
@@ -1697,9 +1767,8 @@ def pull_x_posts(state, previous):
         try:
             j = _x_get("users/%s/tweets" % a["id"], **params)
         except urllib.error.HTTPError as e:
-            print("  X %s timeline failed: HTTP %s" % (tk, e.code))
-            if e.code in (401, 402, 403):
-                note("X API refused timeline reads (HTTP %s). Check the token and X API credits." % e.code)
+            x_http_error(e, "%s timeline" % tk)
+            if BILLING["x"]["status"] in ("rejected", "out"):
                 break
             continue
         except Exception as e:
@@ -2006,7 +2075,8 @@ def refresh_narrative(state, series, stocks, commodities, landbanks, builders, l
         if reply:
             print("  reply began: %r" % reply[:600])
             print("  reply ended: %r" % reply[-300:])
-        if state["fail_count"] >= 2:
+        # A credit or key problem already shows as its own alert on the pages.
+        if state["fail_count"] >= 2 and BILLING["anthropic"]["status"] not in ("out", "limit", "rejected"):
             note("The daily narrative could not be updated for %d runs: %s" % (state["fail_count"], e))
         return state
     state["fail_count"] = 0
@@ -2148,6 +2218,7 @@ def main():
         "landbank_filings": lb_filings,
         "news": news,
         "narrative": narrative_for_page(narrative),
+        "billing": BILLING,
         "resale": resale,
         "headlines": headlines,
         "markets": markets,

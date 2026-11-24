@@ -91,6 +91,10 @@
   .acc-body p { margin: 0; font-size: 14px; line-height: 1.55; color: var(--stone); }
   sup.cite { font-size: 10px; margin-left: 1px; color: var(--dim); }
   sup.cite a { color: var(--gold-light); text-decoration: none; padding: 0 1px; }
+  .bill { margin: 0 0 12px; padding: 11px 14px; border-radius: 12px; border: 1px solid var(--gold); background: rgba(184,130,58,0.10); font-size: 13.5px; line-height: 1.45; color: var(--stone); }
+  .bill.bad { border-color: var(--worse); background: rgba(207,110,118,0.10); }
+  .bill strong { color: var(--paper); }
+  .bill a { display: inline-block; margin-top: 6px; color: var(--gold-light); font-weight: 600; text-decoration: none; }
   .narr-since { margin: 2px 16px 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: rgba(184,130,58,0.06); }
   .narr-since ul { margin: 6px 0 0; padding-left: 17px; display: flex; flex-direction: column; gap: 5px; }
   .narr-since li { font-size: 13px; line-height: 1.45; color: var(--stone); }
@@ -726,7 +730,8 @@ function setStatus(){
   const n = (D.errors || []).length, age = (Date.now() - new Date(D.generated).getTime()) / 36e5;
   const g = new Date(D.generated);
   const when = MONTHS[g.getMonth()] + ' ' + g.getDate() + ' · ' + g.toLocaleTimeString('en-US', {hour: 'numeric', minute: '2-digit'});
-  el.classList.toggle('warn', n > 0 || age > 36);
+  const bills = billingAlerts();
+  el.classList.toggle('warn', n > 0 || age > 36 || bills.length > 0);
   txt.textContent = n > 0 ? n + (n > 1 ? ' issues' : ' issue') + ' · ' + when : age > 36 ? 'Stale · ' + when : 'Updated ' + when;
   el.setAttribute('aria-label', 'Updated ' + when + (n ? ', ' + n + ' issues on the last run' : '') + '. Tap to refresh.');
 }
@@ -739,7 +744,10 @@ function render(){
   else if(hash === 'costs') html = renderCosts();
   else if(hash === 'macro') html = renderMacro();
   else { tab = 'builders'; html = renderBuilders(); }
-  view.innerHTML = html;
+  // Credit alerts sit above every tab, so a needed top-up is seen wherever
+  // the app is opened.
+  const bills = billingAlerts();
+  view.innerHTML = bills.map(a => '<div class="bill' + (a.status === 'low' ? '' : ' bad') + '">' + billingAlertHtml(a) + '</div>').join('') + html;
   document.querySelectorAll('.tabs a').forEach(a => { if(a.dataset.tab === tab) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
   setStatus();
 }
