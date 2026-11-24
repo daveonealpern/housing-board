@@ -2132,8 +2132,8 @@ def eightk_text(url, limit=2500):
         items = idx.get("directory", {}).get("item", [])
         docs = [x["name"] for x in items]
         htm = [d for d in docs if d.lower().endswith((".htm", ".html"))]
-        # Exhibit 99 goes by many names: ex99, ex-99, ex_99, exhibit991, d123ex991.
-        ex = next((d for d in htm if re.search(r"ex(hibit)?[-_. ]?99", d, re.I)), None)
+        # Exhibit 99 goes by many names: ex99, ex-99, ex_99, exh991, exhibit991, d123ex991.
+        ex = next((d for d in htm if re.search(r"ex(h|hibit)?[-_. ]?99", d, re.I)), None)
         if not ex:
             # Otherwise the largest document that is not the 8-K itself, an
             # index page or an XBRL viewer page is almost always the release.
