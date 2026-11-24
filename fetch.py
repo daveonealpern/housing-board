@@ -1832,6 +1832,7 @@ def resolve_x_accounts(state, keys):
 # tours, floor plans, decorating, holidays, giveaways, lifestyle, hiring and
 # brand content. A cheap model does the sorting; if it is unavailable a
 # keyword screen stands in.
+X_MAX_AGE_DAYS = 45
 X_TOPICS = {"rates_market": "Rates and market", "land_capital": "Land and capital", "deals": "Deals",
             "results": "Results and guidance", "leadership": "Leadership", "socal": "SoCal and Ventura",
             "policy_costs": "Policy and costs"}
@@ -1846,8 +1847,9 @@ X_BUSINESS = re.compile(r"rate|mortgage|fed\b|inflation|tariff|lumber|land|lots?
 X_SCREEN_PROMPT = """Sort these posts from official company accounts on X for a land developer in
 Southern California who wants business news only. Keep a post if it carries information about
 interest rates or the housing market, land, lots or capital, acquisitions, partnerships or fundraising,
-results or guidance, executive changes, policy or construction costs, or a specific project, land deal
-or community in Southern California or Ventura County. Drop promotion: home tours, floor plans,
+results or guidance, executive changes, policy or construction costs, or a land purchase, entitlement,
+new community launch, sellout or price or incentive change in Southern California or Ventura County.
+Drop ads for homes for sale and promotion: home tours, floor plans,
 decorating and design, holidays and seasons, giveaways, lifestyle, hiring, events, awards and brand
 content, and anything about other industries (for the investment firms, keep only real estate,
 housing, land or homebuilding news).
@@ -1944,7 +1946,11 @@ def pull_x_posts(state, previous):
     for o in old:                                   # older items from before groups existed
         o.setdefault("group", "public"); o.setdefault("key", o.get("ticker"))
         o.setdefault("name", (X_ENT.get(o.get("key") or "") or {}).get("name", o.get("handle")))
-    items = sorted(new + [o for o in old if o.get("id") not in {n["id"] for n in new}],
+    # Dormant accounts hand back their last posts however old (Melia's are
+    # from 2019), so anything older than the news window is dropped.
+    cutoff = (TODAY - datetime.timedelta(days=X_MAX_AGE_DAYS)).isoformat()
+    items = sorted([p for p in new + [o for o in old if o.get("id") not in {n["id"] for n in new}]
+                    if (p.get("published") or "") >= cutoff],
                    key=lambda x: x.get("published", ""), reverse=True)[:80]
     screen_x_posts(items)
     print("  X posts: %d new, %d stored, %d kept as business news"
