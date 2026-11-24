@@ -1666,20 +1666,23 @@ def refresh_resale_paragraph(brief, resale):
 # once a month, and each timeline is read from the last post already seen,
 # so only new posts are billed.
 X_BEARER = os.environ.get("X_BEARER_TOKEN", "").strip()
-# Verified on the first run (Nov 23, 2026): Lennar, PulteHomes, tollbrothers,
-# kbhome, MeritageHomes, LGIHomes. The others are still being searched for.
+# Checked Nov 23, 2026. Six accounts link their builder's site and were
+# verified by the API lookup. M/I Homes' @mihomes links through a shortener,
+# but mihomes.com names it as its own account (twitter:site), so it is
+# confirmed by the builder's site instead. D.R. Horton, Century Communities and
+# NVR/Ryan Homes link no X account from their websites, so none is read: an
+# @DR_Horton account carries drhorton.com in its profile but D.R. Horton's own
+# site does not point to it.
 X_CANDIDATES = {
-    "DHI":  (["DRHorton", "DR_Horton", "DRHortonHomes", "drhortonamerica"], "drhorton.com"),
     "LEN":  (["Lennar"], "lennar.com"),
     "PHM":  (["PulteHomes", "PulteGroup"], "pulte"),
     "TOL":  (["TollBrothers"], "tollbrothers.com"),
     "KBH":  (["KBHome"], "kbhome.com"),
     "MTH":  (["MeritageHomes"], "meritagehomes.com"),
-    "CCS":  (["CenturyCommunit", "CenturyComm", "CenturyHomes", "CCSHomes"], "centurycommunities.com"),
-    "MHO":  (["MIHomes", "MIHomesInc", "MI_Homes"], "mihomes.com"),
+    "MHO":  (["mihomes"], "mihomes.com"),
     "LGIH": (["LGIHomes"], "lgihomes.com"),
-    "NVR":  (["RyanHomes", "NVHomes", "NVRInc"], "ryanhomes.com"),
 }
+X_CONFIRMED_BY_SITE = {"MHO": "mihomes"}
 
 def _x_get(path, **params):
     url = "https://api.x.com/2/" + path + ("?" + urllib.parse.urlencode(params) if params else "")
@@ -1755,7 +1758,8 @@ def pull_x_posts(state, previous):
                         continue
                     urls = " ".join(x.get("expanded_url", "") for x in
                                     ((u.get("entities") or {}).get("url") or {}).get("urls", []))
-                    if domain in (urls + " " + (u.get("description") or "")).lower():
+                    if (domain in (urls + " " + (u.get("description") or "")).lower()
+                            or X_CONFIRMED_BY_SITE.get(tk, "").lower() == u["username"].lower()):
                         accts[tk] = {"id": u["id"], "username": u["username"], "name": u.get("name")}
                         break
                     print("  X %-5s @%s exists but does not link %s (name %r, link %r)"
@@ -1768,6 +1772,8 @@ def pull_x_posts(state, previous):
     except Exception as e:
         print("  X lookup failed: %s" % e)
         return previous or {}
+    for tk in [t for t in accts if t not in X_CANDIDATES]:      # dropped from the list
+        accts.pop(tk, None)
     since = state.setdefault("x_since", {})
     new = []
     for tk, a in accts.items():
