@@ -153,7 +153,8 @@ so it updates with the same nightly run and needs no setup of its own.
 
 To put it on an iPhone home screen: open that link in Safari, tap Share, then
 Add to Home Screen. It opens full screen with its own icon and keeps the last data
-it saw for when there is no signal.
+it saw for when there is no signal. The app checks for a new version each time it
+opens and reloads itself once when one arrives, so changes show on the next launch.
 
 The app's market summary uses `summary.js`, the same code that writes the board's
 executive summary, so the two always match. The extra phone sections (land signals,
@@ -162,7 +163,8 @@ block in `brief.json`, which the automatic brief refresh maintains once
 `ANTHROPIC_API_KEY` is set.
 
 Every section header on the app opens and closes its section, and the phone
-remembers what you closed. Long lists show the first few rows with a "Show N more"
+remembers what you closed. "Collapse all" beside each tab's title closes every
+section at once (tap again to expand them all). Long lists show the first few rows with a "Show N more"
 row under them. The Builders tab carries the same "Latest from the public builders"
 feed as the board (8-K filings, official posts on X, news) and the filing brief
 under "What the filings say".

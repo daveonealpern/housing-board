@@ -1,12 +1,13 @@
 // Service worker for the Housing Signal Board phone app.
 //
-// data.json: network first, so the app always shows the newest run when there
-// is a connection, falling back to the last copy it saw when there is not.
-// Everything else (this app's page, icons, logo, the shared summary script,
-// fonts): served from the cache straight away and refreshed in the background,
-// so the app opens instantly and picks up a new version on the next launch.
-// Bump VERSION when the list of app files changes.
-const VERSION = 'hsb-app-v9';
+// The app's own code and data (the page, the shared summary script and
+// data.json): network first, asking the server whether the copy changed, so an
+// update shows on the very next launch whenever there is a connection; the
+// last copy seen is used when there is no signal.
+// Icons, logo and fonts: served from the cache straight away and refreshed in
+// the background, since they rarely change.
+// Bump VERSION whenever the app changes, so phones drop the old copies.
+const VERSION = 'hsb-app-v10';
 const SHELL = [
   './',
   './index.html',
@@ -19,7 +20,13 @@ const SHELL = [
 ];
 
 self.addEventListener('install', event => {
-  event.waitUntil(caches.open(VERSION).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
+  // cache: 'reload' skips the browser's own HTTP cache, so a fresh install
+  // never stores a copy of the page that is minutes out of date.
+  event.waitUntil(
+    caches.open(VERSION)
+      .then(c => c.addAll(SHELL.map(u => new Request(u, {cache: 'reload'}))))
+      .then(() => self.skipWaiting())
+  );
 });
 
 self.addEventListener('activate', event => {
@@ -30,25 +37,31 @@ self.addEventListener('activate', event => {
   );
 });
 
+function networkFirst(req, key) {
+  return fetch(req, {cache: 'no-cache'}).then(res => {
+    if (res.ok) {
+      const copy = res.clone();
+      caches.open(VERSION).then(c => c.put(key, copy));
+    }
+    return res;
+  }).catch(() => caches.open(VERSION).then(c => c.match(key)).then(hit => hit || caches.match(key)));
+}
+
 self.addEventListener('fetch', event => {
   const req = event.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
+  const sameOrigin = url.origin === self.location.origin;
 
-  if (url.pathname.endsWith('/data.json')) {
-    event.respondWith(
-      fetch(req).then(res => {
-        if (res.ok) {
-          const copy = res.clone();
-          caches.open(VERSION).then(c => c.put(url.pathname, copy));
-        }
-        return res;
-      }).catch(() => caches.match(url.pathname))
-    );
+  if (sameOrigin && (req.mode === 'navigate' || /\/app\/(index\.html)?$/.test(url.pathname))) {
+    event.respondWith(networkFirst(req, './index.html'));
+    return;
+  }
+  if (sameOrigin && (url.pathname.endsWith('/data.json') || url.pathname.endsWith('/summary.js'))) {
+    event.respondWith(networkFirst(req, url.pathname));
     return;
   }
 
-  const sameOrigin = url.origin === self.location.origin;
   const isFont = url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com';
   if (!sameOrigin && !isFont) return;
 

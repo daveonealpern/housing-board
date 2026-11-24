@@ -115,6 +115,12 @@
   details.more > summary::-webkit-details-marker { display: none; }
   details.more .m-o, details.more[open] .m-c { display: none; }
   details.more[open] .m-o { display: inline; }
+  .title-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .fold-all {
+    flex-shrink: 0; min-height: 32px; padding: 5px 12px; border: 1px solid var(--line); border-radius: 999px;
+    background: transparent; color: var(--gold-light); font-size: 12px; font-weight: 600; cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
 
   .call-lede { margin: 0; font-size: 15px; line-height: 1.5; font-weight: 500; color: var(--paper); }
   .call-pts { margin: 0; padding-left: 17px; display: flex; flex-direction: column; gap: 7px; font-size: 13.5px; line-height: 1.5; color: var(--stone); }
@@ -353,6 +359,13 @@ function more(rows, n, noun){
   return rows.slice(0, n).join('') + '<details class="more"><summary><span class="m-c">Show ' + k + ' more' + (noun ? ' ' + noun : '') + '</span><span class="m-o">Show fewer</span></summary>'
     + '<div class="more-body">' + rows.slice(n).join('') + '</div></details>';
 }
+// A button beside each tab's title that closes every section, or opens them
+// all when they are already closed.
+const FOLD_ALL = '<button type="button" class="fold-all">Collapse all</button>';
+function syncFoldAll(){
+  const b = view.querySelector('.fold-all');
+  if(b) b.textContent = [...view.querySelectorAll('details.fold')].some(d => d.open) ? 'Collapse all' : 'Expand all';
+}
 // One HTML row per news item, so more() can split the list.
 const newsList = (items, max) => (items || []).slice(0, max || 12).map(it => newsRows([it], 1));
 
@@ -492,7 +505,7 @@ function renderBuilders(){
   if(b.as_of) chips.push('<span class="chip">Brief updated ' + esc(shortDate(b.as_of)) + '</span>');
   if((b.stale || []).length) chips.push('<span class="chip warn">' + b.stale.length + ' new filing' + (b.stale.length > 1 ? 's' : '') + ' to read</span>');
   if((app.next_filings || []).length) chips.push('<span class="chip">Next: ' + esc(app.next_filings[0].name.replace(/ annual report$/, '') + ', ' + app.next_filings[0].when) + '</span>');
-  h += '<section class="sec"><p class="eyebrow">Public builders</p><h1 class="title">Builders</h1>' + (chips.length ? '<div class="chips">' + chips.join('') + '</div>' : '') + '</section>';
+  h += '<section class="sec"><p class="eyebrow">Public builders</p><div class="title-row"><h1 class="title">Builders</h1>' + FOLD_ALL + '</div>' + (chips.length ? '<div class="chips">' + chips.join('') + '</div>' : '') + '</section>';
 
   const cr = rows.filter(r => r.cancel != null).sort((a, b) => b.cancel - a.cancel);
   if(cr.length){
@@ -603,7 +616,7 @@ function renderBuilder(tk){
 
   const tiles = [['Deliveries', m.deliveries], ['Net orders', m.orders], ['Gross margin', m.margin], ['Cancellation rate', m.cancels], ['Communities', m.communities], ['Incentives', m.incentives]]
     .filter(t => t[1]);
-  h += '<section class="tiles">' + tiles.map(t => '<div class="tile"><span class="k">' + esc(t[0]) + '</span><span class="v text">' + esc(t[1]) + '</span></div>').join('') + '</section>';
+  h += fold('b-quarter', 'Latest quarter', 'From the ' + (filing.form || '10-Q or 10-K') + ' for the quarter ended ' + (m.quarter || ''), '<div class="tiles">' + tiles.map(t => '<div class="tile"><span class="k">' + esc(t[0]) + '</span><span class="v text">' + esc(t[1]) + '</span></div>').join('') + '</div>');
   const call = callFor(tk);
   if(call){
     h += fold('b-call', 'What management said', callWhen(call),
@@ -673,7 +686,7 @@ function renderSoCal(){
   const b = D.brief || {}, app = b.app || {};
   const levels = {}; ((D.resale && D.resale.levels) || []).forEach(l => levels[l.key] = l);
   const order = [['ventura', 'Ventura'], ['ca', 'Calif.'], ['national', 'U.S.']].filter(x => levels[x[0]]);
-  let h = '<section class="sec" style="gap:6px"><p class="eyebrow">Southern California</p><h1 class="title">SoCal</h1></section>';
+  let h = '<section class="sec" style="gap:6px"><p class="eyebrow">Southern California</p><div class="title-row"><h1 class="title">SoCal</h1>' + FOLD_ALL + '</div></section>';
   if(order.length){
     const lastOf = (l, k) => { const o = l[k] || []; return o.length ? o[o.length-1] : null; };
     const yoy = (l, k) => { const t = trend(l[k] || []); return t.pct; };
@@ -723,7 +736,7 @@ function renderCosts(){
   const mats = [['WPUSI019011', 'Copper'], ['WPU101704', 'Structural steel'], ['WPUSI012011', 'All materials'], ['WPU081', 'Lumber'],
                 ['WPU1333', 'Ready-mix concrete'], ['WPU137', 'Drywall (gypsum)'], ['WPU0721', 'Plastics']]
     .map(([id, label]) => ({id, label, p: pctOf(id)})).filter(x => x.p != null).sort((a, b) => b.p - a.p);
-  let h = '<section class="sec" style="gap:6px"><p class="eyebrow">Materials, energy, labor</p><h1 class="title">Costs</h1></section>';
+  let h = '<section class="sec" style="gap:6px"><p class="eyebrow">Materials, energy, labor</p><div class="title-row"><h1 class="title">Costs</h1>' + FOLD_ALL + '</div></section>';
   const all = pctOf('WPUSI012011'), jobs = pctOf('JTS2300JOL');
   const leaders = mats.filter(x => x.id !== 'WPUSI012011').slice(0, 2);
   if(all != null){
@@ -758,7 +771,7 @@ function renderCosts(){
     return '<div class="tile' + (wide ? ' wide' : '') + '"><span class="k">' + esc(label) + ' · ' + esc(periodLabel(s, last.d)) + '</span><span class="v">' + esc(f(last.v)) + '</span>'
       + (t.pct != null ? '<span class="s ' + tone + '">' + arrow(t.pct, 0) + ' vs last year</span>' : '') + '</div>';
   };
-  h += '<section class="tiles">' + tile('DCOILWTICO', 'Crude oil, WTI', v => '$' + v.toFixed(2)) + tile('JTS2300JOL', 'Construction openings', compact, false, true) + tile('USCONS', 'Construction employment', compact, true) + '</section>';
+  h += fold('energy-labor', 'Energy and labor', 'Crude oil, construction job openings and employment', '<div class="tiles">' + tile('DCOILWTICO', 'Crude oil, WTI', v => '$' + v.toFixed(2)) + tile('JTS2300JOL', 'Construction openings', compact, false, true) + tile('USCONS', 'Construction employment', compact, true) + '</div>');
   const cons = (D.brief || {}).construction;
   if(cons && (cons.builders || []).length){
     const order = ['LEN','DHI','PHM','KBH','CCS','MTH','TOL','NVR','MHO','LGIH'];
@@ -783,7 +796,7 @@ function renderCosts(){
 // --------------------------------------------------------------------- macro
 function renderMacro(){
   const app = (D.brief && D.brief.app) || {};
-  let h = '<section class="sec" style="gap:6px"><p class="eyebrow">Rates and the economy</p><h1 class="title">Macro</h1></section>';
+  let h = '<section class="sec" style="gap:6px"><p class="eyebrow">Rates and the economy</p><div class="title-row"><h1 class="title">Macro</h1>' + FOLD_ALL + '</div></section>';
   const mort = D.series['MORTGAGE30US'];
   if(mort && mort.obs.length){
     const last = mort.obs[mort.obs.length-1], ya = yearAgo(mort.obs);
@@ -797,8 +810,8 @@ function renderMacro(){
     const last = s.obs[s.obs.length-1], ya = yearAgo(s.obs);
     return '<div class="tile"><span class="k">' + esc(label) + '</span><span class="v">' + esc(f(last.v)) + '</span>' + (ya ? '<span class="s ' + toneOf(id) + '">' + esc(f(ya.v)) + ' a year ago</span>' : '') + '</div>';
   };
-  h += '<section class="tiles">' + rate('MORTGAGE30US', '30-year fixed', v => v.toFixed(2) + '%') + rate('SPREAD', 'Spread over 10-year', v => Math.round(v) + ' bp')
-    + rate('DGS10', '10-year Treasury', v => v.toFixed(2) + '%') + rate('FEDFUNDS', 'Fed funds', v => v.toFixed(2) + '%') + '</section>';
+  h += fold('rates', 'Rates', '30-year, spread, 10-year Treasury, fed funds', '<div class="tiles">' + rate('MORTGAGE30US', '30-year fixed', v => v.toFixed(2) + '%') + rate('SPREAD', 'Spread over 10-year', v => Math.round(v) + ' bp')
+    + rate('DGS10', '10-year Treasury', v => v.toFixed(2) + '%') + rate('FEDFUNDS', 'Fed funds', v => v.toFixed(2) + '%') + '</div>');
   h += fold('activity', 'Housing activity', 'Annual rate · vs last year', ['HOUST1F', 'PERMIT1', 'HSN1F', 'MSACSR', 'EXHOSLUSM495S', 'PRRESCONS'].map(seriesRow).join(''), {gap: 0});
   const rx = xNews('research').sort(byDate);
   if(rx.length) h += fold('research', 'From housing research and industry groups', 'John Burns, Zonda, CBIA, BIA SoCal \u00b7 official posts on X', more(newsList(rx, 12), 4), {gap: 0});
@@ -850,6 +863,7 @@ function render(){
   const bills = billingAlerts();
   view.innerHTML = bills.map(a => '<div class="bill' + (a.status === 'low' ? '' : ' bad') + '">' + billingAlertHtml(a) + '</div>').join('') + html;
   document.querySelectorAll('.tabs a').forEach(a => { if(a.dataset.tab === tab) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+  syncFoldAll();
   setStatus();
 }
 // Redraw after a live price update without closing anything the reader opened.
@@ -883,13 +897,32 @@ document.getElementById('status').addEventListener('click', load);
 // Only a tap on a section header counts as the reader's choice; the click
 // arrives before the section opens or closes, so the new state is the opposite.
 view.addEventListener('click', e => {
-  const sm = e.target.closest && e.target.closest('details.fold > summary');
-  if(sm) saveFold(sm.parentElement.dataset.fold, !sm.parentElement.open);
+  if(!e.target.closest) return;
+  const all = e.target.closest('.fold-all');
+  if(all){
+    const ds = [...view.querySelectorAll('details.fold')], open = !ds.some(d => d.open);
+    ds.forEach(d => { d.open = open; saveFold(d.dataset.fold, open); });
+    syncFoldAll();
+    return;
+  }
+  const sm = e.target.closest('details.fold > summary');
+  if(sm){ saveFold(sm.parentElement.dataset.fold, !sm.parentElement.open); setTimeout(syncFoldAll, 0); }
 });
 document.addEventListener('visibilitychange', () => {
+  if(document.visibilityState === 'visible' && swReg) swReg.update().catch(() => {});
   if(document.visibilityState === 'visible' && Date.now() - loadedAt > 15 * 60 * 1000) load();
 });
-if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+// Check for a new version of the app on every launch and on return to it; when
+// a new version takes over, reload once so it shows straight away.
+let swReg = null;
+if('serviceWorker' in navigator){
+  const hadController = !!navigator.serviceWorker.controller;
+  let reloaded = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if(hadController && !reloaded){ reloaded = true; location.reload(); }
+  });
+  navigator.serviceWorker.register('sw.js').then(r => { swReg = r; r.update().catch(() => {}); }).catch(() => {});
+}
 load();
 </script>
 </body>
