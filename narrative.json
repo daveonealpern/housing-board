@@ -186,7 +186,13 @@
     "https://x.com/CaliforniaBIA/status/2116971652038959139",
     "https://x.com/CaliforniaBIA/status/2115104356966244727",
     "https://x.com/CaliforniaBIA/status/2113698234933944614",
-    "https://x.com/CaliforniaBIA/status/2111168614376366344"
+    "https://x.com/CaliforniaBIA/status/2111168614376366344",
+    "call:0000882184-26-000119",
+    "call:0001628280-26-068139",
+    "call:0000833079-26-000133",
+    "call:0000794170-26-000096",
+    "https://news.google.com/rss/articles/CBMilAFBVV95cUxPSmpqZW9OeWdtMmpTSXZCZTFrNkQ0aFFiczh6N0UzSFVKOGtZTU9GWExsSnJfQnBLcW0tdnBMcENzTFpWZ2I3R1RCbV83UDlaR3h2bmF0bl9PYTNpTk93NFU5Mk9TZklNWE5lUjZWai1uYXZWQmJOMjVRcmxJd21Va0EtWE5DYmJOdVR5d1RZOGlUQVdQ?oc=5",
+    "https://news.google.com/rss/articles/CBMigwFBVV95cUxQZnAzcWtaTEU2ZGFBbW80VjNYT096ZmIxaFUtVEM2NHF5ZVdxb2JkWWZlVU1oOG9BZmtVRmZtM0ZGNHhCSk93eVhEc1h1NzFtX05ZRnNfUVdqTDJTUlIxLXlaSHdiM2I0WUY1cHBlemdtdFBWd2dmMktqeXU3aGhjaVJ3cw?oc=5"
   ],
   "brief_as_of": "2026-11-20",
   "marks": {
@@ -383,26 +389,26 @@
     "FPH": 4.53,
     "LBR=F": 540.0,
     "HRC=F": 1410.0,
-    "HG=F": 5.498,
+    "HG=F": 5.512,
     "ALI=F": 2765.0,
-    "CL=F": 79.73,
-    "HO=F": 3.6296,
-    "NG=F": 3.539
+    "CL=F": 79.63,
+    "HO=F": 3.6273,
+    "NG=F": 3.548
   },
-  "next_id": 177,
+  "next_id": 183,
   "since": "2026-11-24",
   "as_of": "2026-11-24",
-  "headline": "Five Point, a California land developer, will likely defer some 2026 land sales rather than sell into a weaker market.",
+  "headline": "Forestar guided fiscal 2027 lot deliveries down to 12,000 to 13,000 and cut its average lot price to $108,300 from $115,700.",
   "sections": {
     "national": [
       "Nine builders have now reported the summer quarter: Lennar and KB Home for quarters ended August 31, and D.R. Horton, PulteGroup, M/I Homes, Meritage, Century Communities, NVR and LGI Homes for September 30. All nine describe it as weaker than the quarter before. Net orders fell everywhere they are reported (Horton down 7%, Lennar down 9%, Pulte down 6%, KB down 12%, M/I down 2%, Meritage down 15%, Century down 4%, NVR down 7%). LGI's third-quarter orders fell 61.2% to 609 homes, its management said on Nov 3, and it narrowed 2026 closings guidance to 4,600 to 4,800 homes on slower sales as affordability weighed [155][8].",
-      "M/I's CEO said the 10-year rose from 4.5% to 5.3% and mortgage rates from about 6.75% to 7.75% in the quarter, and M/I's September orders fell 16% [164]. Century's management said on Oct 28 that rates rose about 75 basis points. It cut 2026 deliveries to 9,350 to 9,650 homes, confirming the Nov 23 headline [73][159]. Century cut starts 8% and Horton 10% [67]. On Sep 16, Lennar cut full-year deliveries to 80,000 to 81,000 from 82,000 to 83,000 and guided fourth-quarter orders of 19,500 to 20,500 against deliveries of 22,000 to 23,000 [166].",
-      "Margins are still compressed year over year: Horton's home sales margin was 20.2% for fiscal 2026 against 21.5%, Lennar 15.8% against 17.5%, Pulte 24.8% against 26.2%. NVR's fell to 18.3% from 21.0%, with $24.8 million of land deposit impairments [162]. The 30-year fixed rate was 7.28% on Nov 19 and the 10-year 4.92% on Nov 20 [63], below the 5.04% quoted Nov 23. HousingWire says the Fed is staying hawkish even with lower energy prices [60], and that sub-7% mortgages need a 10-year yield below 4.85% and 2% mortgage spreads [59].",
-      "Cancellations rose at the entry level: Horton's reached 23% from 20%, NVR's 21.0% from 19.4%, LGI's 53.8% from 33.6% [155]. Century's stayed at 14.6% and M/I's at 12% [159][164]. Horton guides 79,000 to 84,000 closings for fiscal 2027 against 84,202 and expects elevated incentives. Input costs remain high: materials PPI up 12.1% year over year in October, steel futures up 50.0% and diesel 71.9% year to date on Nov 24 [65]. Yet Lennar's construction cost per square foot fell 6% year over year [166] and Century's direct costs fell 2%, lot costs 3% [159]. Toll Brothers reports its year to Oct 31 in December."
+      "M/I's CEO said the 10-year rose from 4.5% to 5.3% and mortgage rates from about 6.75% to 7.75% in the quarter, and M/I's September orders fell 16% [164]. Century's management said on Oct 28 that rates rose about 75 basis points. It cut 2026 deliveries to 9,350 to 9,650 homes, confirming the Nov 23 headline [73][159]. Century cut starts 8% and Horton 10% [67]. On Sep 16, Lennar cut full-year deliveries to 80,000 to 81,000 from 82,000 to 83,000 and guided fourth-quarter orders of 19,500 to 20,500 against deliveries of 22,000 to 23,000 [166]. Horton guides 79,000 to 84,000 closings for fiscal 2027 against 84,202 and expects elevated incentives, its management said Oct 29 [177].",
+      "Margins are still compressed year over year: Horton's home sales margin was 20.2% for fiscal 2026 against 21.5%, Lennar 15.8% against 17.5%, Pulte 24.8% against 26.2%. NVR's fell to 18.3% from 21.0%, with $24.8 million of land deposit impairments [162]. Meritage's margin was 17.4% against 19.1%, and its management expects 2022 to 2025 lot costs to weigh through at least 2027 [179]. The 30-year fixed rate was 7.28% on Nov 19 and the 10-year 4.92% on Nov 20 [63], below the 5.04% quoted Nov 23. HousingWire says the Fed is staying hawkish even with lower energy prices [60], and that sub-7% mortgages need a 10-year yield below 4.85% and 2% mortgage spreads [59].",
+      "Cancellations rose at the entry level: Horton's reached 23% from 20% [177], NVR's 21.0% from 19.4%, LGI's 53.8% from 33.6% [155]. Forestar guided on Oct 29 to 12,000 to 13,000 lots in fiscal 2027 against 13,545, and its average lot price fell to $108,300 from $115,700 [178]. Meritage cut land spend 38% and said Oct 28 it will scrutinize every fourth-quarter land deal, with possible walkaways [179]. Input costs remain high: materials PPI up 12.1% in October, steel futures up 50.0% and diesel 71.9% year to date on Nov 24 [65], yet Lennar's cost per square foot fell 6% [166] and Century's direct costs fell 2% [159]. Toll Brothers reports its year to Oct 31 in December."
     ],
     "west": [
       "Horton's Southwest region (California, Arizona, Nevada, New Mexico, Hawaii) lost the most ground on buyer commitment. Its fiscal 2026 cancellation rate rose to 19% from 15%, and closings fell 5% to 9,013, which Horton attributes particularly to Las Vegas and Southern California. Lennar's West segment gross margin was 12.1% against 16.3%, the lowest of its four segments. Pulte's West segment had orders down 15% and a 21% cancellation rate. On Nov 23, the Orange County Register reported Southern California home sales at a 21-year low [77], and The Cool Down reported California sales at a nearly 3-year low with the median price at $886,760 [129].",
-      "KB's West Coast segment looks like the exception: net orders rose 8% to 937, though average selling price fell 6% to $641,800. But KB's management said on Sep 22 that Southern California drove a roughly $20,000 cut to its fourth-quarter price outlook [165]. LGI's management said Nov 3 that Southern California is among its top markets at 3.4 closings per community per month [155]. Century's West segment lost $13.5 million before tax after $19.1 million of impairments. Its management said total charges of $19.6 million covered six communities, including some in the Bay Area [159].",
+      "KB's West Coast segment looks like the exception: net orders rose 8% to 937, though average selling price fell 6% to $641,800. But KB's management said on Sep 22 that Southern California drove a roughly $20,000 cut to its fourth-quarter price outlook [165]. LGI's management said Nov 3 that Southern California is among its top markets at 3.4 closings per community per month [155]. Century's West segment lost $13.5 million before tax after $19.1 million of impairments, some in the Bay Area [159]. Meritage's management said Oct 28 it prioritizes margin over volume in California, which needs higher incentives, and its West orders fell to 706 from 867 [179].",
       "Land sellers are holding out. Five Point's management said Oct 22 it will likely defer some 2026 land sales rather than sell in a weaker market, and revised full-year net income guidance to about $20 million [163]. Millrose's management said Oct 27 it had no option terminations and provided $1.1 billion for Dream Finders' Beazer deal [160], which gives terms to the $1.07 billion Beazer item seen Nov 9 [154]. Strata Land Partners launched Nov 2 [50][51]. Tri Pointe, now under Sumitomo Forestry, no longer discloses segments. KB's Albert Praw retires Nov 30 and will advise on land [5]. CBIA backed Prop. 45 to shorten CEQA review in posts through Nov 1 [173][175]."
     ],
     "ventura": [
@@ -413,70 +419,39 @@
   },
   "changes": [
     {
-      "text": "Five Point's management said Oct 22 it will likely defer some 2026 land sales and revised 2026 net income guidance to about $20 million.",
+      "text": "Forestar guided on Oct 29 to 12,000 to 13,000 lots and $1.4 billion to $1.5 billion of revenue in fiscal 2027, with its average lot price down to $108,300 from $115,700.",
       "refs": [
-        163
+        178
       ]
     },
     {
-      "text": "Century's management said Oct 28 it cut 2026 deliveries to 9,350 to 9,650 homes and starts 8%, confirming the Nov 23 headline.",
+      "text": "Meritage cut land spend 38% to $329 million, said it will scrutinize every fourth-quarter land deal with possible walkaways, and expects 2022 to 2025 lot costs to weigh through at least 2027.",
       "refs": [
-        159,
-        73
+        179
       ]
     },
     {
-      "text": "Millrose's management said Oct 27 it provided $1.1 billion for Dream Finders' Beazer deal and had no option terminations.",
+      "text": "Horton's management confirmed on Oct 29 its fiscal 2027 guide of 79,000 to 84,000 closings, elevated incentives and a 23% cancellation rate.",
       "refs": [
-        160,
-        154
+        177
       ]
     },
     {
-      "text": "KB's management said Sep 22 that Southern California drove a roughly $20,000 cut to its fourth-quarter price outlook.",
+      "text": "Meritage's management said Oct 28 it prioritizes margin over volume in California, where homes need higher incentives, and its West orders fell to 706 from 867.",
       "refs": [
-        165
-      ]
-    },
-    {
-      "text": "The Ventura County Star reported Nov 18 that county home prices dipped to a two-year low in October.",
-      "refs": [
-        168
+        179
       ]
     }
   ],
   "revisions": [
     {
-      "claim_id": "c2",
-      "earlier": "On Nov 23, the narrative said other builders may follow Century's $19.1 million California and Washington impairment in fourth-quarter filings.",
-      "now": "Pulte booked about 70 basis points of land impairments and NVR $24.8 million of contract land deposit impairments in the September quarter, and Century's total charges were $19.6 million across six communities.",
-      "why": "Those filings were already out, so Century's write-down was not isolated. The open question is whether more come in fourth-quarter results.",
-      "refs": [
-        161,
-        162,
-        159
-      ]
-    },
-    {
-      "claim_id": "c9",
-      "earlier": "On Nov 23, the narrative said construction cost pressure persists into 2027 land pricing.",
-      "now": "Input indexes are still high, but builders report flat to lower costs: Lennar's cost per square foot fell 6%, Century's direct costs fell 2% and lot costs 3%, and M/I's costs were flat on the prior quarter. NVR cited higher lot costs.",
-      "why": "Indexes track input prices, while builders report their own cost per home. Century expects its direct cost savings to level off.",
-      "refs": [
-        166,
-        159,
-        164,
-        162
-      ]
-    },
-    {
       "claim_id": "c1",
-      "earlier": "On Nov 23, the narrative expected re-trades and walk-aways on land options underwritten in 2024 and 2025.",
-      "now": "Millrose reported no option terminations across 22 counterparties and said builders are showing renewed interest in reloading land, while NVR booked $24.8 million of deposit impairments.",
-      "why": "The evidence is mixed. Millrose is one land banker's book, and NVR's charges show deposits at risk elsewhere.",
+      "earlier": "On Nov 23 the ledger expected re-trades and walk-aways on land options underwritten in 2024 and 2025, and it was later marked contradicted because Millrose reported no option terminations on Oct 27.",
+      "now": "Meritage's management said Oct 28 it will scrutinize every fourth-quarter land deal, with possible walkaways, after cutting land spend 38%.",
+      "why": "A public builder now says it may walk from deals, while Millrose's no-termination report covered a different land bank book. The claim is open again.",
       "refs": [
-        160,
-        162
+        179,
+        160
       ]
     }
   ],
@@ -488,7 +463,7 @@
       "status": "contradicted",
       "made": "2026-11-23",
       "updated": "2026-11-24",
-      "note": "Mixed evidence: Millrose reports no terminations, NVR booked deposit impairments."
+      "note": "Reopened: Meritage said Oct 28 it may walk from land deals in Q4."
     },
     {
       "id": "c2",
@@ -521,10 +496,10 @@
       "id": "c5",
       "section": "national",
       "text": "Horton guides 79,000 to 84,000 closings for fiscal 2027 against 84,202 in fiscal 2026 and expects incentives to stay elevated through fiscal 2027. A 10% year-over-year cut in starts reported Nov 23 is consistent with lower volume.",
-      "status": "open",
+      "status": "confirmed",
       "made": "2026-11-23",
-      "updated": "2026-11-23",
-      "note": ""
+      "updated": "2026-11-24",
+      "note": "Horton's management restated the guidance and elevated incentives on Oct 29."
     },
     {
       "id": "c6",
@@ -669,6 +644,24 @@
       "made": "2026-11-24",
       "updated": "2026-11-24",
       "note": ""
+    },
+    {
+      "id": "c22",
+      "section": "national",
+      "text": "Forestar expects to deliver 12,000 to 13,000 lots and $1.4 billion to $1.5 billion of revenue in fiscal 2027, below fiscal 2026's 13,545 lots and $1.6 billion, so developed-lot demand from Horton is shrinking and lot prices are falling.",
+      "status": "open",
+      "made": "2026-11-24",
+      "updated": "2026-11-24",
+      "note": ""
+    },
+    {
+      "id": "c23",
+      "section": "national",
+      "text": "Meritage expects full-year land spend below $1.5 billion and 2022 to 2025 lot costs to weigh on margins through at least 2027, so expect tougher land underwriting from it into 2027.",
+      "status": "open",
+      "made": "2026-11-24",
+      "updated": "2026-11-24",
+      "note": ""
     }
   ],
   "history": [
@@ -719,6 +712,22 @@
         "A Nov 20 review ranked LGI the best of the builders' third-quarter earnings."
       ],
       "revisions": []
+    },
+    {
+      "date": "2026-11-24",
+      "headline": "Five Point, a California land developer, will likely defer some 2026 land sales rather than sell into a weaker market.",
+      "changes": [
+        "Five Point's management said Oct 22 it will likely defer some 2026 land sales and revised 2026 net income guidance to about $20 million.",
+        "Century's management said Oct 28 it cut 2026 deliveries to 9,350 to 9,650 homes and starts 8%, confirming the Nov 23 headline.",
+        "Millrose's management said Oct 27 it provided $1.1 billion for Dream Finders' Beazer deal and had no option terminations.",
+        "KB's management said Sep 22 that Southern California drove a roughly $20,000 cut to its fourth-quarter price outlook.",
+        "The Ventura County Star reported Nov 18 that county home prices dipped to a two-year low in October."
+      ],
+      "revisions": [
+        "Pulte booked about 70 basis points of land impairments and NVR $24.8 million of contract land deposit impairments in the September quarter, and Century's total charges were $19.6 million across six communities.",
+        "Input indexes are still high, but builders report flat to lower costs: Lennar's cost per square foot fell 6%, Century's direct costs fell 2% and lot costs 3%, and M/I's costs were flat on the prior quarter. NVR cited higher lot costs.",
+        "Millrose reported no option terminations across 22 counterparties and said builders are showing renewed interest in reloading land, while NVR booked $24.8 million of deposit impairments."
+      ]
     }
   ],
   "sources": {
@@ -869,13 +878,6 @@
       "date": "2026-10-27",
       "kind": "call"
     },
-    "161": {
-      "title": "PulteGroup management, Q3 FY2026: Management said rising mortgage rates and inflation are pressuring demand, but a move-up and active-adult mix kept gross margin at 24.8%.",
-      "url": "https://www.sec.gov/Archives/edgar/data/822416/000082241626000041/phm-20261022.htm",
-      "source": "earnings release",
-      "date": "2026-10-22",
-      "kind": "call"
-    },
     "162": {
       "title": "NVR management, Q3 FY2026: Management said gross margin fell to 18.3% on higher lot costs, pricing pressure from affordability challenges and weak consumer sentiment.",
       "url": "https://www.sec.gov/Archives/edgar/data/906163/000090616326000099/nvr-20261022.htm",
@@ -931,9 +933,30 @@
       "source": "@CaliforniaBIA",
       "date": "2026-10-23",
       "kind": "x"
+    },
+    "177": {
+      "title": "D.R. Horton management, Q4 FY2026: Higher mortgage rates and affordability limits pressured demand, and management expects elevated incentives through fiscal 2027.",
+      "url": "https://www.sec.gov/Archives/edgar/data/882184/000088218426000119/dhi-20261029.htm",
+      "source": "earnings release",
+      "date": "2026-10-29",
+      "kind": "call"
+    },
+    "178": {
+      "title": "Forestar Group management, Q4 FY2026: Demand is pressured by affordability and rising mortgage rates, but management cites a strong balance sheet and $2.2 billion of contracted revenue.",
+      "url": "https://www.sec.gov/Archives/edgar/data/1406587/000162828026068139/for-20261029.htm",
+      "source": "earnings release",
+      "date": "2026-10-29",
+      "kind": "call"
+    },
+    "179": {
+      "title": "Meritage Homes management, Q3 FY2026: Management is protecting margin and liquidity in a weak, rate-driven market, withholding guidance, and cutting land spend and inventory until visibility improves.",
+      "url": "https://finance.yahoo.com/real-estate/articles/meritage-homes-mth-q3-2026-201734266.html",
+      "source": "earnings call",
+      "date": "2026-10-28",
+      "kind": "call"
     }
   },
-  "evidence_count": 22,
+  "evidence_count": 6,
   "x_accounts": {
     "LEN": {
       "id": "15397465",
@@ -1739,6 +1762,38 @@
     "collegecommunitycourtsventuraapplyforaffordablehousing": [
       1,
       "2026-11-24"
+    ],
+    "downtownlasvegaslandsellsforbignewhousingprojectbylennarhous": [
+      1,
+      "2026-11-24"
+    ],
+    "newhomesarenow40kcheaperthanexistinghomes": [
+      0,
+      "2026-11-24"
+    ],
+    "californialost4800constructionjobswhatsatstakeforlatinoworke": [
+      1,
+      "2026-11-24"
+    ],
+    "landlordsarewinningthehousingbattle": [
+      1,
+      "2026-11-24"
+    ],
+    "advancedrealestatebuyscasitasapartmentsinontariocaliforniafo": [
+      1,
+      "2026-11-24"
+    ],
+    "16yearoldshotinlegoutsidenortheastsidehomesanantoniopolicesa": [
+      0,
+      "2026-11-24"
+    ],
+    "envoyaddstwomustangmachestooxnardaffordablehousing": [
+      0,
+      "2026-11-24"
+    ],
+    "newusceconomicreportforecastsaseverespikeinsoutherncaliforni": [
+      1,
+      "2026-11-24"
     ]
   },
   "calls": {
@@ -2126,6 +2181,174 @@
         {
           "topic": "capital",
           "text": "Great Park Venture distributions and incentive compensation payments to the company totaled $40.4 million in the quarter. Management also pointed to growing recurring fee revenue from Hearthstone and the Great Park."
+        }
+      ],
+      "as_of": "2026-11-24"
+    },
+    "DHI": {
+      "ticker": "DHI",
+      "name": "D.R. Horton",
+      "acc": "0000882184-26-000119",
+      "filed": "2026-10-29",
+      "release_url": "https://www.sec.gov/Archives/edgar/data/882184/000088218426000119/dhi-20261029.htm",
+      "transcript_url": null,
+      "transcript_source": null,
+      "source": "release",
+      "period": "Q4 FY2026",
+      "headline": "Higher mortgage rates and affordability limits pressured demand, and management expects elevated incentives through fiscal 2027.",
+      "west": "",
+      "points": [
+        {
+          "topic": "rates",
+          "text": "Management said rising mortgage rates, affordability constraints and cautious consumer sentiment continued to pressure new home demand, making housing conditions more challenging during the fourth quarter."
+        },
+        {
+          "topic": "demand",
+          "text": "Reported results: fourth quarter net orders fell 7% to 18,619 homes and 9% in value to $6.6 billion. The cancellation rate rose to 23% from 20%."
+        },
+        {
+          "topic": "pricing",
+          "text": "Management said operators adjusted incentives, pricing and starts community by community to align inventory with demand. The company expects incentives to remain elevated in fiscal 2027, depending on market conditions."
+        },
+        {
+          "topic": "margins_costs",
+          "text": "Reported results: fourth quarter pre-tax margin was 10.8% (homebuilding 10.6%), and net income fell 18% to $741.8 million, including $91.4 million of rental segment inventory impairments."
+        },
+        {
+          "topic": "land",
+          "text": "Reported results: 68% of fiscal 2026 closings were on lots from Forestar or third parties, up from 65%. Owned and controlled lots totaled 570,600, with 77% controlled through contracts."
+        },
+        {
+          "topic": "capital",
+          "text": "Management cited strong liquidity ($7.2 billion) and low leverage (20.8% debt to capital). It repurchased $3.6 billion of stock in fiscal 2026 and raised the quarterly dividend 11% to $0.50."
+        },
+        {
+          "topic": "guidance",
+          "text": "Expectations: initial fiscal 2027 guidance calls for revenues of $30.0 billion to $32.0 billion, 79,000 to 84,000 homes closed, about $3.5 billion of operating cash flow and about $3.0 billion of buybacks."
+        }
+      ],
+      "as_of": "2026-11-24"
+    },
+    "TOL": {
+      "ticker": "TOL",
+      "name": "Toll Brothers",
+      "acc": "0000794170-26-000096",
+      "filed": "2026-08-18",
+      "release_url": "https://www.sec.gov/Archives/edgar/data/794170/000079417026000096/tol-20260818.htm",
+      "transcript_url": null,
+      "transcript_source": null,
+      "source": "release",
+      "period": "Q3 FY2026",
+      "headline": "Management called it a solid quarter in a challenging market, reaffirmed full-year guidance, and raised planned fiscal 2026 buybacks to $700 million.",
+      "west": "",
+      "points": [
+        {
+          "topic": "demand",
+          "text": "Management called the market challenging but noted net signed contracts rose 5% year over year to 2,508 homes, or $2.52 billion. Cancellations fell to 5.4% of signed contracts from 7.5%."
+        },
+        {
+          "topic": "margins_costs",
+          "text": "Reported adjusted gross margin was 25.6%, 35 basis points above guidance but down from 27.5% a year ago. GAAP margin was 23.9%, and SG&A rose to 10.0% of revenue from 8.8%."
+        },
+        {
+          "topic": "guidance",
+          "text": "Management expects full-year home sales revenue of about $10.5 billion and a 26.1% adjusted gross margin. Fourth quarter guidance is 3,450 to 3,550 deliveries and a 26.0% adjusted margin."
+        },
+        {
+          "topic": "land",
+          "text": "Reported land spend was $451.9 million for about 2,784 lots. Lots owned and optioned totaled about 75,500, 42% owned. Management expects 8% to 10% community count growth in fiscal 2026, with similar growth in 2027."
+        },
+        {
+          "topic": "capital",
+          "text": "Management said it returned $231 million to stockholders in the quarter and $506 million year to date. It raised planned fiscal 2026 repurchases from $650 million to $700 million, citing low leverage and ample liquidity."
+        },
+        {
+          "topic": "west",
+          "text": "Management gave no Pacific commentary. The segment table, which includes California, Oregon and Washington, shows Q3 contracts of 271 homes versus 284, with a lower average contract price of $1.47 million versus $1.80 million, and backlog of 524 homes versus 753."
+        }
+      ],
+      "as_of": "2026-11-24"
+    },
+    "MTH": {
+      "ticker": "MTH",
+      "name": "Meritage Homes",
+      "acc": "0000833079-26-000133",
+      "filed": "2026-10-28",
+      "release_url": "https://www.sec.gov/Archives/edgar/data/833079/000083307926000133/mth-20261028.htm",
+      "transcript_url": "https://finance.yahoo.com/real-estate/articles/meritage-homes-mth-q3-2026-201734266.html",
+      "transcript_source": "finance.yahoo.com",
+      "source": "call",
+      "period": "Q3 FY2026",
+      "headline": "Management is protecting margin and liquidity in a weak, rate-driven market, withholding guidance, and cutting land spend and inventory until visibility improves.",
+      "west": "Management said it prioritizes margin over volume in California, Denver and Arizona, which remain highly competitive and need higher incentives to move homes. West orders were 706 versus 867, though some affordable core infill West communities are doing well.",
+      "points": [
+        {
+          "topic": "demand",
+          "text": "Orders were 3,083, down 15%, with absorption of 3.0 per month and a 13% cancellation rate. Management said affordability and job worries make buyers hesitate, though long-term demographic demand is unchanged."
+        },
+        {
+          "topic": "rates",
+          "text": "Management said mortgage rates rose from about 6.6% to 7.5% during the quarter and the pressure continued into October. Without meaningful rate relief, it expects incentives to stay elevated near term."
+        },
+        {
+          "topic": "margins_costs",
+          "text": "Gross margin was 17.4%, or 17.9% adjusted, versus 19.1% a year ago. Management expects no significant recovery for several quarters, with 2022 to 2025 lot costs weighing through at least 2027."
+        },
+        {
+          "topic": "land",
+          "text": "Land spend was $329 million, down 38%. Management expects full-year spend below $1.5 billion, holds 71,800 lots (5.3 years), and will scrutinize every land deal in Q4, with possible walkaways."
+        },
+        {
+          "topic": "capital",
+          "text": "Cash was $677 million with no revolver borrowings and net debt to capital of 18.9%. Management prioritizes the dividend and liquidity, and plans spec inventory at the low end of four to six months in 2027."
+        },
+        {
+          "topic": "guidance",
+          "text": "Management gave no Q4 or preliminary 2026 guidance, citing poor visibility and roughly 190% backlog conversion. It reiterated 5% to 10% community count growth for 2026 and will discuss 2027 on the Q4 call."
+        }
+      ],
+      "as_of": "2026-11-24"
+    },
+    "FOR": {
+      "ticker": "FOR",
+      "name": "Forestar Group",
+      "acc": "0001628280-26-068139",
+      "filed": "2026-10-29",
+      "release_url": "https://www.sec.gov/Archives/edgar/data/1406587/000162828026068139/for-20261029.htm",
+      "transcript_url": null,
+      "transcript_source": null,
+      "source": "release",
+      "period": "Q4 FY2026",
+      "headline": "Demand is pressured by affordability and rising mortgage rates, but management cites a strong balance sheet and $2.2 billion of contracted revenue.",
+      "west": "",
+      "points": [
+        {
+          "topic": "demand",
+          "text": "Management said new home demand remains weighed down by affordability constraints and cautious consumer sentiment. Quarterly lots sold still rose 2% to 5,004, though revenue fell 13% to $580.8 million."
+        },
+        {
+          "topic": "rates",
+          "text": "Management said rising mortgage rates added further pressure on demand in the fourth quarter, on top of the existing affordability constraints."
+        },
+        {
+          "topic": "pricing",
+          "text": "Management said it will balance the pace and price of lot sales with investment timing. Reported average price per lot was $108,300 in the quarter, down from $115,700 a year earlier."
+        },
+        {
+          "topic": "margins_costs",
+          "text": "Reported fourth quarter pre-tax income fell 31% to $78.6 million, with a 13.5% pre-tax margin. Results included a $10.0 million asset sale gain and $7.6 million of real estate impairments."
+        },
+        {
+          "topic": "land",
+          "text": "Forestar owned and controlled 84,400 lots, down from 99,800. Of 58,200 owned lots, 8,100 were fully developed and 21,500 were under contract, representing about $2.2 billion of future revenue."
+        },
+        {
+          "topic": "capital",
+          "text": "Management highlighted $1.3 billion of liquidity, including $657.0 million of cash, a 6.7% net debt to capital ratio, and no senior note maturities until fiscal 2028."
+        },
+        {
+          "topic": "guidance",
+          "text": "For fiscal 2027, the company expects to deliver 12,000 to 13,000 lots and $1.4 billion to $1.5 billion of revenue, below fiscal 2026's 13,545 lots and $1.6 billion."
         }
       ],
       "as_of": "2026-11-24"
