@@ -232,3 +232,12 @@ Add an `X_BEARER_TOKEN` secret (X Developer Console, pay-per-use credits)
 and the run reads new posts from the official builder accounts listed in
 `X_CANDIDATES` in fetch.py. A handle is used only if the account's own
 website link or bio names the builder's domain.
+
+## Credit alerts
+
+Each run checks both paid APIs. Claude: a five-token test message (a small
+fraction of a cent) confirms the key, model and credits. X: the free
+/2/usage/credits endpoint returns the remaining balance, shown in the board
+header. If either API is out of credits, at its spend limit or rejects its
+key, both pages show an alert with a link to buy credits; X also warns when
+the balance drops below $2 (`X_LOW_BALANCE` in fetch.py).
