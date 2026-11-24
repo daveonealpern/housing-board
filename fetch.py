@@ -1791,7 +1791,10 @@ def resolve_x_accounts(state, keys):
         h = site_x_handle(X_ENT[k]["domain"])
         if h:
             site[k] = h
-    names = sorted({n for k in keys for n in X_ENT[k]["cands"] + ([site[k]] if k in site else [])})
+    # X usernames are 1 to 15 letters, digits or underscores; anything else
+    # makes the whole lookup fail.
+    names = sorted({n for k in keys for n in X_ENT[k]["cands"] + ([site[k]] if k in site else [])
+                    if re.fullmatch(r"[A-Za-z0-9_]{1,15}", n)})
     found = {}
     for i in range(0, len(names), 90):
         j = _x_get("users/by", usernames=",".join(names[i:i + 90]),
@@ -1908,8 +1911,9 @@ def pull_x_posts(state, previous):
             if stale:
                 state["x_resolved"] = TODAY.isoformat()
     except urllib.error.HTTPError as e:
-        x_http_error(e, "account lookup")
-        return previous or {}
+        x_http_error(e, "account lookup")            # keep reading the accounts already confirmed
+        if BILLING["x"]["status"] in ("rejected", "out"):
+            return previous or {}
     except Exception as e:
         print("  X lookup failed: %s" % e)
     since = state.setdefault("x_since", {})
