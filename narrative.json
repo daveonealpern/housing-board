@@ -150,7 +150,9 @@
     "https://x.com/meliahomes/status/1171132061857353728",
     "https://x.com/meliahomes/status/1167498406350086147",
     "https://x.com/meliahomes/status/1157080694453133313",
-    "https://x.com/meliahomes/status/1156270073620893696"
+    "https://x.com/meliahomes/status/1156270073620893696",
+    "https://news.google.com/rss/articles/CBMijwFBVV95cUxPY3YwTmUzNFMzaElWRjJDT1l0QXpkMENwWVBLNkFFQmhtc0J3ekYwU0ZLZHlsQzlvZXBpRVVfRzVhX2p1NUI2a2lDZWFaTXR6a05CSnZyWWxEc3VNNjZGMnhweWxNaWNSVDNqd3l0MGFiWVphTU4wZ0JROWxxRThjZlZtZEZfa2JEQnNKNEdUTQ?oc=5",
+    "https://news.google.com/rss/articles/CBMiugFBVV95cUxOOTEyS29mMWRia2hjSl9ISmNhQno3SXdmSThEZXVJNENuV0lLME9yeVQybW5pblNZVU1pN3FLMk1aUnVKOG0tUjA3U19GckUzakpERTJZNVl2bTdQNlRPOElYejFoVTBpcHVib2NiSWI5bXpqSC01WWZJOUkzUDkwWDBtenQ4a2duN3VHV3d4R0tTRmZUMV9WX0U1SEN5RThwRTVNbkRuaGljSzlwUmo3bFk5QnBidy1Ucnc?oc=5"
   ],
   "brief_as_of": "2026-11-20",
   "marks": {
@@ -347,13 +349,13 @@
     "FPH": 4.53,
     "LBR=F": 540.0,
     "HRC=F": 1410.0,
-    "HG=F": 5.506,
+    "HG=F": 5.503,
     "ALI=F": 2765.0,
-    "CL=F": 79.91,
-    "HO=F": 3.633,
+    "CL=F": 79.9,
+    "HO=F": 3.6326,
     "NG=F": 3.541
   },
-  "next_id": 137,
+  "next_id": 139,
   "since": "2026-11-24",
   "as_of": "2026-11-24",
   "headline": "California home sales have hit a nearly 3-year low, with the median price dipping to $886,760, adding to the Southern California slump.",
