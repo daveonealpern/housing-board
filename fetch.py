@@ -881,12 +881,92 @@ def _tidy(items, n=8, days=None):
         seen.add(key); out.append(it)
     return out[:n]
 
-def pull_news(previous):
+# Share-price chatter that search engines file under a builder's name: quote
+# pages, return charts, "rises but trails market" recaps, investor listicles.
+STOCK_CHATTER = re.compile(r"seasonal returns chart|stock price,? (news|chart|quote)|quote (&|and) history|"
+                           r"\b(rises?|falls?|gains?|slips?|climbs?|dips?) (but|yet|and) (trails?|lags?|outpaces?|beats?)|"
+                           r"(trails?|lags?)( behind)? (the )?market|what investors (should know|overlooked|need to know)|"
+                           r"takeaways for (long-term )?investors|^markets (&|and) stocks$|stock (price|chart),? (&|and) analysis|"
+                           r"\bstock (is|looks) (a )?(buy|sell)|\bshares? (rise|fall|drop|jump|slide|sink|surge)", re.I)
+
+NEWS_SCREEN_PROMPT = """Sort these news headlines for a land developer in Southern California who wants
+business news about land development, homebuilding and real estate, nothing else. Each line names the
+feed it came from; apply that feed's rule.
+
+- builders (public homebuilders): keep news about a builder's operations, land and lots, community
+  openings and closeouts, orders, results, guidance, strategy, executives, acquisitions, regional moves
+  and earnings-call commentary. Drop share-price moves, stock quote pages, return charts, investor opinion
+  and listicles, analyst ratings, law-firm shareholder alerts, and design-studio or promotional pieces.
+- ca_private (private builders in California): keep land deals, entitlements, community launches and
+  sellouts, financing, acquisitions and leadership changes. Drop promotion and events with no business
+  content.
+- landbank (land bankers, lot developers, real estate private equity): keep land, lot and capital deals,
+  fundraising, acquisitions, results, earnings-call commentary and material litigation. Drop share-price
+  chatter, investor opinion pieces, generic market pages and investing outside real estate.
+- west (housing market and policy): keep California and western US housing market, land and
+  construction news, and state or federal housing policy that affects builders. Drop other countries,
+  other US regions, charity events, and single affordable or seniors projects outside California.
+- ventura (Ventura County and nearby Southern California: Los Angeles, Santa Barbara, Orange, Riverside,
+  San Bernardino): keep real estate, development, planning, zoning, housing policy and market news for
+  that area. Drop other states, celebrity homes, consumer services and lifestyle.
+
+Return ONLY a JSON list, no prose: [{{"id": 0, "keep": true}}, ...] with one entry per headline.
+
+HEADLINES:
+{rows}
+"""
+NEWS_SCREENED = ("builders", "ca_private", "landbank", "west", "ventura")
+
+def _news_key(title):
+    return re.sub(r"[^a-z0-9]", "", (title or "").lower())[:60]
+
+def screen_news(candidates, state):
+    """Mark each candidate headline keep True or False. Decisions are cached in
+    the narrative state by headline, so a headline is only ever sent once; the
+    cheap model does the sorting, and a keyword rule stands in if it cannot."""
+    cache = state.setdefault("news_screen", {})
+    horizon = (TODAY - datetime.timedelta(days=60)).isoformat()
+    for k in [k for k, v in cache.items() if not isinstance(v, list) or v[1] < horizon]:
+        del cache[k]
+    todo = []
+    for feed, it in candidates:
+        hit = cache.get(_news_key(it["title"]))
+        if hit:
+            it["keep"] = bool(hit[0])
+        else:
+            todo.append((feed, it))
+    if todo and ANTHROPIC_KEY and BILLING["anthropic"].get("status") in ("ok", "low"):
+        for start in range(0, len(todo), 80):
+            batch = todo[start:start + 80]
+            rows = "\n".join("id %d | feed %s | %s | %s" % (i, f, it.get("source") or "", it["title"][:200])
+                              for i, (f, it) in enumerate(batch))
+            try:
+                reply = anthropic(NEWS_SCREEN_PROMPT.format(rows=rows), 4000, timeout=300,
+                                  room=6000, model=ANTHROPIC_FAST_MODEL)
+                a, b = reply.find("["), reply.rfind("]")
+                got = json.loads(reply[a:b + 1]) if a >= 0 and b > a else []
+                for r in got if isinstance(got, list) else []:
+                    try:
+                        f, it = batch[int(r.get("id"))]
+                    except (TypeError, ValueError, IndexError):
+                        continue
+                    it["keep"] = bool(r.get("keep"))
+                    cache[_news_key(it["title"])] = [1 if it["keep"] else 0, TODAY.isoformat()]
+            except Exception as e:
+                print("  news screen by model failed (%s); using the keyword screen" % e)
+                break
+        print("  news screen: %d new headlines sorted, %d kept" % (len(todo), sum(1 for _, it in todo if it.get("keep"))))
+    for _, it in todo:
+        if "keep" not in it:            # model unavailable: keyword rule, not cached
+            it["keep"] = not STOCK_CHATTER.search(it["title"])
+
+def pull_news(previous, state=None):
     prev = previous or {}
+    state = state if state is not None else {}
     out = {}
     def keep(item, kind):
         t = item["title"]
-        if NEWS_DROP.search(t) or WIRE_SLUG.match(t):
+        if NEWS_DROP.search(t) or WIRE_SLUG.match(t) or STOCK_CHATTER.search(t):
             return False
         if kind is None:
             return True
@@ -925,22 +1005,33 @@ def pull_news(previous):
     jobs = [(k, lambda k=k, q=q: search(k, q)) for k, q in NEWS_QUERIES.items()]
     jobs.append(("costs", lambda: [dict(i, source=i.get("source") or "NAHB Eye on Housing")
                                    for i in _rss_items(COSTS_FEED) if COST_WORDS.search(i["title"])]))
+    # Fetch every feed first, then sort all new headlines in one pass, then
+    # trim each feed to its length. A feed that fetched nothing keeps its last
+    # items; one whose headlines were all screened out is simply short today.
+    raw = {}
     for key, job in jobs:
+        days, n = NEWS_WINDOW.get(key, (None, 8))
         try:
-            days, n = NEWS_WINDOW.get(key, (None, 8))
-            items = _tidy(job(), n, days)
-            if not items:
+            got = _tidy(job(), n * 3 if key in NEWS_SCREENED else n, days)
+            if not got:
                 raise ValueError("no items")
-            out[key] = {"items": items, "fetched": TODAY.isoformat()}
-            print("  %-10s %d items" % (key, len(items)))
+            raw[key] = got
         except Exception as e:
             old = prev.get(key) or {}
+            cache = state.get("news_screen", {})
+            old = dict(old, items=[i for i in old.get("items", []) if (cache.get(_news_key(i["title"])) or [1])[0]])
             out[key] = old
             age = (TODAY - datetime.date.fromisoformat(old["fetched"])).days if old.get("fetched") else 99
             print("  %-10s failed (%s); keeping items from %s" % (key, e, old.get("fetched")))
             if age > 3:
                 note("News feed '%s' has not refreshed for %d days: %s" % (key, age, e))
         time.sleep(2)
+    screen_news([(k, it) for k, items in raw.items() if k in NEWS_SCREENED for it in items], state)
+    for key, items in raw.items():
+        days, n = NEWS_WINDOW.get(key, (None, 8))
+        kept = [dict((f, v) for f, v in it.items() if f != "keep") for it in items if it.get("keep", True)]
+        out[key] = {"items": _tidy(kept, n, days), "fetched": TODAY.isoformat()}
+        print("  %-10s %d items (%d dropped as off-topic)" % (key, len(out[key]["items"]), len(items) - len(kept)))
     return out
 
 
@@ -2383,8 +2474,8 @@ def main():
             previous_news = json.load(fh).get("news")
     except Exception:
         previous_news = None
-    print("News...");            news = pull_news(previous_news)
     narrative = load_narrative()
+    print("News...");            news = pull_news(previous_news, narrative)
     print("X posts...");         news["x_posts"] = pull_x_posts(narrative, (previous_news or {}).get("x_posts"))
     print("Narrative...")
     narrative = refresh_narrative(narrative, series, stocks, commodities, landbanks, builders, lb_filings,

@@ -89,6 +89,32 @@
   details.acc[open] > summary svg { transform: rotate(90deg); }
   .acc-body { padding: 0 16px 16px; display: flex; flex-direction: column; gap: 10px; }
   .acc-body p { margin: 0; font-size: 14px; line-height: 1.55; color: var(--stone); }
+  .acc-body .brief-lede { font-size: 14.5px; font-weight: 500; color: var(--paper); }
+
+  /* Collapsible sections: every section header folds its section, and the
+     choice is remembered on the phone. Long lists show the first few rows. */
+  details.fold > summary {
+    list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    min-height: 44px; cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  details.fold > summary::-webkit-details-marker { display: none; }
+  .fold-t { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .fold-t h2 { margin: 0; font-size: 16px; font-weight: 600; }
+  .fold-t small { font-size: 12px; color: var(--dim); line-height: 1.35; }
+  details.fold > summary .chev { flex-shrink: 0; transition: transform 0.15s ease; }
+  details.fold[open] > summary .chev { transform: rotate(90deg); }
+  details.fold:not([open]) > summary { border-bottom: 1px solid var(--line); padding-bottom: 8px; }
+  main > details.fold:not([open]) + details.fold:not([open]) { margin-top: -16px; }
+  .fold-body { display: flex; flex-direction: column; gap: var(--g, 10px); padding-top: 6px; }
+  .more-body { display: flex; flex-direction: column; gap: var(--g, 10px); }
+  details.more > summary {
+    list-style: none; display: flex; align-items: center; justify-content: center; gap: 6px;
+    min-height: 44px; font-size: 13px; font-weight: 600; color: var(--gold-light); cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  details.more > summary::-webkit-details-marker { display: none; }
+  details.more .m-o, details.more[open] .m-c { display: none; }
+  details.more[open] .m-o { display: inline; }
   sup.cite { font-size: 10px; margin-left: 1px; color: var(--dim); }
   sup.cite a { color: var(--gold-light); text-decoration: none; padding: 0 1px; }
   .bill { margin: 0 0 12px; padding: 11px 14px; border-radius: 12px; border: 1px solid var(--gold); background: rgba(184,130,58,0.10); font-size: 13.5px; line-height: 1.45; color: var(--stone); }
@@ -283,6 +309,36 @@ function yearAgo(obs){
   return obsBefore(obs, shiftYears(obs[obs.length-1].d, -1));
 }
 
+// ------------------------------------------------------- collapsible sections
+// fold() wraps a section so its header opens and closes it; what the reader
+// last chose for each section is kept on this phone. more() shows the first
+// few rows of a long list and tucks the rest behind "Show N more".
+const CHEV = '<svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D4A865" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>';
+const FOLD_KEY = 'hsb-folds';
+let folds = {};
+try { folds = JSON.parse(localStorage.getItem(FOLD_KEY) || '{}') || {}; } catch(e) { folds = {}; }
+function saveFold(id, open){
+  folds[id] = open ? 1 : 0;
+  try { localStorage.setItem(FOLD_KEY, JSON.stringify(folds)); } catch(e) {}
+}
+function fold(id, title, sub, body, opts){
+  if(!body) return '';
+  opts = opts || {};
+  const open = id in folds ? !!folds[id] : opts.open !== false;
+  return '<details class="fold" data-fold="' + esc(id) + '"' + (open ? ' open' : '') + '><summary><span class="fold-t"><h2>' + esc(title) + '</h2>'
+    + (sub ? '<small>' + esc(sub) + '</small>' : '') + '</span>' + CHEV + '</summary>'
+    + '<div class="fold-body" style="--g:' + (opts.gap == null ? 10 : opts.gap) + 'px">' + body + '</div></details>';
+}
+function more(rows, n, noun){
+  rows = (rows || []).filter(Boolean);
+  if(rows.length <= n + 1) return rows.join('');
+  const k = rows.length - n;
+  return rows.slice(0, n).join('') + '<details class="more"><summary><span class="m-c">Show ' + k + ' more' + (noun ? ' ' + noun : '') + '</span><span class="m-o">Show fewer</span></summary>'
+    + '<div class="more-body">' + rows.slice(n).join('') + '</div></details>';
+}
+// One HTML row per news item, so more() can split the list.
+const newsList = (items, max) => (items || []).slice(0, max || 12).map(it => newsRows([it], 1));
+
 // Display rules for each series the app shows. delta: 'pct' (year-over-year
 // percent change) or 'was' (the value a year ago).
 const SERIES = {
@@ -342,9 +398,9 @@ function upcoming(names, n){
   });
   rows.sort((a, b) => a.days - b.days);
   if(!rows.length) return '';
-  return '<section class="sec"><h2>Coming up</h2><div>' + rows.slice(0, n || 5).map((r, i) =>
+  return fold('coming', 'Coming up', 'Scheduled releases', rows.slice(0, n || 5).map((r, i) =>
     '<div class="list-row"><span>' + esc(r.label) + '</span><span class="' + (i === 0 ? 'mid' : 'dim') + '">'
-    + (r.days === 0 ? 'Today' : r.days === 1 ? 'Tomorrow' : esc(shortDate(r.date))) + '</span></div>').join('') + '</div></section>';
+    + (r.days === 0 ? 'Today' : r.days === 1 ? 'Tomorrow' : esc(shortDate(r.date))) + '</span></div>').join(''), {gap: 0});
 }
 
 // ------------------------------------------------------------------ builders
@@ -382,8 +438,8 @@ function renderBuilders(){
   const b = D.brief || {}, app = b.app || {};
   const sig = computeExecSignals(), pitch = execPitch(sig), paras = execSummary(sig);
   const rows = builderRows(), mode = modeMonth(rows);
-  const chevron = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D4A865" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>';
-  const acc = (title, sub, ps, foot) => ps && ps.length ? '<details class="acc"><summary><span class="acc-t">' + esc(title) + '<small>' + esc(sub) + '</small></span>' + chevron + '</summary><div class="acc-body">'
+  const chevron = CHEV;
+  const acc =(title, sub, ps, foot) => ps && ps.length ? '<details class="acc"><summary><span class="acc-t">' + esc(title) + '<small>' + esc(sub) + '</small></span>' + chevron + '</summary><div class="acc-body">'
     + ps.map(p => '<p>' + esc(p) + '</p>').join('') + (foot ? '<p class="note">' + esc(foot) + '</p>' : '') + '</div></details>' : '';
 
   const N = D.narrative;
@@ -425,50 +481,72 @@ function renderBuilders(){
   if(cr.length){
     const max = Math.max(50, cr[0].cancel);
     const nd = rows.filter(r => r.cancel == null).map(r => r.name), ytd = cr.filter(r => r.cancelYtd).map(r => r.name);
-    h += '<section class="sec"><div class="sec-head"><h2>Cancellation rate</h2><span>Latest quarter · higher is worse</span></div><div class="sec" style="gap:10px">'
-      + cr.map(r => {
+    h += fold('cancels', 'Cancellation rate', 'Latest quarter · higher is worse', cr.map(r => {
           const tone = r.cancel >= 18 ? 'worse' : r.cancel >= 10 ? 'mid' : 'better';
           const color = tone === 'worse' ? 'var(--worse)' : tone === 'mid' ? 'var(--gold-light)' : 'var(--better)';
           const note = r.cancelYtd ? 'YTD' : (r.q !== mode ? r.q : '');
           return '<div class="bar-row"><span class="lbl">' + esc(r.t) + '</span><div class="track"><div class="fill" style="width:' + (r.cancel / max * 100).toFixed(1) + '%;background:' + color + '"></div></div><span class="val">' + r.cancel + '% <small>' + esc(note) + '</small></span></div>';
-        }).join('') + '</div>'
-      + '<p class="note">' + [ytd.length ? ytd.join(' and ') + (ytd.length > 1 ? ' report' : ' reports') + ' a year-to-date rate.' : '', nd.length ? nd.join(' and ') + (nd.length > 1 ? ' do' : ' does') + ' not disclose a rate.' : '', 'Quarters differ by fiscal year; the month shows where a builder is off the usual calendar.'].filter(Boolean).join(' ') + '</p></section>';
+        }).join('')
+      + '<p class="note">' + [ytd.length ? ytd.join(' and ') + (ytd.length > 1 ? ' report' : ' reports') + ' a year-to-date rate.' : '', nd.length ? nd.join(' and ') + (nd.length > 1 ? ' do' : ' does') + ' not disclose a rate.' : '', 'Quarters differ by fiscal year; the month shows where a builder is off the usual calendar.'].filter(Boolean).join(' ') + '</p>');
   }
 
   const sr = rows.slice().sort((a, b) => (b.margin || 0) - (a.margin || 0));
-  h += '<section class="sec" id="scorecard" style="gap:4px"><div class="sec-head" style="margin-bottom:8px"><h2>Scorecard</h2><span>Sorted by gross margin</span></div>'
-    + '<div class="score-head"><span>Builder</span><span>Orders</span><span>Margin</span><span class="r">Stock</span></div>'
+  h += fold('scorecard', 'Scorecard', 'Sorted by gross margin', '<div class="score-head"><span>Builder</span><span>Orders</span><span>Margin</span><span class="r">Stock</span></div>'
     + sr.map(r => '<a class="score-row" href="#b/' + esc(r.t) + '"><span class="who"><b>' + esc(r.t) + '</b><small>' + esc(r.name) + ' · ' + esc(r.q) + '</small></span>'
         + '<span class="num ' + r.orders.tone + '">' + esc(r.orders.txt) + '</span>'
         + '<span class="mg"><span class="num">' + (r.margin != null ? r.margin.toFixed(1) + '%' : '—') + '</span><small>' + esc(r.msub) + '</small></span>'
         + '<span class="num r ' + (r.stock == null ? 'flat' : r.stock >= 0 ? 'better' : 'worse') + '">' + (r.stock == null ? '—' : signed(r.stock)) + '</span></a>').join('')
-    + '<p class="note" style="margin-top:8px">Orders are net orders versus the same quarter last year. Stock is year to date' + (D.live ? ', ' + esc(lowerFirst(priceWhen())) : ', at the last close') + '. Tap a builder for its filing.</p></section>';
+    + '<p class="note" style="margin-top:8px">Orders are net orders versus the same quarter last year. Stock is year to date' + (D.live ? ', ' + esc(lowerFirst(priceWhen())) : ', at the last close') + '. Tap a builder for its filing.</p>', {gap: 0});
+
+  // What the public builders have filed, posted and been reported on lately:
+  // 8-Ks, their official posts on X that passed the business-news screen, and
+  // news naming them. Same feed as the board's "Latest from the public builders".
+  const k8 = (D.builders || []).flatMap(x => (x.recent_8k || []).filter(k => (k.items || []).length)
+      .map(k => ({title: (SHORT[x.ticker] || x.name || x.ticker) + ' 8-K: ' + (k.item_names || []).join(', '), link: k.url, source: 'SEC EDGAR', published: k.filed})));
+  const latest = k8.concat(xNews('public'), ((D.news || {}).builders || {}).items || []).sort(byDate);
+  if(latest.length){
+    h += fold('pub-latest', 'Latest from the public builders', '8-K filings, official posts on X, news', more(newsList(latest, 15), 5), {gap: 0});
+  }
+
+  // The filing brief: rewritten each time a builder files a 10-Q or 10-K.
+  if((b.national || []).length){
+    const bsec = (label, key, sub) => (b[key] || []).length ? accH(label, sub, (b[key] || []).map(p => '<p>' + esc(p) + '</p>').join('')) : '';
+    const covered = Object.keys(b.covered || {}).length;
+    h += fold('pub-brief', 'What the filings say', 'Written ' + (b.as_of ? shortDate(b.as_of) : '') + ' from ' + covered + ' builders’ latest 10-Q and 10-K',
+      '<div class="card summary">'
+        + (b.headline ? '<div class="summary-head"><p class="brief-lede" style="margin:0;font-size:14.5px;font-weight:500;line-height:1.5">' + esc(b.headline) + '</p></div>' : '')
+        + bsec('National picture', 'national', 'Orders, margins, incentives')
+        + bsec('Land positions', 'land', 'Lots owned and optioned')
+        + bsec('Southern California', 'socal', 'Western segments')
+        + bsec('Ventura County', 'ventura', 'Local read')
+        + bsec('What it implies', 'takeaway', 'For land and lot pricing')
+        + '</div><p class="note">' + esc(briefFoot(b)) + '</p>');
+  }
 
   if((app.signals || []).length){
-    h += '<section class="sec"><h2>Land and balance sheet</h2>' + app.signals.map(s => '<div class="card signal"><b>' + esc(s.value) + '</b><span>' + esc(s.text) + '</span></div>').join('') + '</section>';
+    h += fold('land-bs', 'Land and balance sheet', 'From the latest filings', app.signals.map(s => '<div class="card signal"><b>' + esc(s.value) + '</b><span>' + esc(s.text) + '</span></div>').join(''));
   }
   const lb = b.landbanks;
   if(lb && (lb.public || []).length){
     const px = {}; (D.landbanks || []).forEach(r => px[r.ticker] = r);
     const fil = {}; (D.landbank_filings || []).forEach(f => fil[f.ticker] = f);
-    h += '<section class="sec"><div class="sec-head"><h2>Land bankers</h2><span>Who holds the builders\u2019 land</span></div>'
-      + (lb.summary ? '<p class="body-note">' + esc(lb.summary) + '</p>' : '')
+    h += fold('landbanks', 'Land bankers', 'Who holds the builders’ land',
+        (lb.summary ? '<p class="body-note">' + esc(lb.summary) + '</p>' : '')
       + lb.public.map(p => {
           const r = px[p.ticker], t = r ? priceTone(r.ytd_pct, false) : null, f = fil[p.ticker], url = (f && f.url) || p.url;
-          return '<div class="card lb"><div class="t"><div><b>' + esc(p.name) + '</b><span class="tk">' + esc(p.ticker) + ' \u00b7 facts from ' + esc(p.period || '') + '</span></div>'
+          return '<div class="card lb"><div class="t"><div><b>' + esc(p.name) + '</b><span class="tk">' + esc(p.ticker) + ' · facts from ' + esc(p.period || '') + '</span></div>'
             + (r ? '<div class="pv r"><b class="num">' + fmtPx(r) + '</b><div class="' + t.tone + '" style="font-size:12px">' + signedPct(r.ytd_pct) + ' YTD</div></div>' : '') + '</div>'
             + (r ? ytdSvg(r.series, t.color, 40) : '')
             + '<p class="note">' + esc(p.role || '') + '</p>'
             + '<ul>' + (p.facts || []).slice(0, 4).map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>'
-            + (url ? '<a href="' + esc(url) + '" target="_blank" rel="noopener">' + esc(f && f.form ? 'Latest ' + f.form + ' on SEC.gov' : 'Source filing') + ' \u2197</a>' : '') + '</div>';
+            + (url ? '<a href="' + esc(url) + '" target="_blank" rel="noopener">' + esc(f && f.form ? 'Latest ' + f.form + ' on SEC.gov' : 'Source filing') + ' ↗</a>' : '') + '</div>';
         }).join('')
-      + ((lb.private || []).length ? '<div style="margin-top:2px">' + lb.private.map(p => '<div class="stack-row"><div class="t"><b>' + esc(p.name) + '</b>' + (p.url ? '<a href="' + esc(p.url) + '" target="_blank" rel="noopener" class="mid" style="font-size:12px;text-decoration:none">source \u2197</a>' : '') + '</div><p>' + esc(p.text) + '</p></div>').join('') + '</div>' : '')
-      + '</section>';
+      + ((lb.private || []).length ? '<div style="--g:0px">' + more(lb.private.map(p => '<div class="stack-row"><div class="t"><b>' + esc(p.name) + '</b>' + (p.url ? '<a href="' + esc(p.url) + '" target="_blank" rel="noopener" class="mid" style="font-size:12px;text-decoration:none">source ↗</a>' : '') + '</div><p>' + esc(p.text) + '</p></div>'), 2, 'private land bankers') + '</div>' : ''));
     const ln = (((D.news || {}).landbank || {}).items || []).concat(xNews('capital')).sort(byDate);
-    if(ln.length) h += '<section class="sec" style="gap:0"><h2 style="margin-bottom:4px">Land banking news</h2>' + newsRows(ln, 6) + '</section>';
+    if(ln.length) h += fold('landbank-news', 'Land banking news', 'Land bankers, private equity and lenders, incl. posts on X', more(newsList(ln, 12), 4), {gap: 0});
   }
   if((app.next_filings || []).length){
-    h += '<section class="sec" style="gap:4px"><h2 style="margin-bottom:6px">Next filings</h2>' + app.next_filings.map((f, i) => '<div class="list-row"><span>' + esc(f.name) + '</span><span class="' + (i === 0 ? 'mid' : 'dim') + '">' + esc(f.when) + '</span></div>').join('') + '</section>';
+    h += fold('next-filings', 'Next filings', 'Expected 10-Q and 10-K dates', more(app.next_filings.map((f, i) => '<div class="list-row"><span>' + esc(f.name) + '</span><span class="' + (i === 0 ? 'mid' : 'dim') + '">' + esc(f.when) + '</span></div>'), 4), {gap: 0});
   }
   h += '<a class="btn-line" href="../">Open the full board</a>';
   return h;
@@ -505,20 +583,18 @@ function renderBuilder(tk){
   const own = num(m.lots_owned), opt = num(m.lots_optioned);
   if(own != null && opt != null){
     const tot = own + opt, po = Math.round(own / tot * 100);
-    h += '<section class="sec"><div class="sec-head"><h2>Lots controlled</h2><span class="num" style="color:var(--paper)">' + tot.toLocaleString('en-US') + '</span></div>'
-      + '<div class="lots" role="img" aria-label="' + po + ' percent owned, ' + (100 - po) + ' percent optioned"><div style="width:' + po + '%;background:var(--gold)"></div><div style="width:' + (100 - po) + '%;background:var(--slate)"></div></div>'
-      + '<div class="sec-head" style="font-size:12px"><span style="text-align:left;color:var(--paper)"><span class="mid">■</span> Owned ' + own.toLocaleString('en-US') + ' (' + po + '%)</span><span style="color:var(--paper)"><span style="color:#8FA3AD">■</span> Optioned ' + opt.toLocaleString('en-US') + ' (' + (100 - po) + '%)</span></div></section>';
+    h += fold('b-lots', 'Lots controlled', tot.toLocaleString('en-US') + ' lots', '<div class="lots" role="img" aria-label="' + po + ' percent owned, ' + (100 - po) + ' percent optioned"><div style="width:' + po + '%;background:var(--gold)"></div><div style="width:' + (100 - po) + '%;background:var(--slate)"></div></div>'
+      + '<div class="sec-head" style="font-size:12px"><span style="text-align:left;color:var(--paper)"><span class="mid">■</span> Owned ' + own.toLocaleString('en-US') + ' (' + po + '%)</span><span style="color:var(--paper)"><span style="color:#8FA3AD">■</span> Optioned ' + opt.toLocaleString('en-US') + ' (' + (100 - po) + '%)</span></div>');
   } else if(m.lots_owned || m.lots_optioned){
-    h += '<section class="sec" style="gap:4px"><h2 style="margin-bottom:6px">Lots</h2>'
-      + (m.lots_owned ? '<div class="list-row"><span>Owned</span><span class="v">' + esc(m.lots_owned) + '</span></div>' : '')
-      + (m.lots_optioned ? '<div class="list-row"><span>Optioned or controlled</span><span class="v">' + esc(m.lots_optioned) + '</span></div>' : '') + '</section>';
+    h += fold('b-lots', 'Lots', 'Owned and optioned', (m.lots_owned ? '<div class="list-row"><span>Owned</span><span class="v">' + esc(m.lots_owned) + '</span></div>' : '')
+      + (m.lots_optioned ? '<div class="list-row"><span>Optioned or controlled</span><span class="v">' + esc(m.lots_optioned) + '</span></div>' : ''), {gap: 0});
   }
 
   if(hist.length >= 2){
     const f = (v, s) => v == null ? '—' : (s ? signed(v, 1) : v + '%');
-    h += '<section class="sec"><h2>Quarter by quarter</h2><table class="hist"><thead><tr><th>Quarter</th><th>Orders</th><th>Margin</th><th>Cancels</th></tr></thead><tbody>'
+    h += fold('b-hist', 'Quarter by quarter', 'From each filing read', '<table class="hist"><thead><tr><th>Quarter</th><th>Orders</th><th>Margin</th><th>Cancels</th></tr></thead><tbody>'
       + hist.map(x => '<tr><td>' + esc(shortDate(x.quarter).split(' ')[0] + ' ' + x.quarter.slice(0, 4)) + '</td><td>' + f(x.orders_yoy_pct, true) + '</td><td>' + f(x.margin_pct) + '</td><td>' + f(x.cancel_rate_pct) + '</td></tr>').join('')
-      + '</tbody></table></section>';
+      + '</tbody></table>');
   }
 
   // Only the sentences of the brief that name this builder; most paragraphs
@@ -542,20 +618,17 @@ function renderBuilder(tk){
   const bn = (((D.news || {}).builders || {}).items || []).filter(it => (it.tickers || []).includes(tk));
   const xp = xNews('public', tk);
   if(k8.length || bn.length || xp.length){
-    h += '<section class="sec" style="gap:0"><div class="sec-head" style="margin-bottom:4px"><h2>Latest from ' + esc(SHORT[tk] || tk) + '</h2><span>8-Ks, news, posts</span></div>'
-      + k8.map(k => '<a class="news-row" href="' + esc(k.url) + '" target="_blank" rel="noopener"><span class="news-t">8-K: ' + esc((k.item_names || []).join(', ')) + '</span><span class="news-m">SEC \u00b7 ' + esc(shortDate(k.filed)) + '</span></a>').join('')
-      + newsRows(xp, 4)
-      + newsRows(bn, 6) + '</section>';
+    const k8i = k8.map(k => ({title: '8-K: ' + (k.item_names || []).join(', '), link: k.url, source: 'SEC EDGAR', published: k.filed}));
+    h += fold('b-latest', 'Latest from ' + (SHORT[tk] || tk), '8-K filings, official posts on X, news', more(newsList(k8i.concat(xp, bn).sort(byDate), 12), 5), {gap: 0});
   }
   const cr = (((b.construction || {}).builders) || []).find(r => r.ticker === tk);
   if(cr){
-    h += '<section class="sec" style="gap:0"><div class="sec-head" style="margin-bottom:4px"><h2>Construction cost</h2><span>' + esc(cr.period || '') + '</span></div>'
-      + '<div class="bc"><p>' + esc(cr.build_cost || '') + '</p>' + (cr.drivers ? '<p class="dim" style="font-size:12.5px">' + esc(cr.drivers) + '</p>' : '')
+    h += fold('b-cost', 'Construction cost', cr.period || '', '<div class="bc"><p>' + esc(cr.build_cost || '') + '</p>' + (cr.drivers ? '<p class="dim" style="font-size:12.5px">' + esc(cr.drivers) + '</p>' : '')
       + '<div class="kv">' + (cr.cycle_time ? 'Cycle <b>' + esc(cr.cycle_time) + '</b>' : '') + (cr.cycle_time && cr.margin ? ' \u00b7 ' : '') + (cr.margin ? 'Margin <b>' + esc(cr.margin) + '</b>' : '') + '</div>'
-      + (cr.source ? '<div class="kv">' + esc(cr.source) + '</div>' : '') + '</div></section>';
+      + (cr.source ? '<div class="kv">' + esc(cr.source) + '</div>' : '') + '</div>', {gap: 0});
   }
   if(sents.length){
-    h += '<section class="sec"><h2>In the brief</h2>' + sents.slice(0, 8).map(t => '<blockquote>' + esc(t) + '</blockquote>').join('') + '</section>';
+    h += fold('b-brief', 'In the brief', 'Sentences naming ' + (SHORT[tk] || tk), more(sents.slice(0, 8).map(t => '<blockquote>' + esc(t) + '</blockquote>'), 3));
   }
   if(filing.url){
     h += '<a class="btn-line" href="' + esc(filing.url) + '" target="_blank" rel="noopener">Read the ' + esc(filing.form || 'filing') + ' on SEC.gov</a>'
@@ -576,7 +649,7 @@ function renderSoCal(){
     const month = lastOf(levels[order[0][0]], 'median_price');
     const cell = (i, v) => '<span' + (i === 0 ? ' style="font-weight:600"' : '') + '>' + v + '</span>';
     const yrow = k => '<div class="rs y"><span>vs last year</span>' + order.map(x => { const p = yoy(levels[x[0]], k); return '<span class="' + (p == null ? 'dim' : k === 'homes_sold' ? (p < 0 ? 'worse' : 'better') : 'flat') + '">' + (p == null ? '—' : (k === 'homes_sold' ? arrow(p) : signed(p))) + '</span>'; }).join('') + '</div>';
-    h += '<section class="sec"><div class="sec-head"><h2>Resale market</h2><span>Redfin · ' + esc(month ? MONTHS[d8(month.d).getMonth()] : '') + '</span></div><div class="card resale">'
+    let rb = '<div class="card resale">'
       + '<div class="rs h"><span></span>' + order.map((x, i) => '<span' + (i === 0 ? ' class="mid"' : '') + '>' + x[1] + '</span>').join('') + '</div>'
       + '<div class="rs m"><span>Median price</span>' + order.map((x, i) => { const v = lastOf(levels[x[0]], 'median_price'); return cell(i, v ? '$' + Math.round(v.v / 1000) + 'K' : '—'); }).join('') + '</div>' + yrow('median_price')
       + '<div class="rs m"><span>Homes sold</span>' + order.map((x, i) => { const v = lastOf(levels[x[0]], 'homes_sold'); return cell(i, v ? Math.round(v.v).toLocaleString('en-US') : '—'); }).join('') + '</div>' + yrow('homes_sold')
@@ -589,26 +662,25 @@ function renderSoCal(){
       const pr = ps.every(v => Math.abs(v) < 2) ? 'Prices are holding' : ps.every(v => v > 0) ? 'Prices are rising' : ps.every(v => v < 0) ? 'Prices are falling' : 'Prices are mixed';
       const lo = Math.min(...ss.map(Math.abs)).toFixed(0), hi = Math.max(...ss.map(Math.abs)).toFixed(0);
       const sv = ss.every(v => v < -2) ? 'sales are down ' + (lo === hi ? lo : lo + '% to ' + hi) + '% at every level' : ss.every(v => v > 2) ? 'sales are up ' + (lo === hi ? lo : lo + '% to ' + hi) + '% at every level' : 'sales are mixed';
-      h += '<p class="note">' + pr + '; ' + sv + '.</p>';
+      rb += '<p class="note">' + pr + '; ' + sv + '.</p>';
     }
-    h += '</section>';
+    h += fold('resale', 'Resale market', 'Redfin · ' + (month ? MONTHS[d8(month.d).getMonth()] : '') + ' · Ventura, California, U.S.', rb);
   }
   if((app.west || []).length){
-    h += '<section class="sec" style="gap:4px"><div class="sec-head" style="margin-bottom:6px"><h2>Builders in the West</h2><span>Latest segment results</span></div>'
-      + app.west.map(w => '<div class="stack-row"><div class="t"><b>' + esc(w.name) + '</b><span class="' + (w.tone === 'better' ? 'better' : w.tone === 'worse' ? 'worse' : 'flat') + '">' + esc(w.stat) + '</span></div><p>' + esc(w.text) + '</p></div>').join('') + '</section>';
+    h += fold('west', 'Builders in the West', 'Latest segment results', more(app.west.map(w => '<div class="stack-row"><div class="t"><b>' + esc(w.name) + '</b><span class="' + (w.tone === 'better' ? 'better' : w.tone === 'worse' ? 'worse' : 'flat') + '">' + esc(w.stat) + '</span></div><p>' + esc(w.text) + '</p></div>'), 4, 'builders'), {gap: 0});
   }
   const pb = b.private_builders;
   if(pb && (pb.list || []).length){
-    h += '<section class="sec" style="gap:4px"><div class="sec-head" style="margin-bottom:6px"><h2>Private builders</h2><span>California</span></div>'
-      + (pb.summary ? '<p class="body-note" style="margin-bottom:4px">' + esc(pb.summary) + '</p>' : '')
-      + pb.list.map(p => '<div class="stack-row"><div class="t"><b>' + esc(p.name) + '</b></div><p>' + esc(p.text) + '</p></div>').join('') + '</section>';
     const pn = (((D.news || {}).ca_private || {}).items || []).concat(xNews('private')).sort(byDate);
-    h += '<section class="sec" style="gap:0"><h2 style="margin-bottom:4px">Private builder news</h2>'
-      + (pn.length ? newsRows(pn, 8) : '<p class="note">The news feed fills on the next nightly run.</p>') + '</section>';
+    h += fold('private-news', 'Private builder news', 'SoCal and Ventura builders, incl. official posts on X',
+      pn.length ? more(newsList(pn, 12), 4) : '<p class="note">The news feed fills on the next nightly run.</p>', {gap: 0});
+    h += fold('private', 'Private builders', 'California \u00b7 ' + pb.list.length + ' tracked',
+      (pb.summary ? '<p class="body-note" style="margin-bottom:4px">' + esc(pb.summary) + '</p>' : '')
+      + more(pb.list.map(p => '<div class="stack-row"><div class="t"><b>' + esc(p.name) + '</b></div><p>' + esc(p.text) + '</p></div>'), 3, 'builders'), {gap: 0});
   }
-  h += '<section class="sec" style="gap:4px"><h2 style="margin-bottom:6px">California indicators</h2>' + ['CABPPRIV', 'LXXRSA', 'CASTHPI', 'CAUR'].map(seriesRow).join('') + '</section>';
+  h += fold('ca-ind', 'California indicators', 'Permits, prices, jobs', ['CABPPRIV', 'LXXRSA', 'CASTHPI', 'CAUR'].map(seriesRow).join(''), {gap: 0});
   if((app.watch || []).length){
-    h += '<section class="sec"><h2>Regulatory and market watch</h2>' + app.watch.map((w, i) => '<div class="card watch' + (i === 0 ? ' accent first' : '') + '"><span class="k">' + esc(w.label) + '</span><p>' + esc(w.text) + '</p></div>').join('') + '</section>';
+    h += fold('watch', 'Regulatory and market watch', app.watch.length + ' items', more(app.watch.map((w, i) => '<div class="card watch' + (i === 0 ? ' accent first' : '') + '"><span class="k">' + esc(w.label) + '</span><p>' + esc(w.text) + '</p></div>'), 2, 'items'));
   }
   return h;
 }
@@ -631,8 +703,7 @@ function renderCosts(){
   }
   const fut = D.commodities || [];
   if(fut.length){
-    h += '<section class="sec" style="gap:0"><div class="sec-head" style="margin-bottom:2px"><h2>Commodities</h2><span>Futures, year to date' + (D.live ? ' \u00b7 ' + esc(liveLabel()) : '') + '</span></div>'
-      + fut.map(r => {
+    h += fold('commod', 'Commodities', 'Futures, year to date' + (D.live ? ' \u00b7 ' + liveLabel() : ''), more(fut.map(r => {
           const t = priceTone(r.ytd_pct, true), rg = ytdRange(r);
           return '<div class="fut"><div class="t"><div><div class="nm">' + esc(r.name) + '</div><div class="un">' + esc(r.unit || '') + '</div></div>'
             + '<div class="pv"><b>' + fmtPx(r) + '</b><span class="' + t.tone + '">' + signedPct(r.ytd_pct) + ' YTD</span>'
@@ -640,15 +711,14 @@ function renderCosts(){
             + ytdSvg(r.series, t.color, 50)
             + (rg ? '<div class="fut-scale"><span>' + esc(rg.startLabel) + ' ' + esc(rg.start) + '</span><span>low ' + esc(rg.lo) + ' \u00b7 high ' + esc(rg.hi) + '</span></div>' : '')
             + '<p>' + esc(r.why || '') + '</p></div>';
-        }).join('')
-      + '<p class="note" style="margin-top:8px">Dashed line is the first close of the year. Red means the input is costing more.</p></section>';
+        }), 3, 'commodities')
+      + '<p class="note" style="margin-top:8px">Dashed line is the first close of the year. Red means the input is costing more.</p>', {gap: 0});
   }
   if(mats.length){
     const max = Math.max(50, ...mats.map(x => Math.abs(x.p)));
     const last = D.series['WPUSI012011'] ? D.series['WPUSI012011'].obs.slice(-1)[0] : null;
-    h += '<section class="sec" style="gap:12px"><div class="sec-head"><h2>Materials</h2><span>Producer prices' + (last ? ' · ' + MONTHS[d8(last.d).getMonth()] : '') + ', vs last year</span></div>'
-      + mats.map(x => { const tone = toneOf(x.id), color = tone === 'worse' ? (x.p >= 12 ? 'var(--worse)' : 'var(--gold-light)') : tone === 'better' ? 'var(--better)' : 'var(--stone)';
-          return '<div class="bar-row cost-row"><span class="lbl">' + esc(x.label) + '</span><div class="track"><div class="fill" style="width:' + (Math.abs(x.p) / max * 100).toFixed(1) + '%;background:' + color + '"></div></div><span class="val" style="font-size:14px;color:' + color + '">' + signed(x.p) + '</span></div>'; }).join('') + '</section>';
+    h += fold('materials', 'Materials', 'Producer prices' + (last ? ' · ' + MONTHS[d8(last.d).getMonth()] : '') + ', vs last year', mats.map(x => { const tone = toneOf(x.id), color = tone === 'worse' ? (x.p >= 12 ? 'var(--worse)' : 'var(--gold-light)') : tone === 'better' ? 'var(--better)' : 'var(--stone)';
+          return '<div class="bar-row cost-row"><span class="lbl">' + esc(x.label) + '</span><div class="track"><div class="fill" style="width:' + (Math.abs(x.p) / max * 100).toFixed(1) + '%;background:' + color + '"></div></div><span class="val" style="font-size:14px;color:' + color + '">' + signed(x.p) + '</span></div>'; }).join(''), {gap: 12});
   }
   const tile = (id, label, f, wide, costTone) => {
     const s = D.series[id]; if(!s || !s.obs.length) return '';
@@ -662,20 +732,19 @@ function renderCosts(){
   if(cons && (cons.builders || []).length){
     const order = ['LEN','DHI','PHM','KBH','CCS','MTH','TOL','NVR','MHO','LGIH'];
     const rows = cons.builders.slice().sort((a, b) => (order.indexOf(a.ticker) + 99) % 99 - (order.indexOf(b.ticker) + 99) % 99);
-    h += '<section class="sec" style="gap:0"><div class="sec-head" style="margin-bottom:6px"><h2>What builders pay to build</h2><span>' + (cons.as_of ? 'Written ' + esc(shortDate(cons.as_of)) : 'From filings') + '</span></div>'
-      + (cons.summary ? '<p class="body-note" style="margin-bottom:6px">' + esc(cons.summary) + '</p>' : '')
-      + rows.map(r => '<a class="bc" href="#b/' + esc(r.ticker) + '" style="text-decoration:none;color:inherit"><div class="t"><b>' + esc(SHORT[r.ticker] || r.name) + '</b><span>' + esc(r.period || '') + '</span></div>'
+    h += fold('build-cost', 'What builders pay to build', (cons.as_of ? 'Written ' + shortDate(cons.as_of) : 'From filings') + ' \u00b7 tap a builder for detail',
+        (cons.summary ? '<p class="body-note" style="margin-bottom:6px">' + esc(cons.summary) + '</p>' : '')
+      + more(rows.map(r => '<a class="bc" href="#b/' + esc(r.ticker) + '" style="text-decoration:none;color:inherit"><div class="t"><b>' + esc(SHORT[r.ticker] || r.name) + '</b><span>' + esc(r.period || '') + '</span></div>'
           + '<p>' + esc(r.build_cost || '') + '</p>'
-          + '<div class="kv">' + (r.cycle_time ? 'Cycle <b>' + esc(r.cycle_time) + '</b>' : '') + (r.cycle_time && r.margin ? ' \u00b7 ' : '') + (r.margin ? 'Margin <b>' + esc(r.margin) + '</b>' : '') + '</div></a>').join('')
-      + '</section>';
+          + '<div class="kv">' + (r.cycle_time ? 'Cycle <b>' + esc(r.cycle_time) + '</b>' : '') + (r.cycle_time && r.margin ? ' \u00b7 ' : '') + (r.margin ? 'Margin <b>' + esc(r.margin) + '</b>' : '') + '</div></a>'), 3, 'builders'), {gap: 0});
     if((cons.market || []).length){
       const ms = cons.market_source || {};
-      h += '<section class="sec"><div class="sec-head"><h2>Input prices</h2><span>' + esc(ms.name ? ms.name.replace(/^NAHB analysis of BLS producer prices, /, 'BLS via NAHB \u00b7 ') : '') + '</span></div><div class="tiles">'
-        + cons.market.map(m => '<div class="tile"><span class="k">' + esc(m.label) + '</span><span class="mk-v">' + esc(m.value) + '</span><span class="s dim">' + esc(m.text) + '</span></div>').join('') + '</div></section>';
+      h += fold('input-px', 'Input prices', ms.name ? ms.name.replace(/^NAHB analysis of BLS producer prices, /, 'BLS via NAHB \u00b7 ') : '', '<div class="tiles">'
+        + cons.market.map(m => '<div class="tile"><span class="k">' + esc(m.label) + '</span><span class="mk-v">' + esc(m.value) + '</span><span class="s dim">' + esc(m.text) + '</span></div>').join('') + '</div>');
     }
   }
   const cn = ((D.news || {}).costs || {}).items || [];
-  if(cn.length) h += '<section class="sec" style="gap:0"><h2 style="margin-bottom:4px">From NAHB on costs</h2>' + newsRows(cn, 5) + '</section>';
+  if(cn.length) h += fold('nahb', 'From NAHB on costs', 'Eye on Housing', more(newsList(cn, 8), 3), {gap: 0});
   h += upcoming(COST_RELEASES, 4);
   return h;
 }
@@ -699,9 +768,8 @@ function renderMacro(){
   };
   h += '<section class="tiles">' + rate('MORTGAGE30US', '30-year fixed', v => v.toFixed(2) + '%') + rate('SPREAD', 'Spread over 10-year', v => Math.round(v) + ' bp')
     + rate('DGS10', '10-year Treasury', v => v.toFixed(2) + '%') + rate('FEDFUNDS', 'Fed funds', v => v.toFixed(2) + '%') + '</section>';
-  h += '<section class="sec" style="gap:4px"><div class="sec-head" style="margin-bottom:6px"><h2>Housing activity</h2><span>Annual rate · vs last year</span></div>'
-    + ['HOUST1F', 'PERMIT1', 'HSN1F', 'MSACSR', 'EXHOSLUSM495S', 'PRRESCONS'].map(seriesRow).join('') + '</section>';
-  h += '<section class="sec" style="gap:4px"><h2 style="margin-bottom:6px">Consumers and credit</h2>' + ['UMCSENT', 'DRSFRMACBS'].map(seriesRow).join('') + '</section>';
+  h += fold('activity', 'Housing activity', 'Annual rate · vs last year', ['HOUST1F', 'PERMIT1', 'HSN1F', 'MSACSR', 'EXHOSLUSM495S', 'PRRESCONS'].map(seriesRow).join(''), {gap: 0});
+  h += fold('consumers', 'Consumers and credit', 'Sentiment and delinquency', ['UMCSENT', 'DRSFRMACBS'].map(seriesRow).join(''), {gap: 0});
   h += upcoming(MACRO_RELEASES, 5);
   return h;
 }
@@ -779,6 +847,12 @@ window.addEventListener('hashchange', () => {
   lastHash = location.hash;
 });
 document.getElementById('status').addEventListener('click', load);
+// Only a tap on a section header counts as the reader's choice; the click
+// arrives before the section opens or closes, so the new state is the opposite.
+view.addEventListener('click', e => {
+  const sm = e.target.closest && e.target.closest('details.fold > summary');
+  if(sm) saveFold(sm.parentElement.dataset.fold, !sm.parentElement.open);
+});
 document.addEventListener('visibilitychange', () => {
   if(document.visibilityState === 'visible' && Date.now() - loadedAt > 15 * 60 * 1000) load();
 });

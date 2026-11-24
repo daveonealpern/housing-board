@@ -161,6 +161,12 @@ builders in the West, regulatory watch, cost notes, next filings) come from the 
 block in `brief.json`, which the automatic brief refresh maintains once
 `ANTHROPIC_API_KEY` is set.
 
+Every section header on the app opens and closes its section, and the phone
+remembers what you closed. Long lists show the first few rows with a "Show N more"
+row under them. The Builders tab carries the same "Latest from the public builders"
+feed as the board (8-K filings, official posts on X, news) and the filing brief
+under "What the filings say".
+
 ## Live share prices
 
 The nightly run stores each builder's closing price. To keep prices current
@@ -232,6 +238,22 @@ Add an `X_BEARER_TOKEN` secret (X Developer Console, pay-per-use credits)
 and the run reads new posts from the official builder accounts listed in
 `X_CANDIDATES` in fetch.py. A handle is used only if the account's own
 website link or bio names the builder's domain.
+
+Posts older than 45 days are ignored (dormant accounts otherwise hand back posts
+from years ago), and each new post is sorted by the fast model: business news is
+kept (rates and market, land and capital, deals, results, leadership, policy and
+costs, and Southern California land, entitlements, launches, sellouts and price
+changes); ads, design, lifestyle and events are dropped.
+
+### Business-news screen on the news feeds
+
+The same fast model sorts every new headline in the builders, private builders,
+land banking, West and Ventura feeds against a rule for each feed: company
+operations, land, capital, results and policy stay; share-price chatter, quote
+pages, investor listicles, law-firm alerts, promotion and out-of-area items go.
+Each headline is sorted once and the decision is remembered in `narrative.json`
+(`news_screen`), so the daily cost is a cent or two. Without the Claude key, a
+keyword rule drops the share-price chatter only.
 
 ## Credit alerts
 

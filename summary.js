@@ -487,9 +487,13 @@ function xBalanceLine(){
 
 // Official posts on X that passed the business-news screen, as news rows.
 // group: 'public', 'private' or 'capital'; optional key narrows to one company.
+// Posts older than this are not shown even if an older data file still holds
+// them; the collector applies the same 45-day window.
+const X_MAX_AGE_DAYS = 45;
 function xNews(group, key){
+  const cutoff = new Date(Date.now() - X_MAX_AGE_DAYS * 864e5).toISOString().slice(0, 10);
   return ((((D.news || {}).x_posts || {}).items) || [])
-    .filter(p => p.keep && (!group || (p.group || 'public') === group) && (!key || p.key === key || p.ticker === key))
+    .filter(p => p.keep && (p.published || '') >= cutoff && (!group || (p.group || 'public') === group) && (!key || p.key === key || p.ticker === key))
     .map(p => ({title: p.summary || p.text, link: p.link, published: p.published,
                 source: (p.name || '@' + p.handle) + ' on X' + (p.topic && typeof X_TOPIC_NAMES !== 'undefined' ? ' · ' + (X_TOPIC_NAMES[p.topic] || '') : '')}));
 }
