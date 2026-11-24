@@ -1666,17 +1666,19 @@ def refresh_resale_paragraph(brief, resale):
 # once a month, and each timeline is read from the last post already seen,
 # so only new posts are billed.
 X_BEARER = os.environ.get("X_BEARER_TOKEN", "").strip()
+# Verified on the first run (Nov 23, 2026): Lennar, PulteHomes, tollbrothers,
+# kbhome, MeritageHomes, LGIHomes. The others are still being searched for.
 X_CANDIDATES = {
-    "DHI":  (["DRHorton"], "drhorton.com"),
+    "DHI":  (["DRHorton", "DR_Horton", "DRHortonHomes", "drhortonamerica"], "drhorton.com"),
     "LEN":  (["Lennar"], "lennar.com"),
     "PHM":  (["PulteHomes", "PulteGroup"], "pulte"),
     "TOL":  (["TollBrothers"], "tollbrothers.com"),
     "KBH":  (["KBHome"], "kbhome.com"),
     "MTH":  (["MeritageHomes"], "meritagehomes.com"),
-    "CCS":  (["CenturyCommunit"], "centurycommunities.com"),
-    "MHO":  (["MIHomes"], "mihomes.com"),
+    "CCS":  (["CenturyCommunit", "CenturyComm", "CenturyHomes", "CCSHomes"], "centurycommunities.com"),
+    "MHO":  (["MIHomes", "MIHomesInc", "MI_Homes"], "mihomes.com"),
     "LGIH": (["LGIHomes"], "lgihomes.com"),
-    "NVR":  (["RyanHomes"], "ryanhomes.com"),
+    "NVR":  (["RyanHomes", "NVHomes", "NVRInc"], "ryanhomes.com"),
 }
 
 def _x_get(path, **params):
@@ -1734,13 +1736,19 @@ def pull_x_posts(state, previous):
     accts = state.setdefault("x_accounts", {})
     try:
         stale = (TODAY - datetime.date.fromisoformat(state.get("x_resolved", "2000-01-01"))).days > 30
-        if not accts or stale:
-            names = [n for c, _ in X_CANDIDATES.values() for n in c]
+        missing = [tk for tk in X_CANDIDATES if tk not in accts]
+        retry = bool(missing) and os.environ.get("GITHUB_EVENT_NAME") == "workflow_dispatch"
+        if not accts or stale or retry:
+            # A manual run retries only the builders not yet found; the full
+            # lookup repeats monthly. Lookups are billed per account found.
+            todo = X_CANDIDATES if (not accts or stale) else {tk: X_CANDIDATES[tk] for tk in missing}
+            names = [n for c, _ in todo.values() for n in c]
             j = _x_get("users/by", usernames=",".join(names),
                        **{"user.fields": "url,entities,description,verified,name"})
             found = {u["username"].lower(): u for u in j.get("data", [])}
-            accts.clear()
-            for tk, (cands, domain) in X_CANDIDATES.items():
+            if todo is X_CANDIDATES:
+                accts.clear()
+            for tk, (cands, domain) in todo.items():
                 for c in cands:
                     u = found.get(c.lower())
                     if not u:
@@ -1750,6 +1758,8 @@ def pull_x_posts(state, previous):
                     if domain in (urls + " " + (u.get("description") or "")).lower():
                         accts[tk] = {"id": u["id"], "username": u["username"], "name": u.get("name")}
                         break
+                    print("  X %-5s @%s exists but does not link %s (name %r, link %r)"
+                          % (tk, u["username"], domain, u.get("name"), urls[:80]))
                 print("  X %-5s %s" % (tk, accts.get(tk, {}).get("username", "no verified account")))
             state["x_resolved"] = TODAY.isoformat()
     except urllib.error.HTTPError as e:
@@ -1871,22 +1881,29 @@ def build_evidence(state, series, stocks, commodities, landbanks, builders, lb_f
         nid += 1
 
     # data releases newer than the last edition saw
+    # marks hold [date, value] of each series as the last edition saw it, so a
+    # daily series is compared with what the narrative last said, not with the
+    # month-end point stored before it.
     first_run = not marks
     for sid, sr in series.items():
         obs = sr.get("obs") or []
         if not obs:
             continue
         last = obs[-1]
-        if not first_run and last["d"] > marks.get(sid, ""):
+        seen_at = marks.get(sid)
+        seen_d, seen_v = (seen_at if isinstance(seen_at, list) else [seen_at or "", None])
+        if not first_run and last["d"] > seen_d:
             prev = obs[-2] if len(obs) > 1 else None
             y = _yoy(obs)
+            if seen_v is not None:
+                before = "the previous edition had %s for %s" % (_fmt_val(seen_v, sr.get("units")), seen_d)
+            else:
+                before = "previous %s (%s)" % (_fmt_val(prev["v"], sr.get("units")) if prev else "n/a", prev["d"] if prev else "")
             add("data", "%s: %s for %s" % (sr.get("name", sid), _fmt_val(last["v"], sr.get("units")), last["d"]),
-                "previous %s (%s)%s. Units: %s. %s" % (
-                    _fmt_val(prev["v"], sr.get("units")) if prev else "n/a", prev["d"] if prev else "",
-                    "; %+.1f%% year over year" % y if y is not None else "", sr.get("units", ""),
-                    sr.get("read", "")),
+                "%s%s. Units: %s. %s" % (before, "; %+.1f%% year over year" % y if y is not None else "",
+                                          sr.get("units", ""), sr.get("read", "")),
                 "https://fred.stlouisfed.org/series/%s" % sid, "FRED", last["d"], key="data:%s:%s" % (sid, last["d"]))
-        marks[sid] = last["d"]
+        marks[sid] = [last["d"], last["v"]]
 
     # price moves since the last edition, as one item per group
     px = dict(state.get("px", {}))
