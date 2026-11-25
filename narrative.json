@@ -1,5 +1,5 @@
 {
-  "checked": "2026-11-24",
+  "checked": "2026-11-25",
   "fail_count": 0,
   "seen": [
     "market:Public builder share prices:2026-11-23",
@@ -206,7 +206,42 @@
     "https://www.housingwire.com/articles/rate-equitysimple-home-equity-loan/",
     "https://www.housingwire.com/articles/homebuilder-underwriting-bet/",
     "https://www.housingwire.com/articles/wire-fraud-shared-verification/",
-    "https://www.housingwire.com/articles/first-list-price-cma/"
+    "https://www.housingwire.com/articles/first-list-price-cma/",
+    "data:T10Y2Y:2026-11-24",
+    "data:DGS2:2026-11-23",
+    "data:DGS10:2026-11-23",
+    "data:DGS30:2026-11-23",
+    "data:SOFR:2026-11-24",
+    "data:SOFR30DAYAVG:2026-11-25",
+    "data:SOFR90DAYAVG:2026-11-25",
+    "data:DPRIME:2026-11-23",
+    "data:BAMLC0A4CBBB:2026-11-23",
+    "data:BAMLH0A0HYM2:2026-11-23",
+    "data:CSUSHPINSA:2026-09-01",
+    "data:CASTHPI:2026-07-01",
+    "data:LXXRSA:2026-09-01",
+    "market:Public builder share prices:2026-11-24",
+    "market:Land banker share prices:2026-11-24",
+    "market:Construction commodity futures:2026-11-25",
+    "https://news.google.com/rss/articles/CBMivwFBVV95cUxPVXpxREVlVzZVQUtoRXFvX29lLW1DbWZLRUNRUGpLTDcxQjdkblpaeS1mZ3I3c29USFJrWC05eGlSbmNtTHVNRUc2M2NkTjc1MGNIejJjQm9VSTZoakpjZk03VXNvWXU1ZmFRcFdlZVFrTnpkU2tQSWN3LTdnNUM0Z1dsRi12NG0xRl91eVR6R1VycXJGc0xuZ2dMWlN6R1RRejdKNjBmaEtTdTlLR3dRTWZnZjZ4b1hMLTZ2Tm9odw?oc=5",
+    "https://news.google.com/rss/articles/CBMilwFBVV95cUxOc1lSS2ZpenQ3OUFUc0hheDdTeFJ4Q1VLLXIwbE1ENGJmZHhkNWtNTzlJN21MVU94SWtrckhBRjJwbmxDRVZJVXgyS2RmZVh1c3dsV1phV3cwdV85Q1JjRG5IeFhlWUVoVTBnb2p2OVFxYnFhRVAwVkM2LVNPTUUxb1RWalVzRDIxUlVfOGNteHI2dzBNa2JR?oc=5",
+    "https://news.google.com/rss/articles/CBMiqwFBVV95cUxPSXpkZWl1ZTAtZXphY2E3M05JNkowamN6NzYwZ2hlWHRXV0hndzVJZjdEeWo0VmxkRzBKSXZka1p1SG51R2VjdVJQSE90WHpnMm9vd3B0N1I4amM4YVp1bVMxOVRFUHUwS21vS1gxeVFtd1REanVOWGVIcTY4bXYwNkwxSzNoVEdCMGJMckFCMHREcTVwWUdvUTFScTRqRG44VzU2WEgxUFlYNzQ?oc=5",
+    "https://news.google.com/rss/articles/CBMiowFBVV95cUxQUXlNS1RqQk1DYkVOa2Ntc2RIR3hycllXaGRPWnVwdHFIVmJoaVFqZ0cwSjhXSm5ZMnpoRjhHODVCUzhISnB0emVnVHVFMVZheE9Idk84TjNqejFSbWs2Y0dlNF9SVUdWNVJXRGpuRnV6X2QxWUJhM3ZJazY5WnZ5Yi1YMFFhemNqUW9LTjdMalV0UW5VeDl4R2t0UkkzcDRzc0pv?oc=5",
+    "https://news.google.com/rss/articles/CBMiswFBVV95cUxPUVNSOVAzaVBmU0IyRFV5a2JBQmZ6aHdkaWVzOTJfaVBWQXpVeEJFRDQ3LTA5RmY1LXc2VlYtZGQ1NFNoZkotLXpHSkNBRkxqRVRPT3JIMXdQTWV5dUpLRUh4V2lXMldnMmlBaC1WZWNnYlFJbDNzeWdoVng1TGJNLU04NVJiTVRiZEZuTlJXZkdOcXhSbnE3N0RiOFdFb1BFZmRsdFJsVU8tTk84eTRMdVZSdw?oc=5",
+    "https://news.google.com/rss/articles/CBMipAFBVV95cUxQcUZaWTB5QTNXdTdPb0piQjlaRnNQWDFSempMNEY2dkdhZkRVcFdOYlg0SGUxQmh4OGFFTThydGI2MlBhS1VMb2NGY0RBTktyTFcycko2SERiaUxUemdEMHAwYUk3cGwzME5NWDk4UFBPek5JYmc5d2tLZHZHQlpFVmhBSElFdUpiTy1NQWNoUXFtSDlGdzlTb2RuSk0xY3RwNzBNMA?oc=5",
+    "https://news.google.com/rss/articles/CBMikwFBVV95cUxNYzBNZ1UxUTJETV93NWd4Y2xYRHN2RUNoNTJOQUFZZDV1WVVwVFJjYjdBWWQwMkNteVVVV25iclc4UjYwdUUwUXAwdTJjQXhGNzI5VWdIS1RtRmgwQzFxTlpGWi14WDJoR0lmM1Foa1lCTkttYzNVVThEeE92THo4MHprT2lNR0pEallEMFhRRjhqMXc?oc=5",
+    "https://news.google.com/rss/articles/CBMiyAFBVV95cUxPRmtfN2pZR3dZM0c1ZHB3OF9jYnY0bnJOQnlyYlJTNnFlZDFtdXZVSDZacnNfdV9fa3ZFSU1aWkVhZldhTXA2ZlpYQ19BRzNBaXpMeFlpNjhkNjdkUi1vbC1PYUIybXdZMHg0S2NDZ1RiXzhESElsbkRzd29YYWx4RnhUWjkydld1eUlfek9KQS1La2xXMUZ0WWpzV19ibjFKcEZ6Yk9HZll6aUFxMllYVi10bkUxdjVJTjlBVDJnbmM4SjRadDlubQ?oc=5",
+    "https://news.google.com/rss/articles/CBMinAFBVV95cUxPa3lkS3N2OVVoX2VDS3hOYm9SNmNxajR3RE5mVlFITGRmMzgzbVpnN3NCWHRfYkxycHJ2a1c1alVwTDlxdkRNa0JaTm5FT0drY3N2LXFQMFIyc3ZDRmNCY1JBajJUZno5aTR0RzlKcE9oQS15WEVzREY3RS1tbXlQd0N0djhkanlSV3laNjhyMEowNHZwN0tfTjFGSHk?oc=5",
+    "https://news.google.com/rss/articles/CBMijgFBVV95cUxQODd4Z2N4NlZoRUZqS3IxaDNoY2lKTU9JY1FhVHdZUEdYNkVRcnI1UU9XdTdDbGNZRGRQQmlLX091eTltODY1cVJueVBCMWIxNXZRWXJadmdNM0FxT3JTMDNqbjRoMS12bTJpX00xQzlzdUxKTk13ZzBsRnNBQmNjbjBIOUEyRHJnYTQ2S0V3?oc=5",
+    "https://news.google.com/rss/articles/CBMi7AFBVV95cUxNRUV2bU8tek9yTWpnZXE0dklTSlRjVlZYeTNkcWo0T0MweWFweVU3WlhTT1QwMUV5N3U0MExKdGVvanZySEdEU1VpRVR5enNDVUZpQ0RNMUtwUmcxR0FMZWNQZ05Od0hlNEhQQnZDa2lUSVpTUTZuUldybWJIWGZwLXFtbzlyVXV1SXRhWHVST1IyclUzS2RRZFduUm1XTEJGVkJFcHRkV193YmRvQmdhMzlBSEhGNy1CemZESjlNanc0Z0dCcmlxTG9LN25yVVdfWGlUcmZRakdOTFBaQ0pRV1Jfem5HYXVVRVhfZA?oc=5",
+    "https://news.google.com/rss/articles/CBMiqwFBVV95cUxPQnpkazg4aHJucnZxZUJVa19jQ19hRldOQTlGTDNQZ3BWOUJBeUNLZGNTb1RJUVJ6Qnoxbzl1QjlSOEFBajJzVldCa2FHZnJuNGpMaE9DMEtIVm5SbjFEZmJvTHprWkI2dUtHWlprZERlNXNUZ0NYX3dYYmc4ZUhMVHdrQ1pNaVhRQXlyMjZOMWEtZkxDTkJGN2FOTlRRNW9PLWw0cWYxS29UM0k?oc=5",
+    "https://news.google.com/rss/articles/CBMibkFVX3lxTFBqdXJNanFUeVpfaG1LOUNILXVpR3c1U2xTRm1VdThpNjV4TXk5OWxOd1B6c3lQUlYzelFzZ2pEUzRld0dobWpOd0JZeHFrX1dhWkk4S05mT2F3a0luR2RLMjc4d29icEoxX0RFSGVR?oc=5",
+    "https://www.housingwire.com/articles/pa-ag-respa-settlement-conquest/",
+    "https://www.housingwire.com/articles/ppe-technology-8-questions/",
+    "https://www.housingwire.com/articles/mortgage-hedging-loan-data-sync/",
+    "https://www.housingwire.com/articles/local-housing-reforms-parking/",
+    "https://www.housingwire.com/articles/btr-treasury-investor-ban/",
+    "https://www.housingwire.com/articles/social-security-3-6-cola-insolvency-debt-risks-senior-housing/"
   ],
   "brief_as_of": "2026-11-20",
   "marks": {
@@ -243,35 +278,35 @@
       11.111439
     ],
     "T10Y2Y": [
-      "2026-11-23",
-      0.29
+      "2026-11-24",
+      0.28
     ],
     "DGS2": [
-      "2026-11-20",
+      "2026-11-23",
       4.63
     ],
     "DGS10": [
-      "2026-11-20",
+      "2026-11-23",
       4.92
     ],
     "DGS30": [
-      "2026-11-20",
-      5.31
+      "2026-11-23",
+      5.29
     ],
     "SOFR": [
-      "2026-11-23",
-      3.92
+      "2026-11-24",
+      3.94
     ],
     "SOFR30DAYAVG": [
-      "2026-11-24",
-      3.92534
+      "2026-11-25",
+      3.92601
     ],
     "SOFR90DAYAVG": [
-      "2026-11-24",
-      3.85303
+      "2026-11-25",
+      3.85639
     ],
     "DPRIME": [
-      "2026-11-09",
+      "2026-11-23",
       7.0
     ],
     "FEDFUNDS": [
@@ -283,12 +318,12 @@
       6.66
     ],
     "BAMLC0A4CBBB": [
-      "2026-11-20",
-      122.0
+      "2026-11-23",
+      120.0
     ],
     "BAMLH0A0HYM2": [
-      "2026-11-20",
-      376.0
+      "2026-11-23",
+      363.0
     ],
     "HSN1F": [
       "2026-09-01",
@@ -311,8 +346,8 @@
       393300.0
     ],
     "CSUSHPINSA": [
-      "2026-08-01",
-      336.741
+      "2026-09-01",
+      335.754
     ],
     "WPUSI012011": [
       "2026-10-01",
@@ -343,12 +378,12 @@
       9329.0
     ],
     "CASTHPI": [
-      "2026-04-01",
-      974.97
+      "2026-07-01",
+      970.58
     ],
     "LXXRSA": [
-      "2026-08-01",
-      446.6454829868
+      "2026-09-01",
+      446.199066749
     ],
     "CAUR": [
       "2026-10-01",
@@ -388,87 +423,84 @@
     ]
   },
   "px": {
-    "DHI": 147.06,
-    "LEN": 81.8,
-    "PHM": 126.39,
-    "NVR": 5562.89,
-    "TOL": 146.47,
-    "KBH": 46.35,
-    "MTH": 62.78,
-    "CCS": 50.99,
-    "LGIH": 40.26,
-    "MHO": 126.22,
-    "MRP": 24.99,
-    "FOR": 22.65,
-    "FPH": 4.53,
-    "LBR=F": 540.0,
+    "DHI": 152.17,
+    "LEN": 85.0,
+    "PHM": 130.23,
+    "NVR": 5868.8,
+    "TOL": 148.94,
+    "KBH": 48.77,
+    "MTH": 65.12,
+    "CCS": 51.86,
+    "LGIH": 41.87,
+    "MHO": 129.75,
+    "MRP": 25.58,
+    "FOR": 22.94,
+    "FPH": 4.6,
+    "LBR=F": 547.0,
     "HRC=F": 1433.0,
-    "HG=F": 5.504,
-    "ALI=F": 2751.0,
-    "CL=F": 81.06,
-    "HO=F": 3.6739,
-    "NG=F": 3.613
+    "HG=F": 5.4,
+    "ALI=F": 2744.5,
+    "CL=F": 82.57,
+    "HO=F": 3.6591,
+    "NG=F": 3.614
   },
-  "next_id": 197,
+  "next_id": 232,
   "since": "2026-11-24",
-  "as_of": "2026-11-24",
-  "headline": "Forestar guided fiscal 2027 lot deliveries down to 12,000 to 13,000 and cut its average lot price to $108,300 from $115,700.",
+  "as_of": "2026-11-25",
+  "headline": "D.R. Horton's CEO says the builder is not betting on lower mortgage rates in 2027 as it trims starts.",
   "sections": {
     "national": [
       "Nine builders have now reported the summer quarter: Lennar and KB Home for quarters ended August 31, and D.R. Horton, PulteGroup, M/I Homes, Meritage, Century Communities, NVR and LGI Homes for September 30. All nine describe it as weaker than the quarter before. Net orders fell everywhere they are reported (Horton down 7%, Lennar down 9%, Pulte down 6%, KB down 12%, M/I down 2%, Meritage down 15%, Century down 4%, NVR down 7%). LGI's third-quarter orders fell 61.2% to 609 homes, its management said on Nov 3, and it narrowed 2026 closings guidance to 4,600 to 4,800 homes on slower sales as affordability weighed [155][8].",
-      "M/I's CEO said the 10-year rose from 4.5% to 5.3% and mortgage rates from about 6.75% to 7.75% in the quarter, and M/I's September orders fell 16% [164]. Century's management said on Oct 28 that rates rose about 75 basis points. It cut 2026 deliveries to 9,350 to 9,650 homes, confirming the Nov 23 headline [73][159]. Century cut starts 8% and Horton 10% [67]. On Sep 16, Lennar cut full-year deliveries to 80,000 to 81,000 from 82,000 to 83,000 and guided fourth-quarter orders of 19,500 to 20,500 against deliveries of 22,000 to 23,000 [166]. Horton guides 79,000 to 84,000 closings for fiscal 2027 against 84,202 and expects elevated incentives, its management said Oct 29 [177].",
-      "Margins are still compressed year over year: Horton's home sales margin was 20.2% for fiscal 2026 against 21.5%, Lennar 15.8% against 17.5%, Pulte 24.8% against 26.2%. NVR's fell to 18.3% from 21.0%, with $24.8 million of land deposit impairments [162]. Meritage's margin was 17.4% against 19.1%, and its management expects 2022 to 2025 lot costs to weigh through at least 2027 [179]. The 30-year fixed rate was 7.28% on Nov 19 and the 10-year 4.92% on Nov 20 [63], below the 5.04% quoted Nov 23. HousingWire says the Fed is staying hawkish even with lower energy prices [60], and that sub-7% mortgages need a 10-year yield below 4.85% and 2% mortgage spreads [59].",
-      "Cancellations rose at the entry level: Horton's reached 23% from 20% [177], NVR's 21.0% from 19.4%, LGI's 53.8% from 33.6% [155]. Forestar guided on Oct 29 to 12,000 to 13,000 lots in fiscal 2027 against 13,545, and its average lot price fell to $108,300 from $115,700 [178]. Meritage cut land spend 38% and said Oct 28 it will scrutinize every fourth-quarter land deal, with possible walkaways [179]. Input costs remain high: materials PPI up 12.1% in October, steel futures up 50.0% and diesel 71.9% year to date on Nov 24 [65], yet Lennar's cost per square foot fell 6% [166] and Century's direct costs fell 2% [159]. Toll Brothers reports its year to Oct 31 in December."
+      "M/I's CEO said the 10-year rose from 4.5% to 5.3% and mortgage rates from about 6.75% to 7.75% in the quarter, and M/I's September orders fell 16% [164]. Century's management said on Oct 28 that it cut 2026 deliveries to 9,350 to 9,650 homes and starts 8%, confirming the Nov 23 headline [73][159][67]. On Sep 16, Lennar cut full-year deliveries to 80,000 to 81,000 from 82,000 to 83,000 and guided fourth-quarter orders of 19,500 to 20,500 against deliveries of 22,000 to 23,000 [166].",
+      "Horton cut starts 10% [67]. It guides 79,000 to 84,000 closings for fiscal 2027 against 84,202 and expects elevated incentives, its management said Oct 29 [177]. On Nov 25, ResiClub reported that Horton's CEO is not betting on lower mortgage rates in 2027 [213]. Lance Lambert wrote on Nov 24 that Horton is cutting starts as unsold inventory climbs above pre-pandemic levels [219]. The 30-year fixed rate was 7.28% on Nov 19 and the 10-year 4.92% on both Nov 20 and Nov 23 [63][199], not the 5.04% quoted in earlier editions. HousingWire says sub-7% mortgages need a 10-year yield below 4.85% and 2% mortgage spreads [59].",
+      "Margins are still compressed year over year: Horton 20.2% against 21.5%, Lennar 15.8% against 17.5% and Meritage 17.4% against 19.1%, whose management expects 2022 to 2025 lot costs to weigh through at least 2027 [179]. Cancellations rose at the entry level: Horton's reached 23% from 20% [177], NVR's 21.0% from 19.4%, LGI's 53.8% from 33.6% [155]. Forestar guided on Oct 29 to 12,000 to 13,000 lots in fiscal 2027 against 13,545, and its average lot price fell to $108,300 from $115,700 [178]. Input costs remain high: materials PPI up 12.1% in October [65], steel futures up 52.4% and diesel 73.0% year to date on Nov 25 [212], yet Lennar's cost per square foot fell 6% [166] and Century's direct costs fell 2% [159]. Toll Brothers reports its year to Oct 31 in December."
     ],
     "west": [
       "Horton's Southwest region (California, Arizona, Nevada, New Mexico, Hawaii) lost the most ground on buyer commitment. Its fiscal 2026 cancellation rate rose to 19% from 15%, and closings fell 5% to 9,013, which Horton attributes particularly to Las Vegas and Southern California. Lennar's West segment gross margin was 12.1% against 16.3%, the lowest of its four segments. Pulte's West segment had orders down 15% and a 21% cancellation rate. On Nov 23, the Orange County Register reported Southern California home sales at a 21-year low [77], and The Cool Down reported California sales at a nearly 3-year low with the median price at $886,760 [129].",
       "KB's West Coast segment looks like the exception: net orders rose 8% to 937, though average selling price fell 6% to $641,800. But KB's management said on Sep 22 that Southern California drove a roughly $20,000 cut to its fourth-quarter price outlook [165]. LGI's management said Nov 3 that Southern California is among its top markets at 3.4 closings per community per month [155]. Century's West segment lost $13.5 million before tax after $19.1 million of impairments, some in the Bay Area [159]. Meritage's management said Oct 28 it prioritizes margin over volume in California, which needs higher incentives, and its West orders fell to 706 from 867 [179].",
-      "Land sellers are holding out. Five Point's management said Oct 22 it will likely defer some 2026 land sales rather than sell in a weaker market, and revised full-year net income guidance to about $20 million [163]. Millrose's management said Oct 27 it had no option terminations and provided $1.1 billion for Dream Finders' Beazer deal [160], which gives terms to the $1.07 billion Beazer item seen Nov 9 [154]. Strata Land Partners launched Nov 2 [50][51]. Tri Pointe, now under Sumitomo Forestry, no longer discloses segments. KB's Albert Praw retires Nov 30 and will advise on land [5]. CBIA backed Prop. 45 to shorten CEQA review in posts through Nov 1 [173][175]."
+      "Land sellers are holding out. Five Point's management said Oct 22 it will likely defer some 2026 land sales rather than sell in a weaker market, and revised full-year net income guidance to about $20 million [163]. Millrose's management said Oct 27 it had no option terminations and provided $1.1 billion for Dream Finders' Beazer deal [160]. Tri Pointe, now under Sumitomo Forestry, no longer discloses segments. KB's Albert Praw retires Nov 30 and will advise on land [5]. CBIA backed Prop. 45 to shorten CEQA review in posts through Nov 1 [173][175]. Yahoo reported Nov 24 that developers are eyeing Southern California golf courses for housing, and neighbors are angry [222]."
     ],
     "ventura": [
       "No public builder discloses at county level. Ventura appears in none of these filings. Anything county-specific attributed to a builder filing is extrapolation. KB Home is actively selling at Beltramo Ranch in the county, and the new-home pipeline countywide is thin for a county of this size. City Ventures, a private builder, held a grand opening for Walnut Park in Simi Valley on Nov 14 [42]. The Ventura County Star reported on Nov 18 that Simi Valley annexed 302 acres with plans for a large development [153]. The reporting seen here gives no unit count or builder, so timing and entitlement path are unknown.",
-      "The resale side, from Redfin's October county data in the resale panel on this board: median sale price $862,100, up 0.5% from a year earlier, on 509 sales, down 12.7%, with a 52-day median time on market and sales at 98.2% of list. The Ventura County Star also reported on Nov 18 that county home prices dipped to a two-year low in October [168]. The headline gives no figure, so it cannot be reconciled with Redfin's 0.5% gain. The county's drop in sales fits the regional slump [77]. Next door, the Los Angeles Case-Shiller index was up 1.4% year over year in August.",
+      "The resale side, from Redfin's October county data in the resale panel on this board: median sale price $862,100, up 0.5% from a year earlier, on 509 sales, down 12.7%, with a 52-day median time on market and sales at 98.2% of list. The Ventura County Star also reported on Nov 18 that county home prices dipped to a two-year low in October [168]. The headline gives no figure, so it cannot be reconciled with Redfin's 0.5% gain. The county's drop in sales fits the regional slump [77]. Next door, the Los Angeles Case-Shiller index was up 1.0% year over year in September, slowing from 1.4% in August [209].",
       "The items that belong on the radar are regulatory, not corporate. The 2025 California Building Standards Code and local County amendments took effect for all applications submitted on or after January 1, 2026, and AB 1308 now requires the County to inspect completed residential work of one to ten units within ten business days, with a miss treated as a Housing Accountability Act violation. That second one is real leverage on close-out timing. A third item surfaced Nov 23: Ventura Planning supported employee housing code and zoning changes [85][87]. On Nov 19, a school district was reported weighing 130 apartments on the Janss site in Thousand Oaks [151]."
     ]
   },
   "changes": [
     {
-      "text": "Forestar guided on Oct 29 to 12,000 to 13,000 lots and $1.4 billion to $1.5 billion of revenue in fiscal 2027, with its average lot price down to $108,300 from $115,700.",
+      "text": "On Nov 25, ResiClub reported that D.R. Horton's CEO said the company is not betting on lower mortgage rates in 2027.",
       "refs": [
-        178
+        213
       ]
     },
     {
-      "text": "Meritage cut land spend 38% to $329 million, said it will scrutinize every fourth-quarter land deal with possible walkaways, and expects 2022 to 2025 lot costs to weigh through at least 2027.",
+      "text": "Lance Lambert wrote Nov 24 that Horton is cutting starts as unsold inventory climbs above pre-pandemic levels.",
       "refs": [
-        179
+        219
       ]
     },
     {
-      "text": "Horton's management confirmed on Oct 29 its fiscal 2027 guide of 79,000 to 84,000 closings, elevated incentives and a 23% cancellation rate.",
+      "text": "The Los Angeles Case-Shiller index slowed to 1.0% year over year in September, and California's house price index was 970.6 for July, up 0.6% from a year earlier.",
       "refs": [
-        177
+        209,
+        208
       ]
     },
     {
-      "text": "Meritage's management said Oct 28 it prioritizes margin over volume in California, where homes need higher incentives, and its West orders fell to 706 from 867.",
+      "text": "Steel futures rose to 52.4% and diesel to 73.0% year to date on Nov 25, and the 10-year held at 4.92% on Nov 23.",
       "refs": [
-        179
+        212,
+        199
+      ]
+    },
+    {
+      "text": "Yahoo reported Nov 24 that developers are eyeing Southern California golf courses for housing, with neighbors opposed.",
+      "refs": [
+        222
       ]
     }
   ],
-  "revisions": [
-    {
-      "claim_id": "c1",
-      "earlier": "On Nov 23 the ledger expected re-trades and walk-aways on land options underwritten in 2024 and 2025, and it was later marked contradicted because Millrose reported no option terminations on Oct 27.",
-      "now": "Meritage's management said Oct 28 it will scrutinize every fourth-quarter land deal, with possible walkaways, after cutting land spend 38%.",
-      "why": "A public builder now says it may walk from deals, while Millrose's no-termination report covered a different land bank book. The claim is open again.",
-      "refs": [
-        179,
-        160
-      ]
-    }
-  ],
+  "revisions": [],
   "claims": [
     {
       "id": "c1",
@@ -477,7 +509,7 @@
       "status": "contradicted",
       "made": "2026-11-23",
       "updated": "2026-11-24",
-      "note": "Reopened: Meritage said Oct 28 it may walk from land deals in Q4."
+      "note": "Status unchanged from earlier edition."
     },
     {
       "id": "c2",
@@ -486,7 +518,7 @@
       "status": "confirmed",
       "made": "2026-11-23",
       "updated": "2026-11-24",
-      "note": "Pulte (about 70 bps) and NVR ($24.8 million) already booked land charges in the September quarter."
+      "note": "Status unchanged from earlier edition."
     },
     {
       "id": "c3",
@@ -513,7 +545,7 @@
       "status": "confirmed",
       "made": "2026-11-23",
       "updated": "2026-11-24",
-      "note": "Horton's management restated the guidance and elevated incentives on Oct 29."
+      "note": "Lance Lambert's Nov 24 note also says Horton is cutting starts as unsold inventory rises."
     },
     {
       "id": "c6",
@@ -540,16 +572,16 @@
       "status": "contradicted",
       "made": "2026-11-23",
       "updated": "2026-11-24",
-      "note": "Unchanged since the previous edition."
+      "note": "Status unchanged from earlier edition; the 10-year was still 4.92% on Nov 23."
     },
     {
       "id": "c9",
       "section": "national",
-      "text": "Input cost indexes stay high (materials PPI up 12.1% YoY, steel up 50.0% and diesel up 71.9% year to date on Nov 24, tariffs modeled at $12,919 per home), but builders report flat to lower cost per home, so land pricing pressure into 2027 comes mainly from demand and margins.",
+      "text": "Input cost indexes stay high (materials PPI up 12.1% YoY, steel up 52.4% and diesel up 73.0% year to date on Nov 25), but builders report flat to lower cost per home, so land pricing pressure into 2027 comes mainly from demand and margins.",
       "status": "contradicted",
       "made": "2026-11-23",
       "updated": "2026-11-24",
-      "note": "Narrowed after Lennar, Century and M/I reported flat to lower costs."
+      "note": "Status unchanged from earlier edition; figures updated to Nov 25."
     },
     {
       "id": "c10",
@@ -676,6 +708,24 @@
       "made": "2026-11-24",
       "updated": "2026-11-24",
       "note": ""
+    },
+    {
+      "id": "c24",
+      "section": "national",
+      "text": "Horton's CEO is not betting on lower mortgage rates in 2027 (ResiClub, Nov 25), so land underwriting for Horton-linked deals should assume mortgage rates stay near current levels.",
+      "status": "open",
+      "made": "2026-11-25",
+      "updated": "2026-11-25",
+      "note": ""
+    },
+    {
+      "id": "c25",
+      "section": "west",
+      "text": "Southern California golf course housing proposals (Yahoo, Nov 24) will draw neighborhood opposition, which adds entitlement time and risk to infill land deals.",
+      "status": "open",
+      "made": "2026-11-25",
+      "updated": "2026-11-25",
+      "note": ""
     }
   ],
   "history": [
@@ -742,6 +792,19 @@
         "Input indexes are still high, but builders report flat to lower costs: Lennar's cost per square foot fell 6%, Century's direct costs fell 2% and lot costs 3%, and M/I's costs were flat on the prior quarter. NVR cited higher lot costs.",
         "Millrose reported no option terminations across 22 counterparties and said builders are showing renewed interest in reloading land, while NVR booked $24.8 million of deposit impairments."
       ]
+    },
+    {
+      "date": "2026-11-24",
+      "headline": "Forestar guided fiscal 2027 lot deliveries down to 12,000 to 13,000 and cut its average lot price to $108,300 from $115,700.",
+      "changes": [
+        "Forestar guided on Oct 29 to 12,000 to 13,000 lots and $1.4 billion to $1.5 billion of revenue in fiscal 2027, with its average lot price down to $108,300 from $115,700.",
+        "Meritage cut land spend 38% to $329 million, said it will scrutinize every fourth-quarter land deal with possible walkaways, and expects 2022 to 2025 lot costs to weigh through at least 2027.",
+        "Horton's management confirmed on Oct 29 its fiscal 2027 guide of 79,000 to 84,000 closings, elevated incentives and a 23% cancellation rate.",
+        "Meritage's management said Oct 28 it prioritizes margin over volume in California, where homes need higher incentives, and its West orders fell to 706 from 867."
+      ],
+      "revisions": [
+        "Meritage's management said Oct 28 it will scrutinize every fourth-quarter land deal, with possible walkaways, after cutting land spend 38%."
+      ]
     }
   ],
   "sources": {
@@ -766,32 +829,11 @@
       "date": "2026-11-11",
       "kind": "news"
     },
-    "50": {
-      "title": "Strata Land launches as builders face land-capital squeeze",
-      "url": "https://news.google.com/rss/articles/CBMic0FVX3lxTE03WEpibnVZS0hsMFNPU2w0Y2lXd05HWEpIQk9lTzU2MzBVRmdBMTBWVzFYS1UxR3cwWTNxLWVXWWFfcWZta193dHVtQVJWUmE0ODZ6SUFWTG02M21VZng1ZmF1b3lsV3dlVmhNd3pvRG10WEE?oc=5",
-      "source": "HousingWire",
-      "date": "2026-11-02",
-      "kind": "news"
-    },
-    "51": {
-      "title": "Wafra and Hunt Companies Launch Strata Land Partners",
-      "url": "https://news.google.com/rss/articles/CBMirAFBVV95cUxPS2xROGJreEotbU5BcnozTGMwX0FXOHZnYU1NczJVNGNPclB5emtZeGIxZjBhRHhNdFZBMXFQcnI2QW1Ua1FZMjRWbk5uZ2djYTZQcUlvazV5dnlzRFZIRmtISDRxdWJ2RHBvQnFmYmdaeDREb1YxOVZHUkNsbncxYnhSako3ZDExM0xSMk13Z3RVWUk3SGxEUWd5WUQ0ckkzX0N0UTg1ajZLclNm?oc=5",
-      "source": "PR Newswire",
-      "date": "2026-11-02",
-      "kind": "news"
-    },
     "59": {
       "title": "Will the AI stock sell-off give us sub-7% mortgage rates before the holidays?",
       "url": "https://www.housingwire.com/articles/sub-7-mortgage-rates-yield-spreads/",
       "source": "HousingWire",
       "date": "2026-11-21",
-      "kind": "news"
-    },
-    "60": {
-      "title": "Why aren\u2019t mortgage rates lower after massive stock sell-off?",
-      "url": "https://www.housingwire.com/articles/10-year-yield-mortgage-rates-fed/",
-      "source": "HousingWire",
-      "date": "2026-11-20",
       "kind": "news"
     },
     "63": {
@@ -864,13 +906,6 @@
       "date": "2026-11-18",
       "kind": "news"
     },
-    "154": {
-      "title": "Weekly Recap: Q3 revenue and earnings rise and $1.07B Beazer financing",
-      "url": "https://news.google.com/rss/articles/CBMiygFBVV95cUxQYnVlNExjWlJfajNqeTdoZ20yM2FjU2F5a3VZR2w1U2JtNzVMYXhqTV9GeWc0SVF4cWJFOVNOR2V1cVplNEFaMkZzVkhpMFBsaTRuUE0zUWpZT3VzdDdpMTRfSXBRN09tdU0xcEVrZHpvSmZhRzZRZV9xZmdOVFh0U1FkOHVoTDhZSEs5dVN5R1Q0RHpVWGJ6NEdwX2tLZlRoaXpmOFpJdkV5RVhSZWR6a3hOTVJPVmR6cEtWNVlNZi0yNS1SUnRwY1BR?oc=5",
-      "source": "TradingView",
-      "date": "2026-11-09",
-      "kind": "news"
-    },
     "155": {
       "title": "LGI Homes management, Q3 FY2026: Management said affordability and higher rates cut orders 61%, but margins, costs and balance sheet improved; closings guidance narrowed to 4,600 to 4,800.",
       "url": "https://www.fool.com/earnings/call-transcripts/2026/11/03/lgi-homes-lgih-q3-2026-earnings-call-transcript/",
@@ -890,13 +925,6 @@
       "url": "https://finance.yahoo.com/markets/stocks/articles/millrose-mrp-q3-2026-earnings-165831546.html",
       "source": "earnings call",
       "date": "2026-10-27",
-      "kind": "call"
-    },
-    "162": {
-      "title": "NVR management, Q3 FY2026: Management said gross margin fell to 18.3% on higher lot costs, pricing pressure from affordability challenges and weak consumer sentiment.",
-      "url": "https://www.sec.gov/Archives/edgar/data/906163/000090616326000099/nvr-20261022.htm",
-      "source": "earnings release",
-      "date": "2026-10-22",
       "kind": "call"
     },
     "163": {
@@ -968,9 +996,58 @@
       "source": "earnings call",
       "date": "2026-10-28",
       "kind": "call"
+    },
+    "199": {
+      "title": "10-year Treasury: 4.92% for 2026-11-23",
+      "url": "https://fred.stlouisfed.org/series/DGS10",
+      "source": "FRED",
+      "date": "2026-11-23",
+      "kind": "data"
+    },
+    "208": {
+      "title": "California house price index: 970.6 for 2026-07-01",
+      "url": "https://fred.stlouisfed.org/series/CASTHPI",
+      "source": "FRED",
+      "date": "2026-07-01",
+      "kind": "data"
+    },
+    "209": {
+      "title": "Los Angeles Case-Shiller: 446.2 for 2026-09-01",
+      "url": "https://fred.stlouisfed.org/series/LXXRSA",
+      "source": "FRED",
+      "date": "2026-09-01",
+      "kind": "data"
+    },
+    "212": {
+      "title": "Construction commodity futures closes through 2026-11-25",
+      "url": "",
+      "source": "Yahoo Finance",
+      "date": "2026-11-25",
+      "kind": "market"
+    },
+    "213": {
+      "title": "D.R. Horton's CEO says the giant homebuilder isn't betting on lower mortgage rates in 2027",
+      "url": "https://news.google.com/rss/articles/CBMivwFBVV95cUxPVXpxREVlVzZVQUtoRXFvX29lLW1DbWZLRUNRUGpLTDcxQjdkblpaeS1mZ3I3c29USFJrWC05eGlSbmNtTHVNRUc2M2NkTjc1MGNIejJjQm9VSTZoakpjZk03VXNvWXU1ZmFRcFdlZVFrTnpkU2tQSWN3LTdnNUM0Z1dsRi12NG0xRl91eVR6R1VycXJGc0xuZ2dMWlN6R1RRejdKNjBmaEtTdTlLR3dRTWZnZjZ4b1hMLTZ2Tm9odw?oc=5",
+      "source": "ResiClub",
+      "date": "2026-11-25",
+      "kind": "news"
+    },
+    "219": {
+      "title": "Lance Lambert: D.R. Horton reduces home starts as unsold inventory climbs above pre-pandemic levels",
+      "url": "https://news.google.com/rss/articles/CBMikwFBVV95cUxNYzBNZ1UxUTJETV93NWd4Y2xYRHN2RUNoNTJOQUFZZDV1WVVwVFJjYjdBWWQwMkNteVVVV25iclc4UjYwdUUwUXAwdTJjQXhGNzI5VWdIS1RtRmgwQzFxTlpGWi14WDJoR0lmM1Foa1lCTkttYzNVVThEeE92THo4MHprT2lNR0pEallEMFhRRjhqMXc?oc=5",
+      "source": "Traders Union",
+      "date": "2026-11-24",
+      "kind": "news"
+    },
+    "222": {
+      "title": "Developers eye Southern California golf courses for housing. Neighbors are mad.",
+      "url": "https://news.google.com/rss/articles/CBMijgFBVV95cUxQODd4Z2N4NlZoRUZqS3IxaDNoY2lKTU9JY1FhVHdZUEdYNkVRcnI1UU9XdTdDbGNZRGRQQmlLX091eTltODY1cVJueVBCMWIxNXZRWXJadmdNM0FxT3JTMDNqbjRoMS12bTJpX00xQzlzdUxKTk13ZzBsRnNBQmNjbjBIOUEyRHJnYTQ2S0V3?oc=5",
+      "source": "Yahoo",
+      "date": "2026-11-24",
+      "kind": "news"
     }
   },
-  "evidence_count": 6,
+  "evidence_count": 35,
   "x_accounts": {
     "LEN": {
       "id": "15397465",
@@ -1100,9 +1177,9 @@
   },
   "x_resolved": "2026-11-24",
   "x_since": {
-    "LEN": "2124880653892161578",
+    "LEN": "2125243041380245604",
     "PHM": "2083285617983545601",
-    "TOL": "2125031705446908348",
+    "TOL": "2125424283430355387",
     "KBH": "2125212841229631534",
     "MTH": "1583522049418350592",
     "LGIH": "1633515437836337155",
@@ -1112,12 +1189,12 @@
     "trumark": "823970440477409280",
     "cityv": "1469084852024610820",
     "woodside": "1595811322603651087",
-    "richmond": "2124955903988252682",
+    "richmond": "2125381458436976912",
     "melia": "1171132061857353728",
     "williams": "1368332300665061380",
     "apollo": "2125227946420191313",
-    "blackstone": "2124978885037027832",
-    "bam": "2124894755582554401",
+    "blackstone": "2125352081548603644",
+    "bam": "2125333736170369085",
     "jbrec": "2030312518435131678",
     "zonda": "1897051103935754496",
     "cbia": "2120663226660904965",
@@ -1892,6 +1969,214 @@
     "11mrenovationhitsseniorhousinginlascrucesroswell": [
       0,
       "2026-11-24"
+    ],
+    "kaplanfoxalertsmillrosepropertiesincnysemrpinvestors": [
+      0,
+      "2026-11-25"
+    ],
+    "form4forestargroupincgeorgewseagravesdirectorfor20november": [
+      0,
+      "2026-11-25"
+    ],
+    "form4forestargroupincanthonywoxleydirectorchairmanpresceofor": [
+      0,
+      "2026-11-25"
+    ],
+    "kellielfischerconverts750rsusintosharesatforestargroupinc": [
+      0,
+      "2026-11-25"
+    ],
+    "forestargroupdirectorsamuelrfullervests750rsusonnovember2020": [
+      0,
+      "2026-11-25"
+    ],
+    "parmervests750rsusatforestargrouponnov20": [
+      0,
+      "2026-11-25"
+    ],
+    "cfojamesdouglasallenacquired2601forestargroupforsharesandsur": [
+      0,
+      "2026-11-25"
+    ],
+    "forestargroupforreportslowerannualresultsisitstill33belowfai": [
+      0,
+      "2026-11-25"
+    ],
+    "millrosepropertiesmrpstartsa250millionbuybackasundervaluedna": [
+      0,
+      "2026-11-25"
+    ],
+    "drhortonsceosaysthegianthomebuilderisntbettingonlowermortgag": [
+      1,
+      "2026-11-25"
+    ],
+    "tollbrotherstolgainsonearningsoptimismisitstillabargain": [
+      0,
+      "2026-11-25"
+    ],
+    "tollbrotherstolopensnewluxurycommunitiesacrosstheus": [
+      1,
+      "2026-11-25"
+    ],
+    "tollbrothersmovesforwardwithtownhomeprojectacrossfromexpandi": [
+      1,
+      "2026-11-25"
+    ],
+    "drhortonhelpsspreadholidaycheerthroughabc6stoysfortotsdrive": [
+      0,
+      "2026-11-25"
+    ],
+    "rosennationaltrialcounselencourageslennarcorporationinvestor": [
+      0,
+      "2026-11-25"
+    ],
+    "statestreetcorpsells6357sharesofnvrincnvr": [
+      0,
+      "2026-11-25"
+    ],
+    "pathstoneholdingsllcbuys32080sharesofnvrincnvr": [
+      0,
+      "2026-11-25"
+    ],
+    "tollbrotherstoladvanceswhilemarketdeclinessomeinformationfor": [
+      0,
+      "2026-11-25"
+    ],
+    "tollbrothersatcavassonisnowsellinginscottsdalearizona": [
+      1,
+      "2026-11-25"
+    ],
+    "buffingtonhomesbytollbrothersannouncesellisestatescommunityc": [
+      1,
+      "2026-11-25"
+    ],
+    "ridgecrestestatesbytollbrothersnowopeninpittsboronorthcaroli": [
+      1,
+      "2026-11-25"
+    ],
+    "drhortonincstockunderperformstuesdaywhencomparedtocompetitor": [
+      0,
+      "2026-11-25"
+    ],
+    "lancelambertdrhortonreduceshomestartsasunsoldinventoryclimbs": [
+      1,
+      "2026-11-25"
+    ],
+    "emcoranddrhortonhavebeenhighlightedaszacksbullandbearoftheda": [
+      0,
+      "2026-11-25"
+    ],
+    "tollbrothersopensridgecrestestatesluxuryhomecommunityinchath": [
+      1,
+      "2026-11-25"
+    ],
+    "nvrincstockoutperformscompetitorsonstrongtradingday": [
+      0,
+      "2026-11-25"
+    ],
+    "alookatnvrincnvrafter55gaingfvalue761677vsprice586880": [
+      0,
+      "2026-11-25"
+    ],
+    "newjerseyjobsoftheweektollbrothersmooncatrookcoffeeinnovaten": [
+      0,
+      "2026-11-25"
+    ],
+    "drhortonincstockoutperformscompetitorsonstrongtradingday": [
+      0,
+      "2026-11-25"
+    ],
+    "lennarnyselensharepriceforecastanalysis": [
+      0,
+      "2026-11-25"
+    ],
+    "lennarcorporationlnndeinsiderownershipandholdings": [
+      0,
+      "2026-11-25"
+    ],
+    "crewsdigging12feetbelowinoceansidecaliforniaconstructionsite": [
+      0,
+      "2026-11-25"
+    ],
+    "southerncaliforniahousingmarkethitsthebreakswhy": [
+      1,
+      "2026-11-25"
+    ],
+    "developerseyesoutherncaliforniagolfcoursesforhousingneighbor": [
+      1,
+      "2026-11-25"
+    ],
+    "agcofcalifornianamesconstructionsafetywinnersexcellenceaward": [
+      0,
+      "2026-11-25"
+    ],
+    "2homebuildingstocksmanagingthroughhousingmarketheadwinds": [
+      0,
+      "2026-11-25"
+    ],
+    "constructionadvancesatglineimprovementsinlosangelescounty": [
+      0,
+      "2026-11-25"
+    ],
+    "vancouverislandcompanyturnstofactorybuilthomestotacklehousin": [
+      0,
+      "2026-11-25"
+    ],
+    "vehiclecode22362vcspeedinginaconstructionzonecalifornia": [
+      0,
+      "2026-11-25"
+    ],
+    "ussinglefamilyhousingstartsreboundbuttrendremainssubdued": [
+      1,
+      "2026-11-25"
+    ],
+    "closuresandconstructionatdisneylandresort": [
+      0,
+      "2026-11-25"
+    ],
+    "spdrsphomebuildersetfnysearcaxhbwhatdoesa99jumpinhousingstar": [
+      0,
+      "2026-11-25"
+    ],
+    "wildfiresdeepenregionshousingchallenges": [
+      1,
+      "2026-11-25"
+    ],
+    "riversideeyesstateprohousingrenewalwithhousingpromisesstillo": [
+      1,
+      "2026-11-25"
+    ],
+    "miramarbeachhomesgetboardedupbeforetidesrisenewschannel312": [
+      0,
+      "2026-11-25"
+    ],
+    "mariemalkanthiedalpethadoobituary2026simivalleycareardonsimi": [
+      0,
+      "2026-11-25"
+    ],
+    "yorkdentsplysitegets1mgrantforhousingproject": [
+      0,
+      "2026-11-25"
+    ],
+    "fernmoorhomessecures85mrefinancinginunioncountynj": [
+      0,
+      "2026-11-25"
+    ],
+    "henriettaojedaastilleroobituarycaminodelsolfuneralhomeoxnard": [
+      0,
+      "2026-11-25"
+    ],
+    "hudseizescontrolofnewarkhousingauthorityfiresentireboard": [
+      0,
+      "2026-11-25"
+    ],
+    "studiocitysoybarclosingjan16asaffordablehousingreplacesstrip": [
+      1,
+      "2026-11-25"
+    ],
+    "danielleesorrellobituarycaminodelsolfuneralhomeoxnardca": [
+      0,
+      "2026-11-25"
     ]
   },
   "calls": {
