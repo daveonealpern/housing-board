@@ -7,15 +7,15 @@
 // Icons, logo and fonts: served from the cache straight away and refreshed in
 // the background, since they rarely change.
 // Bump VERSION whenever the app changes, so phones drop the old copies.
-const VERSION = 'hsb-app-v10';
+const VERSION = 'hsb-app-v11';
 const SHELL = [
   './',
   './index.html',
   './manifest.webmanifest',
   './clc-logo.png',
-  './icon-180.png',
-  './icon-192.png',
-  './icon-512.png',
+  './icon-180.png?v=2',
+  './icon-192.png?v=2',
+  './icon-512.png?v=2',
   '../summary.js',
 ];
 
