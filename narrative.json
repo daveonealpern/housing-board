@@ -1,6 +1,6 @@
 {
-  "checked": "2026-11-25",
-  "fail_count": 0,
+  "checked": "2026-11-26",
+  "fail_count": 1,
   "seen": [
     "market:Public builder share prices:2026-11-23",
     "market:Land banker share prices:2026-11-23",
@@ -1177,10 +1177,10 @@
   },
   "x_resolved": "2026-11-24",
   "x_since": {
-    "LEN": "2125243041380245604",
+    "LEN": "2125605450141864232",
     "PHM": "2083285617983545601",
-    "TOL": "2125424283430355387",
-    "KBH": "2125212841229631534",
+    "TOL": "2125748955648856259",
+    "KBH": "2125922518967939414",
     "MTH": "1583522049418350592",
     "LGIH": "1633515437836337155",
     "MHO": "1712189022959743400",
@@ -1189,11 +1189,11 @@
     "trumark": "823970440477409280",
     "cityv": "1469084852024610820",
     "woodside": "1595811322603651087",
-    "richmond": "2125381458436976912",
+    "richmond": "2125744852868461021",
     "melia": "1171132061857353728",
     "williams": "1368332300665061380",
-    "apollo": "2125227946420191313",
-    "blackstone": "2125352081548603644",
+    "apollo": "2125936860488929404",
+    "blackstone": "2125598013166858540",
     "bam": "2125333736170369085",
     "jbrec": "2030312518435131678",
     "zonda": "1897051103935754496",
@@ -2177,6 +2177,174 @@
     "danielleesorrellobituarycaminodelsolfuneralhomeoxnardca": [
       0,
       "2026-11-25"
+    ],
+    "form4forestargroupincgeorgewseagravesdirectorfor20novemberby": [
+      0,
+      "2026-11-26"
+    ],
+    "fphfivepointholdingsllcordinarysharesclassalateststockpricea": [
+      0,
+      "2026-11-26"
+    ],
+    "why2027mayturnintoalandnegotiationyearforhomebuilders": [
+      1,
+      "2026-11-26"
+    ],
+    "singlefamilyhousingoutlookandaffordabilitytrends2027": [
+      0,
+      "2026-11-26"
+    ],
+    "homebuildersstocksq3highlightsnvr": [
+      1,
+      "2026-11-26"
+    ],
+    "mihomesmhoceoschottensteinsold48000sharesfor624matanaverage1": [
+      0,
+      "2026-11-26"
+    ],
+    "mihomesceosells624millionincompanystockbyinvestingcom": [
+      0,
+      "2026-11-26"
+    ],
+    "tollbrothersannouncesfinalopportunityathawthorninalpharettag": [
+      1,
+      "2026-11-26"
+    ],
+    "trusteetalksmayoralambitionsimmigrationlennarmuchmore": [
+      0,
+      "2026-11-26"
+    ],
+    "drhortonseeselevatedmortgageratesinto2027": [
+      1,
+      "2026-11-26"
+    ],
+    "zacksindustryoutlookhighlightstollbrothersandkbhome": [
+      0,
+      "2026-11-26"
+    ],
+    "centurycommunitiespromotesjimfrancescontopresidentincolorado": [
+      1,
+      "2026-11-26"
+    ],
+    "investorsheavilysearchkbhomekbhhereiswhatyouneedtoknow": [
+      0,
+      "2026-11-26"
+    ],
+    "mihomeschairmanceoandpresidentsoldsharesworthover62m": [
+      0,
+      "2026-11-26"
+    ],
+    "schottensteinplanstosell48000mihomessharesviaoptionexercise": [
+      0,
+      "2026-11-26"
+    ],
+    "sharesvaluedat624mcamefromastockoptionexerciseanmihomesmhoof": [
+      0,
+      "2026-11-26"
+    ],
+    "cannvrincnysenvrmaintainmomentumamidmarketuncertainty": [
+      0,
+      "2026-11-26"
+    ],
+    "multipleinsiderssoldmeritagehomessharespresentingweaksignsfo": [
+      0,
+      "2026-11-26"
+    ],
+    "afterthestormcomesrebuildingdemolishingforsoutherncalifornia": [
+      1,
+      "2026-11-26"
+    ],
+    "piercollapsesseawallsbreachedhomesfloodedasbigwaveshistorich": [
+      0,
+      "2026-11-26"
+    ],
+    "californiaapproves1125bhousingbond": [
+      1,
+      "2026-11-26"
+    ],
+    "rankedthecentralvalleystop20homebuildersin2026": [
+      1,
+      "2026-11-26"
+    ],
+    "mysteryconstructioncompanyseeks90kforpotentialregionalheadqu": [
+      0,
+      "2026-11-26"
+    ],
+    "newushomesalesreachhighestthisyeartoppingforecasts": [
+      1,
+      "2026-11-26"
+    ],
+    "inlandempirehomelessforumfocusesonregionalcoordinationhousin": [
+      1,
+      "2026-11-26"
+    ],
+    "corespacestodeveloptwostudenthousingcommunitiesnearuniversit": [
+      0,
+      "2026-11-26"
+    ],
+    "affiniuscapitalprovides755mconstructionloanforstudenthousing": [
+      0,
+      "2026-11-26"
+    ],
+    "regionalspotlightcaliforniahomesaleshitlowestlevelaspricesmo": [
+      1,
+      "2026-11-26"
+    ],
+    "developerseyecalifgolfcoursesforhousingneighborsaremad": [
+      1,
+      "2026-11-26"
+    ],
+    "smchostsaffordablehousingforuminsantamonicadec4": [
+      1,
+      "2026-11-26"
+    ],
+    "ojaiplanningcommissiontoweighwildflowerhoteltreeremovalsfora": [
+      1,
+      "2026-11-26"
+    ],
+    "waynecountyapproves83maffordablehousingdeal": [
+      0,
+      "2026-11-26"
+    ],
+    "oregonhousingdirectorandreabellsconflictquestioned": [
+      0,
+      "2026-11-26"
+    ],
+    "virginia231millionhousingfundinghamptonroadswinsbig": [
+      0,
+      "2026-11-26"
+    ],
+    "woodbridgeapartmentcomplexgets35mfacelifttokeeprentsaffordab": [
+      0,
+      "2026-11-26"
+    ],
+    "clevelandhousingcourtjudgewiltshireonrentcourtlimits": [
+      0,
+      "2026-11-26"
+    ],
+    "saratogaspringsputnamstreetworkforcehousingplanawaitspermits": [
+      0,
+      "2026-11-26"
+    ],
+    "turkeysheadtohomesinneedatfoodsharedrivethruinoxnard": [
+      0,
+      "2026-11-26"
+    ],
+    "hollandhandsout402minincentivesfor302newhomesamidlocalhousin": [
+      0,
+      "2026-11-26"
+    ],
+    "plainfieldcouncilmanseeksreversalofhousingvote": [
+      0,
+      "2026-11-26"
+    ],
+    "edestrattonobituary2026simivalleycarosefamilyfuneralhomecrem": [
+      0,
+      "2026-11-26"
+    ],
+    "spanbergerunveilsvirginiahousingframeworktargets300000homesh": [
+      0,
+      "2026-11-26"
     ]
   },
   "calls": {
