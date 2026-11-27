@@ -1,6 +1,6 @@
 {
-  "checked": "2026-11-26",
-  "fail_count": 1,
+  "checked": "2026-11-27",
+  "fail_count": 2,
   "seen": [
     "market:Public builder share prices:2026-11-23",
     "market:Land banker share prices:2026-11-23",
@@ -1177,10 +1177,10 @@
   },
   "x_resolved": "2026-11-24",
   "x_since": {
-    "LEN": "2125605450141864232",
+    "LEN": "2125967820873728145",
     "PHM": "2083285617983545601",
-    "TOL": "2125748955648856259",
-    "KBH": "2125922518967939414",
+    "TOL": "2125977902395359515",
+    "KBH": "2126300004046250471",
     "MTH": "1583522049418350592",
     "LGIH": "1633515437836337155",
     "MHO": "1712189022959743400",
@@ -1189,11 +1189,11 @@
     "trumark": "823970440477409280",
     "cityv": "1469084852024610820",
     "woodside": "1595811322603651087",
-    "richmond": "2125744852868461021",
+    "richmond": "2126040834680270978",
     "melia": "1171132061857353728",
     "williams": "1368332300665061380",
     "apollo": "2125936860488929404",
-    "blackstone": "2125598013166858540",
+    "blackstone": "2125960390391570809",
     "bam": "2125333736170369085",
     "jbrec": "2030312518435131678",
     "zonda": "1897051103935754496",
@@ -2345,6 +2345,122 @@
     "spanbergerunveilsvirginiahousingframeworktargets300000homesh": [
       0,
       "2026-11-26"
+    ],
+    "concordcourtbycityventuresincomptonca": [
+      1,
+      "2026-11-27"
+    ],
+    "investoralertpomerantzlawfirmremindsinvestorswithlossesonthe": [
+      0,
+      "2026-11-27"
+    ],
+    "kaplanfoxurgesinvestorsofmillrosepropertiesincnysemr": [
+      0,
+      "2026-11-27"
+    ],
+    "millrosepropertiesmrpstocktradesbelowfairvalueonearnings": [
+      0,
+      "2026-11-27"
+    ],
+    "stcloudlandsellsfor3885masselleragreesto22bacquisition": [
+      1,
+      "2026-11-27"
+    ],
+    "millrosepropertiesincq32026earningscallsummary": [
+      1,
+      "2026-11-27"
+    ],
+    "fivepointholdingsllcsetsdateforthirdquarter2026earningsannou": [
+      1,
+      "2026-11-27"
+    ],
+    "marshallwacellpsells3609sharesofnvrincnvr": [
+      0,
+      "2026-11-27"
+    ],
+    "nycstopdealsstarwoodtollbrotherscloseondumbohotelsale": [
+      1,
+      "2026-11-27"
+    ],
+    "williamryanhomesinvitessuncitycenterneighborstogivebloodatfa": [
+      0,
+      "2026-11-27"
+    ],
+    "lgihomeslgihstocklookscheapwithearningssupport": [
+      0,
+      "2026-11-27"
+    ],
+    "mihomesceosells624millionincompanystock": [
+      0,
+      "2026-11-27"
+    ],
+    "whatinvestorsgotwrongaboutlennarbeforethedrop": [
+      0,
+      "2026-11-27"
+    ],
+    "howislennarnyselennavigatingchangingmarketconditions": [
+      1,
+      "2026-11-27"
+    ],
+    "leninvestorslennarcorporationsharesdeclinedby537": [
+      0,
+      "2026-11-27"
+    ],
+    "tollbrothersjardinheightstownhomescomingtojohnscreek": [
+      1,
+      "2026-11-27"
+    ],
+    "alookatpultegroupincphmafter30gaingfvalue119": [
+      0,
+      "2026-11-27"
+    ],
+    "alookatlennarcorplenafter39gaingfvalue12494vsprice8500": [
+      0,
+      "2026-11-27"
+    ],
+    "losangeleshousingmarketseeshomesalesdrop175": [
+      1,
+      "2026-11-27"
+    ],
+    "coachellavalleyhousingcoalitionhitshighnotewithhonorsgrant": [
+      0,
+      "2026-11-27"
+    ],
+    "ontariohomebuilderpromobuyahousegetafreechevy": [
+      0,
+      "2026-11-27"
+    ],
+    "truamericabreaksgroundonfirstgroundupdevelopmentinsantaclari": [
+      1,
+      "2026-11-27"
+    ],
+    "lynmarkplans110million302unitapartmentcommunityinsuburbanchi": [
+      0,
+      "2026-11-27"
+    ],
+    "homebuilderstockwoestopersistafterlongestslumpsince2008": [
+      0,
+      "2026-11-27"
+    ],
+    "losangeleshousingpermitssurgeasjobsgrow": [
+      1,
+      "2026-11-27"
+    ],
+    "minnesotasupremecourtrulingshrinksminneapolispublichousingte": [
+      0,
+      "2026-11-27"
+    ],
+    "sandiegodevelopersueshousingcommissionover7minredundantfees": [
+      1,
+      "2026-11-27"
+    ],
+    "estrellaazulaffordablehousingbreaksgroundinboyleheights": [
+      1,
+      "2026-11-27"
+    ],
+    "covingtonapartmentcomplexconvertsall94unitstoaffordablehousi": [
+      1,
+      "2026-11-27"
     ]
   },
   "calls": {
