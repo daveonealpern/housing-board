@@ -1,6 +1,6 @@
 {
-  "checked": "2026-11-27",
-  "fail_count": 2,
+  "checked": "2026-11-28",
+  "fail_count": 3,
   "seen": [
     "market:Public builder share prices:2026-11-23",
     "market:Land banker share prices:2026-11-23",
@@ -1177,9 +1177,9 @@
   },
   "x_resolved": "2026-11-24",
   "x_since": {
-    "LEN": "2125967820873728145",
+    "LEN": "2126330207556501593",
     "PHM": "2083285617983545601",
-    "TOL": "2125977902395359515",
+    "TOL": "2126375690539020603",
     "KBH": "2126300004046250471",
     "MTH": "1583522049418350592",
     "LGIH": "1633515437836337155",
@@ -1189,10 +1189,10 @@
     "trumark": "823970440477409280",
     "cityv": "1469084852024610820",
     "woodside": "1595811322603651087",
-    "richmond": "2126040834680270978",
+    "richmond": "2126465348157227060",
     "melia": "1171132061857353728",
     "williams": "1368332300665061380",
-    "apollo": "2125936860488929404",
+    "apollo": "2126345050866999404",
     "blackstone": "2125960390391570809",
     "bam": "2125333736170369085",
     "jbrec": "2030312518435131678",
@@ -2461,6 +2461,94 @@
     "covingtonapartmentcomplexconvertsall94unitstoaffordablehousi": [
       1,
       "2026-11-27"
+    ],
+    "ismillrosepropertiesmrpworthmorethanitsearningssuggest": [
+      0,
+      "2026-11-28"
+    ],
+    "mrpinvestordeadlinemillrosepropertiesincinvestorswithsubstan": [
+      0,
+      "2026-11-28"
+    ],
+    "lennarsold1233homesforspinoffmillrose": [
+      1,
+      "2026-11-28"
+    ],
+    "howardhughesmillrosepropertiesleadlistofundervaluedrealestat": [
+      0,
+      "2026-11-28"
+    ],
+    "drhortonbuys20vacantjacksontwplotsfor364million": [
+      1,
+      "2026-11-28"
+    ],
+    "berkshirebets600monlennarasushousingslumps": [
+      1,
+      "2026-11-28"
+    ],
+    "centurycommunitiesnyseccsstockbumpeduptosellbywallstreetzen": [
+      0,
+      "2026-11-28"
+    ],
+    "tollbrothersinctolisatrendingstockfactstoknowbeforebettingon": [
+      0,
+      "2026-11-28"
+    ],
+    "meritagehomesmthstocklooksaboutrightattodaysprice": [
+      0,
+      "2026-11-28"
+    ],
+    "melissakennedytravisbarkersfirstwifeandherlifeinrealestate": [
+      0,
+      "2026-11-28"
+    ],
+    "buildersofferconcessionsonnearlyallbakersfieldnewhomes": [
+      1,
+      "2026-11-28"
+    ],
+    "berkadiaarranges219mfanniemaeloanforharlemaffordablehousingr": [
+      0,
+      "2026-11-28"
+    ],
+    "walkerdunloparranges2035mconstructionloanformanhattanmixedus": [
+      0,
+      "2026-11-28"
+    ],
+    "megasoutherncaliforniagolfhubswingsbackintolifeafter55mdevel": [
+      1,
+      "2026-11-28"
+    ],
+    "ojaifarmworkerhousingprojectpreparesforgroundbreaking": [
+      1,
+      "2026-11-28"
+    ],
+    "northadamseyes3200squarefootlotsandshorttermrentalfeesforhou": [
+      0,
+      "2026-11-28"
+    ],
+    "aspenhoteldeveloperbreaksgroundon23bedroomworkerhousingdownt": [
+      0,
+      "2026-11-28"
+    ],
+    "astormythanksgivingintheus700000homeswithoutpowerseveralstat": [
+      0,
+      "2026-11-28"
+    ],
+    "suspectedduidrivercrashesintooxnardapartmentthanksgivingnigh": [
+      0,
+      "2026-11-28"
+    ],
+    "suvslamsthroughapartmentwallinoxnard": [
+      0,
+      "2026-11-28"
+    ],
+    "1arrestedafterthanksgivingduicrashintooxnardapartment": [
+      0,
+      "2026-11-28"
+    ],
+    "suspectedduicrashhitsoxnardapartmentbuilding": [
+      0,
+      "2026-11-28"
     ]
   },
   "calls": {
